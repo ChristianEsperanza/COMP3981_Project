@@ -32,10 +32,9 @@ class GUI:
                     pygame.quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    for tile in self.board.tiles:
+                    for tile in self.board.board:
                         if tile.get_rect().collidepoint(pos):
                             print(f"Clicked {tile.board_coordinate}")
-
                 else:
                     self.handle_event(event, window)
 
@@ -51,6 +50,7 @@ class GUI:
         return window
 
     def handle_event(self, event, window):
+        # TODO: Flesh out, should handle most click events
         pos = pygame.mouse.get_pos()
 
 

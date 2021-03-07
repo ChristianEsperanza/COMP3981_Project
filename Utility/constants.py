@@ -14,7 +14,7 @@ window_width = 1300
 window_height = 900
 
 piece_radius = 25
-piece_distance = 25
+piece_distance = 20
 
 board_width = window_width - 550
 board_height = window_height

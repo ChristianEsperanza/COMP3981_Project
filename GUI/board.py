@@ -5,22 +5,17 @@ from Utility.constants import *
 
 class Board:
     def __init__(self):
-        self.tiles = []
+        self.board = []
         pass
 
     def build_board(self, window):
-        # pygame.draw.rect(window, red, (board_start_x, board_start_y, board_width, board_height), board_height)
-        # circ = pygame.draw.circle(window, green, (board_start_x + 50, board_start_y+ 50),  piece_radius)
         self.draw_tiles(window)
         pygame.display.update()
-
-    def search_window_coordinates(self):
-        res = False
 
     def draw_tiles(self, window):
         # TODO: resize the current white/black stone images in /Images and replace this with an empty image
         img = pygame.image.load('../COMP3981_Project/Images/black_stone.svg')
-        self.tiles = [
+        self.board = [
             Tile(8, 4, "I5", None), Tile(8, 5, "I6", None), Tile(8, 6, "I7", None), Tile(8, 7, "I8", None), Tile(8, 8, "I9", None),
             Tile(7, 3, "H4", None), Tile(7, 4, "H5", None), Tile(7, 5, "H6", None), Tile(7, 6, "H7", None), Tile(7, 7, "H8", None), Tile(7, 8, "H9", None),
             Tile(6, 2, "G3", None), Tile(6, 3, "G4", None), Tile(6, 4, "G5", None), Tile(6, 5, "G6", None), Tile(6, 6, "G7", None), Tile(6, 7, "G8", None), Tile(6, 8, "G9", None),
@@ -40,7 +35,7 @@ class Board:
             current_x = ((10 - col) * piece_radius) + piece_radius + board_start_x
             for row in range(0, col):
                 rect = window.blit(img, (current_x, current_y))
-                self.tiles[tile_counter].set_rect(rect)
+                self.board[tile_counter].set_rect(rect)
 
                 current_x += (piece_radius * 2) + piece_distance
                 tile_counter += 1
