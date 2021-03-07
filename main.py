@@ -1,12 +1,12 @@
 import pygame
 
-from GUI.game import Game
+from GUI.gui import GUI
 from Utility.constants import *
 
 
 def main():
-    game = Game()
-    game.run()
+    gui = GUI()
+    gui.run()
 
 
 if __name__ == '__main__':
