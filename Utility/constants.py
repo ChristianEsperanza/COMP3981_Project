@@ -26,8 +26,10 @@ console_width = window_width - board_width
 console_height = window_height
 console_start_x = board_width
 console_start_y = 0
-button_length = 150
-button_height = 30
+button_length = 180
+button_height = 40
+
+# Console columns are 225 in length each
 
 
 # Misc

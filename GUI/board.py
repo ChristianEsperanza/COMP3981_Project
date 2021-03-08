@@ -10,8 +10,6 @@ class Board:
 
     def build_board(self, window):
         self.set_default_tiles()
-        # self.set_german_daisy_tiles()
-        # self.set_belgian_daisy_tiles()
         self.update_board(window)
         pygame.display.update()
 
@@ -64,11 +62,9 @@ class Board:
         tile_counter = 0
         current_y = board_start_y + piece_radius
         for col in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
-            current_x = ((10 - col) * piece_radius) + piece_radius + board_start_x
-            for row in range(0, col):
-                # rect = window.blit(img, (current_x, current_y))
-                # self.board[tile_counter].set_rect(rect)
+            current_x = ((10 - col) * piece_radius) + piece_distance + board_start_x
 
+            for row in range(0, col):
                 if self.board[tile_counter].piece is None:
                     rect = window.blit(unoccupied, (current_x, current_y))
                     self.board[tile_counter].set_rect(rect)
@@ -84,10 +80,7 @@ class Board:
             current_y += (piece_radius * 2) + piece_distance
 
 
-
 """        
-        take this out of here and put it in update_board or something. make 2 more functions to
-        set up for the other layouts
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
         # beginning has 25 X diff, end of row has a 40 X diff
         tile_counter = 0

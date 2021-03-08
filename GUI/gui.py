@@ -61,6 +61,7 @@ class GUI:
         :return:
         """
         ########## STARTING POSITIONS DROPDOWN ##########
+        # TODO: Requires fixing, crashes on selection
         starting_positions = [
             "Standard",
             "German Daisy",
@@ -70,27 +71,99 @@ class GUI:
                                                    var_text="",
                                                    titles=starting_positions)
         starting_position_dropdown.scale_to_title()
+        starting_position_dropdown.set_size((button_length, button_height))
 
         ##########  CONTROLS BOX  ##########
-        # TODO: These should call individual functions
-        start_button = thorpy.make_button("Start", func=self.test_func2)
+        # TODO: These should call their actual functions
+        start_button = thorpy.make_button("Start", func=self.test_func)
         start_button.set_size((button_length, button_height))
-        stop_button = thorpy.make_button("Stop", func=self.test_func)
+        stop_button = thorpy.make_button("Stop", func=self.test_func2)
         stop_button.set_size((button_length, button_height))
-        pause_button = thorpy.make_button("Pause", func=self.test_func)
+        pause_button = thorpy.make_button("Pause", func=self.test_func3)
         pause_button.set_size((button_length, button_height))
-        undo_button = thorpy.make_button("Reset", func=self.test_func)
+        reset_button = thorpy.make_button("Reset", func=self.test_func)
+        reset_button.set_size((button_length, button_height))
+        undo_button = thorpy.make_button("Undo", func=self.test_func)
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            start_button, stop_button, pause_button, undo_button
+            starting_position_dropdown, start_button, stop_button, pause_button, reset_button, undo_button
         ])
+
         controls_box.set_topleft((console_start_x, console_start_y))
+        controls_box.set_size((225, 450))
         controls_box.blit()
         controls_box.update()
 
+        ### SETTINGS ###
+        black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
+        black_settings_title.set_size((button_length, button_height))
+
+        black_move_limit = thorpy.make_button("Move Limit", func=self.test_func)
+        black_move_limit.set_size((button_length, button_height))
+
+        black_time_limit = thorpy.make_button("Time Limit", func=self.test_func)
+        black_time_limit.set_size((button_length, button_height))
+
+        black_human_computer_choice = thorpy.make_button("Human or AI", func=self.test_func)
+        black_human_computer_choice.set_size((button_length, button_height))
+
+        white_settings_title = thorpy.make_text("White", 22, (0,0,0))
+        white_settings_title.set_size((button_length, button_height))
+
+        white_move_limit = thorpy.make_button("Move Limit", func=self.test_func)
+        white_move_limit.set_size((button_length, button_height))
+
+        white_time_limit = thorpy.make_button("Time Limit", func=self.test_func)
+        white_time_limit.set_size((button_length, button_height))
+
+        white_human_computer_choice = thorpy.make_button("Human or AI", func=self.test_func)
+        white_human_computer_choice.set_size((button_length, button_height))
+
+        settings_box = thorpy.Box.make(elements=[
+            black_settings_title, black_move_limit, black_time_limit, black_human_computer_choice,
+            white_settings_title, white_move_limit, white_time_limit, white_human_computer_choice
+        ])
+        settings_box.set_topleft((console_start_x + 225, 0))
+        settings_box.set_size((225, 450))
+        settings_box.blit()
+        settings_box.update()
+
+
+        # ########## Black Specific Settings ##########
+        # black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
+        # # black_move_limit = thorpy.Inserter(name="Move Limit: ", value="Write here.")
+        # # black_time_limit = thorpy.Inserter(name="Time Limit:", value="Write here")
+        # black_move_limit = thorpy.make_button("Move Limit", func=self.test_func())
+        # black_time_limit = thorpy.make_button("Time Limit", func=self.test_func())
+        #
+        # # Set black settings to be underneath the controls
+        # black_settings_box = thorpy.Box.make(elements=[
+        #     black_settings_title, black_move_limit, black_time_limit
+        # ])
+        # black_settings_box.set_topleft(controls_box.get_rect().bottomleft)
+        # black_settings_box.blit()
+        # black_settings_box.update()
+        #
+        #
+        # ########## White Specific Settings ##########
+        # white_settings_title = thorpy.make_text("White", 22, (0,0,0))
+        # # white_move_limit = thorpy.Inserter(name="Move limit:", value="Write here")
+        # # white_time_limit = thorpy.Inserter(name="Time Limit:", value="Write here")
+        # white_move_limit = thorpy.make_button("Move Limit", func=self.test_func())
+        # white_time_limit = thorpy.make_button("Time Limit", func=self.test_func())
+        #
+        # white_settings_box = thorpy.Box.make(elements=[
+        #     white_settings_title, white_move_limit, white_time_limit
+        # ])
+        # white_settings_box.set_topleft((console_start_x +225, 0))
+        # white_settings_box.set_size((225, 450))
+        # white_settings_box.blit()
+        # white_settings_box.update()
+
         ########## CONSOLE BOX - Holds all groups ##########
-        elements = [starting_position_dropdown, controls_box]
+        # Add to this
+        elements = [controls_box]
         console_box = thorpy.Box.make(elements=elements)
         console_box.set_topleft((console_start_x, console_start_y))
         console_box.blit()
@@ -117,6 +190,16 @@ class GUI:
 
     def test_func(self):
         print("In test func")
+        self.board.set_default_tiles()
+        self.board.update_board(self.window)
 
     def test_func2(self):
         print("Func 2")
+        self.board.set_german_daisy_tiles()
+        self.board.update_board(self.window)
+
+    def test_func3(self):
+        print("func 3")
+        self.board.set_belgian_daisy_tiles()
+        self.board.update_board(self.window)
+
