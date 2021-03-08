@@ -2,6 +2,7 @@ import pygame
 import thorpy
 from GUI.board import Board
 from Utility.constants import *
+from GUI.vector import Vector
 
 
 class GUI:
@@ -37,6 +38,7 @@ class GUI:
                     pos = pygame.mouse.get_pos()
                     for tile in self.board.board:
                         if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+                            print(f"Tile Coords: ({tile.row}, {tile.column})")
                             self.clicked_tile(tile)
                 else:
                     self.handle_event(event, self.window)
@@ -134,6 +136,52 @@ class GUI:
         settings_box.blit()
         settings_box.update()
 
+        ######## MOVEMENT CONTROLS ########
+        # Row 1
+        up_left = thorpy.make_button("UP-L", func=self.test_func_move, params={"vector": Vector.UP_LEFT})
+        up_left.set_size((50, 50))
+
+        up_right = thorpy.make_button("UP-R", func=self.test_func_move, params={"vector": Vector.UP_RIGHT})
+        up_right.set_size((50, 50))
+
+        up_box = thorpy.Box([up_left, up_right])
+        thorpy.store(up_box, mode="h")
+        up_box.fit_children()
+
+        # Row 2
+        left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.LEFT})
+        left.set_size((50, 50))
+
+        center = thorpy.make_button("0", func=self.test_func_move)
+        center.set_size((50, 50))
+        center.set_topleft((2000, 1000))
+
+        right = thorpy.make_button(">", func=self.test_func_move, params={"vector": Vector.RIGHT})
+        right.set_size((50, 50))
+
+        horiz_box = thorpy.Box([left, center, right])
+        thorpy.store(horiz_box, mode="h")
+        horiz_box.fit_children()
+
+        # Row 3
+        down_left = thorpy.make_button("DN-L", func=self.test_func_move, params={"vector": Vector.DOWN_LEFT})
+        down_left.set_size((50, 50))
+
+        down_right = thorpy.make_button("DN-R", func=self.test_func_move, params={"vector": Vector.DOWN_RIGHT})
+        down_right.set_size((50, 50))
+        down_right.stick_to(up_left, target_side="right", self_side="left")
+
+        down_box = thorpy.Box([down_left, down_right])
+        thorpy.store(down_box, mode="h")
+        down_box.fit_children()
+
+        move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
+        move_box.set_topleft((console_start_x, 450))
+        move_box.set_size((225, 450))
+        move_box.blit()
+        move_box.update()
+
+
         ########## CONSOLE BOX - Holds all groups ##########
         # Add to this
         elements = [controls_box]
@@ -142,7 +190,7 @@ class GUI:
         console_box.blit()
         console_box.update()
 
-        self.console = thorpy.Menu([console_box])
+        self.console = thorpy.Menu([console_box, move_box])
         for element in self.console.get_population():
             element.surface = self.window
 
@@ -175,4 +223,32 @@ class GUI:
         print("func 3")
         self.board.set_belgian_daisy_tiles()
         self.board.update_board(self.window)
+
+    def test_func_move(self, **kwargs):
+        try:
+            print("Move: " + str(kwargs['vector']))
+            vector_rep = kwargs['vector']
+            vector = None
+            if vector_rep == Vector.UP_LEFT:
+                vector = (1, 0)
+            elif vector_rep == Vector.UP_RIGHT:
+                vector = (1, 1)
+            elif vector_rep == Vector.LEFT:
+                vector = (0, -1)
+            elif vector_rep == Vector.RIGHT:
+                vector = (0, 1)
+            elif vector_rep == Vector.DOWN_LEFT:
+                vector = (-1, -1)
+            elif vector_rep == Vector.DOWN_RIGHT:
+                vector = (-1, 0)
+
+            for tile in self.selected_pieces:
+                print(f"Moving vector {vector}")
+                self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
+            self.board.update_board(self.window)
+        except KeyError:
+            print("Middle Button pressed")
+        finally:
+            self.selected_pieces.clear()
+
 

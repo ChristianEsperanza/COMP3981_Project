@@ -79,6 +79,23 @@ class Board:
                 tile_counter += 1
             current_y += (piece_radius * 2) + piece_distance
 
+    def swap_tiles(self, coord_a: tuple, coord_b: tuple):
+        tile_a = None
+        for tile in self.board:
+            if tile.row == coord_a[0] and tile.column == coord_a[1]:
+                tile_a = tile
+                break
+        tile_b = None
+        for tile in self.board:
+            if tile.row == coord_b[0] and tile.column == coord_b[1]:
+                tile_b = tile
+                break
+        print(f"Swapping {tile_a.board_coordinate} and {tile_b.board_coordinate}")
+        temp = tile_b.piece
+        tile_b.piece = tile_a.piece
+        tile_a.piece = temp
+        # self.update_board()
+
 
 """        
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.

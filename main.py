@@ -1,5 +1,5 @@
 import pygame
-import pygame_gui
+# import pygame_gui
 
 from GUI.gui import GUI
 from Utility.constants import *
