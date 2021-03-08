@@ -9,12 +9,13 @@ class Board:
         pass
 
     def build_board(self, window):
-        self.draw_tiles(window)
+        self.draw_default_tiles(window)
         pygame.display.update()
 
-    def draw_tiles(self, window):
+    def draw_default_tiles(self, window):
         # TODO: resize the current white/black stone images in /Images and replace this with an empty image
         img = pygame.image.load('../COMP3981_Project/Images/black_stone.svg')
+
         self.board = [
             Tile(8, 4, "I5", None), Tile(8, 5, "I6", None), Tile(8, 6, "I7", None), Tile(8, 7, "I8", None), Tile(8, 8, "I9", None),
             Tile(7, 3, "H4", None), Tile(7, 4, "H5", None), Tile(7, 5, "H6", None), Tile(7, 6, "H7", None), Tile(7, 7, "H8", None), Tile(7, 8, "H9", None),
@@ -55,4 +56,11 @@ class Board:
         # }
 
         # [[tile.draw(window, len(tiles[x])) for tile in tiles[x]] for x in tiles.keys()]
+
+    def draw_german_daisy_tiles(self, window):
+        pass
+
+    def draw_belgian_daisy_tiles(self, window):
+        pass
+
 
