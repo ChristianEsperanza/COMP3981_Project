@@ -60,6 +60,11 @@ class GUI:
         :param window:
         :return:
         """
+        ####################################################################
+        ###### Note: Most of this is broken or placeholder right now #######
+        ####################################################################
+
+
         ########## STARTING POSITIONS DROPDOWN ##########
         # TODO: Requires fixing, crashes on selection
         starting_positions = [
@@ -129,38 +134,6 @@ class GUI:
         settings_box.blit()
         settings_box.update()
 
-
-        # ########## Black Specific Settings ##########
-        # black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
-        # # black_move_limit = thorpy.Inserter(name="Move Limit: ", value="Write here.")
-        # # black_time_limit = thorpy.Inserter(name="Time Limit:", value="Write here")
-        # black_move_limit = thorpy.make_button("Move Limit", func=self.test_func())
-        # black_time_limit = thorpy.make_button("Time Limit", func=self.test_func())
-        #
-        # # Set black settings to be underneath the controls
-        # black_settings_box = thorpy.Box.make(elements=[
-        #     black_settings_title, black_move_limit, black_time_limit
-        # ])
-        # black_settings_box.set_topleft(controls_box.get_rect().bottomleft)
-        # black_settings_box.blit()
-        # black_settings_box.update()
-        #
-        #
-        # ########## White Specific Settings ##########
-        # white_settings_title = thorpy.make_text("White", 22, (0,0,0))
-        # # white_move_limit = thorpy.Inserter(name="Move limit:", value="Write here")
-        # # white_time_limit = thorpy.Inserter(name="Time Limit:", value="Write here")
-        # white_move_limit = thorpy.make_button("Move Limit", func=self.test_func())
-        # white_time_limit = thorpy.make_button("Time Limit", func=self.test_func())
-        #
-        # white_settings_box = thorpy.Box.make(elements=[
-        #     white_settings_title, white_move_limit, white_time_limit
-        # ])
-        # white_settings_box.set_topleft((console_start_x +225, 0))
-        # white_settings_box.set_size((225, 450))
-        # white_settings_box.blit()
-        # white_settings_box.update()
-
         ########## CONSOLE BOX - Holds all groups ##########
         # Add to this
         elements = [controls_box]
@@ -178,7 +151,7 @@ class GUI:
         pos = pygame.mouse.get_pos()
 
     def clicked_tile(self, tile):
-        # print(f"Clicked {tile.board_coordinate}, occupied by {tile.piece}")
+        print(f"Clicked {tile.board_coordinate}, occupied by {tile.piece}")
         if tile not in self.selected_pieces:
             self.selected_pieces.append(tile)
             print(f"Added {tile.board_coordinate}")
