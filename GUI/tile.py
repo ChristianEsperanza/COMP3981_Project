@@ -13,7 +13,7 @@ class Tile:
         :param x_coordinate: int, x coordinate on the board
         :param y_coordinate: int, y coordinate on the board
         :param board_coordinate: str, named coordinate on the board
-        :param piece: Piece, if not occupied
+        :param piece: int, ID of the piece colour (1 for White, 2 for Black)
         """
         self.row = row
         self.column = column

@@ -14,7 +14,7 @@ window_width = 1300
 window_height = 900
 
 piece_radius = 25
-piece_distance = 20
+piece_distance = 15
 
 board_width = window_width - 550
 board_height = window_height
@@ -24,10 +24,14 @@ board_start_y = 30
 # Console starts where board ends
 console_width = window_width - board_width
 console_height = window_height
-# console_start_x = window_width - console_width + 10
-console_start_x = board_width + 10
+console_start_x = board_width
 console_start_y = 0
+button_length = 150
+button_height = 30
+
 
 # Misc
 num_rows = 9
 max_row = 9
+white_piece_id = 1
+black_piece_id = 2
