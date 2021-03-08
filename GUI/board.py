@@ -10,6 +10,8 @@ class Board:
 
     def build_board(self, window):
         self.set_default_tiles()
+        # self.set_german_daisy_tiles()
+        # self.set_belgian_daisy_tiles()
         self.update_board(window)
         pygame.display.update()
 
@@ -26,12 +28,31 @@ class Board:
             Tile(0, 0, "A1", black_piece_id), Tile(0, 1, "A2", black_piece_id), Tile(0, 2, "A3", black_piece_id), Tile(0, 3, "A4", black_piece_id), Tile(0, 4, "A5", black_piece_id),
         ]
 
+    def set_german_daisy_tiles(self):
+        self.board = [
+            Tile(8, 4, "I5", white_piece_id), Tile(8, 5, "I6", white_piece_id), Tile(8, 6, "I7", None), Tile(8, 7, "I8", black_piece_id), Tile(8, 8, "I9", black_piece_id),
+            Tile(7, 3, "H4", white_piece_id), Tile(7, 4, "H5", white_piece_id), Tile(7, 5, "H6", white_piece_id), Tile(7, 6, "H7", black_piece_id), Tile(7, 7, "H8", black_piece_id), Tile(7, 8, "H9", black_piece_id),
+            Tile(6, 2, "G3", None), Tile(6, 3, "G4", white_piece_id), Tile(6, 4, "G5", white_piece_id), Tile(6, 5, "G6", None), Tile(6, 6, "G7", black_piece_id), Tile(6, 7, "G8", black_piece_id), Tile(6, 8, "G9", None),
+            Tile(5, 1, "F2", None), Tile(5, 2, "F3", None), Tile(5, 3, "F4", None), Tile(5, 4, "F5", None), Tile(5, 5, "F6", None), Tile(5, 6, "F7", None), Tile(5, 7, "F8", None), Tile(5, 8, "F9", None),
+            Tile(4, 0, "E1", None), Tile(4, 1, "E2", None), Tile(4, 2, "E3", None), Tile(4, 3, "E4", None), Tile(4, 4, "E5", None), Tile(4, 5, "E6", None), Tile(4, 6, "E7", None), Tile(4, 7, "E8", None), Tile(4, 8, "E9", None),
+            Tile(3, 0, "D1", None), Tile(3, 1, "D2", None), Tile(3, 2, "D3", None), Tile(3, 3, "D4", None), Tile(3, 4, "D5", None), Tile(3, 5, "D6", None), Tile(3, 6, "D7", None), Tile(3, 7, "D8", None),
+            Tile(2, 0, "C1", None), Tile(2, 1, "C2", black_piece_id), Tile(2, 2, "C3", black_piece_id), Tile(2, 3, "C4", None), Tile(2, 4, "C5", white_piece_id), Tile(2, 5, "C6", white_piece_id), Tile(2, 6, "C7", None),
+            Tile(1, 0, "B1", black_piece_id), Tile(1, 1, "B2", black_piece_id), Tile(1, 2, "B3", black_piece_id), Tile(1, 3, "B4", white_piece_id), Tile(1, 4, "B5", white_piece_id), Tile(1, 5, "B6", white_piece_id),
+            Tile(0, 0, "A1", black_piece_id), Tile(0, 1, "A2", black_piece_id), Tile(0, 2, "A3", None), Tile(0, 3, "A4", white_piece_id), Tile(0, 4, "A5", white_piece_id),
+        ]
 
-    def set_german_daisy_tiles(self, window):
-        pass
-
-    def set_belgian_daisy_tiles(self, window):
-        pass
+    def set_belgian_daisy_tiles(self):
+        self.board = [
+            Tile(8, 4, "I5", None), Tile(8, 5, "I6", None), Tile(8, 6, "I7", None), Tile(8, 7, "I8", None), Tile(8, 8, "I9", None),
+            Tile(7, 3, "H4", white_piece_id), Tile(7, 4, "H5", white_piece_id), Tile(7, 5, "H6", None), Tile(7, 6, "H7", None), Tile(7, 7, "H8", black_piece_id), Tile(7, 8, "H9", black_piece_id),
+            Tile(6, 2, "G3", white_piece_id), Tile(6, 3, "G4", white_piece_id), Tile(6, 4, "G5", white_piece_id), Tile(6, 5, "G6", None), Tile(6, 6, "G7", black_piece_id), Tile(6, 7, "G8", black_piece_id), Tile(6, 8, "G9", black_piece_id),
+            Tile(5, 1, "F2", None), Tile(5, 2, "F3", white_piece_id), Tile(5, 3, "F4", white_piece_id), Tile(5, 4, "F5", None), Tile(5, 5, "F6", None), Tile(5, 6, "F7", black_piece_id), Tile(5, 7, "F8", black_piece_id), Tile(5, 8, "F9", None),
+            Tile(4, 0, "E1", None), Tile(4, 1, "E2", None), Tile(4, 2, "E3", None), Tile(4, 3, "E4", None), Tile(4, 4, "E5", None), Tile(4, 5, "E6", None), Tile(4, 6, "E7", None), Tile(4, 7, "E8", None), Tile(4, 8, "E9", None),
+            Tile(3, 0, "D1", None), Tile(3, 1, "D2", black_piece_id), Tile(3, 2, "D3", black_piece_id), Tile(3, 3, "D4", None), Tile(3, 4, "D5", None), Tile(3, 5, "D6", white_piece_id), Tile(3, 6, "D7", white_piece_id), Tile(3, 7, "D8", None),
+            Tile(2, 0, "C1", black_piece_id), Tile(2, 1, "C2", black_piece_id), Tile(2, 2, "C3", black_piece_id), Tile(2, 3, "C4", None), Tile(2, 4, "C5", white_piece_id), Tile(2, 5, "C6", white_piece_id), Tile(2, 6, "C7", white_piece_id),
+            Tile(1, 0, "B1", black_piece_id), Tile(1, 1, "B2", black_piece_id), Tile(1, 2, "B3", None), Tile(1, 3, "B4", None), Tile(1, 4, "B5", white_piece_id), Tile(1, 5, "B6", white_piece_id),
+            Tile(0, 0, "A1", None), Tile(0, 1, "A2", None), Tile(0, 2, "A3", None), Tile(0, 3, "A4", None), Tile(0, 4, "A5", None),
+        ]
 
     def update_board(self, window):
         unoccupied = pygame.image.load('../COMP3981_Project/Images/unoccupied.png')
