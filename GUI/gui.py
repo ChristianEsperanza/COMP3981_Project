@@ -1,3 +1,4 @@
+import random
 import pygame
 import thorpy
 from GUI.board import Board
@@ -13,6 +14,9 @@ class GUI:
     """
 
     def __init__(self):
+        """
+        Initialize GUI with empty window and console, which are to be built after the GUI is initialized
+        """
         self.board = Board()
         self.window = None
         self.console = None
@@ -20,12 +24,15 @@ class GUI:
 
     def run(self):
         """
-        Builds the GUI and then runs the main loop calling methods to build different pieces
+        Builds the GUI and then runs the main loop, calling methods to build different pieces
         """
         # Build window, board, console
         self.build_window()
         self.board.build_board(self.window)
         self.build_console(self.window)
+
+        # TODO: Rename this function
+        self.add_placeholders()
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
@@ -44,8 +51,20 @@ class GUI:
                 else:
                     self.handle_event(event, self.window)
 
+            # self.dumb_stuff()
             self.console.react(event)
             pygame.display.update()
+
+    def dumb_stuff(self):
+        """
+        Draws two flashing rectangles. Probably best we get rid of this.
+        """
+        rect = pygame.Rect(975, 450, 320, 450)
+        pygame.draw.rect(self.window, [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)], rect)
+
+        rect2 = pygame.Rect(1200, 0, 100, 450)
+        pygame.draw.rect(self.window, [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)], rect2)
+
 
     def build_window(self):
         """
@@ -54,7 +73,14 @@ class GUI:
         """
         # Draw screen then game board
         window = pygame.display.set_mode((window_width, window_height))
+        window.fill(blue)
         pygame.draw.rect(window, red, (0, 0, board_width, board_height))
+
+        # Music
+        # pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
+        # pygame.mixer.music.set_volume(0.01)
+        # pygame.mixer.music.play()
+
         self.window = window
 
     def build_console(self, window):
@@ -200,6 +226,8 @@ class GUI:
         pos = pygame.mouse.get_pos()
 
     def clicked_tile(self, tile):
+        # Deals with an event where a tile was clicked
+
         print(f"Clicked {tile.board_coordinate}, occupied by {tile.piece}")
         if tile not in self.selected_pieces:
             self.selected_pieces.append(tile)
@@ -210,16 +238,19 @@ class GUI:
         print([tile.board_coordinate for tile in self.selected_pieces])
 
     def test_func(self):
+        # TODO: Delete this
         print("In test func")
         self.board.set_default_tiles()
         self.board.update_board(self.window)
 
     def test_func2(self):
+        # TODO: Delete this
         print("Func 2")
         self.board.set_german_daisy_tiles()
         self.board.update_board(self.window)
 
     def test_func3(self):
+        # TODO: Delete this
         print("func 3")
         self.board.set_belgian_daisy_tiles()
         self.board.update_board(self.window)
@@ -264,4 +295,31 @@ class GUI:
         finally:
             self.selected_pieces.clear()
 
+    def add_placeholders(self):
+        """
+        Builds the boxes for black and white score, time taken,
+        and moves taken
+        """
+        black_score_title = thorpy.make_text("Black", 22, (0,0,0))
+        # black_score_title.set_size((button_length, button_height))
 
+        black_time_title = thorpy.make_text("Time Taken: 0.0", 16, (0,0,0))
+        black_moves_taken = thorpy.make_text("Moves Taken: 0", 16, (0,0,0))
+
+        black_score_box  = thorpy.Box.make(elements=[
+            black_score_title, black_time_title, black_moves_taken
+        ])
+        black_score_box.set_topleft((39, 663))
+        black_score_box.blit()
+        black_score_box.update()
+
+        white_score_title = thorpy.make_text("White", 22, (0,0,0))
+        white_time_title = thorpy.make_text("Time Taken: 0.0", 16, (0,0,0))
+        white_moves_taken = thorpy.make_text("Moves Taken: 0", 16, (0,0,0))
+
+        white_score_box  = thorpy.Box.make(elements=[
+            white_score_title, white_time_title, white_moves_taken
+        ])
+        white_score_box.set_topleft((568, 663))
+        white_score_box.blit()
+        white_score_box.update()

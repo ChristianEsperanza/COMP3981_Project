@@ -4,6 +4,9 @@ from GUI.tile import Tile
 from Utility.constants import *
 
 class Board:
+    """
+    Class which represents the board in the game window.
+    """
     def __init__(self):
         self.board = []
         pass
@@ -14,6 +17,9 @@ class Board:
         pygame.display.update()
 
     def set_default_tiles(self):
+        """
+        Set the board for a Standard start.
+        """
         self.board = [
             Tile(8, 4, "I5", white_piece_id), Tile(8, 5, "I6", white_piece_id), Tile(8, 6, "I7", white_piece_id), Tile(8, 7, "I8", white_piece_id), Tile(8, 8, "I9", white_piece_id),
             Tile(7, 3, "H4", white_piece_id), Tile(7, 4, "H5", white_piece_id), Tile(7, 5, "H6", white_piece_id), Tile(7, 6, "H7", white_piece_id), Tile(7, 7, "H8", white_piece_id), Tile(7, 8, "H9", white_piece_id),
@@ -27,6 +33,9 @@ class Board:
         ]
 
     def set_german_daisy_tiles(self):
+        """
+        Set the board for a German Daisy start.
+        """
         self.board = [
             Tile(8, 4, "I5", white_piece_id), Tile(8, 5, "I6", white_piece_id), Tile(8, 6, "I7", None), Tile(8, 7, "I8", black_piece_id), Tile(8, 8, "I9", black_piece_id),
             Tile(7, 3, "H4", white_piece_id), Tile(7, 4, "H5", white_piece_id), Tile(7, 5, "H6", white_piece_id), Tile(7, 6, "H7", black_piece_id), Tile(7, 7, "H8", black_piece_id), Tile(7, 8, "H9", black_piece_id),
@@ -40,6 +49,9 @@ class Board:
         ]
 
     def set_belgian_daisy_tiles(self):
+        """
+        Set the board for a Belgian Daisy start.
+        """
         self.board = [
             Tile(8, 4, "I5", None), Tile(8, 5, "I6", None), Tile(8, 6, "I7", None), Tile(8, 7, "I8", None), Tile(8, 8, "I9", None),
             Tile(7, 3, "H4", white_piece_id), Tile(7, 4, "H5", white_piece_id), Tile(7, 5, "H6", None), Tile(7, 6, "H7", None), Tile(7, 7, "H8", black_piece_id), Tile(7, 8, "H9", black_piece_id),
@@ -53,6 +65,13 @@ class Board:
         ]
 
     def update_board(self, window):
+        """
+        Updates the current board, going through the tiles and redrawing the
+        images.
+        NOTE: As of March 08, this should be fine to leave for the remainder of the
+        project (barring geometry changes). Moves and tile changes should be handled
+        outside of this method.
+        """
         unoccupied = pygame.image.load('../COMP3981_Project/Images/unoccupied.png')
         black_stone_image = pygame.image.load('../COMP3981_Project/Images/resize_black.png')
         white_stone_image = pygame.image.load('../COMP3981_Project/Images/resize_white.png')
@@ -80,6 +99,11 @@ class Board:
             current_y += (piece_radius * 2) + piece_distance
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
+        """
+        Swaps the pieces of two tiles.
+        :param coord_a: int
+        :param coord_b: int
+        """
         tile_a = None
         for tile in self.board:
             if tile.row == coord_a[0] and tile.column == coord_a[1]:
