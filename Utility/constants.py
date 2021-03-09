@@ -1,4 +1,3 @@
-import pygame
 """
 Constants to be used throughout the program.
 """
@@ -7,7 +6,6 @@ Constants to be used throughout the program.
 red = [255, 0, 0]
 green = [0, 255, 0]
 blue = [0, 0, 255]
-
 
 # Dimensions
 window_width = 1300

@@ -1,7 +1,8 @@
 import pygame
-import math
+
 from GUI.tile import Tile
 from Utility.constants import *
+
 
 class Board:
     def __init__(self):
@@ -135,5 +136,3 @@ class Board:
         # }
         # [[tile.draw(window, len(tiles[x])) for tile in tiles[x]] for x in tiles.keys()]
 """
-
-

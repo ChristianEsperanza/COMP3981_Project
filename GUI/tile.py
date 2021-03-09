@@ -1,7 +1,3 @@
-import pygame
-from Utility.constants import *
-
-
 class Tile:
     """
     Class to represent a tile to be displayed on the board.
@@ -10,8 +6,8 @@ class Tile:
     def __init__(self, row, column, board_coordinate, piece):
         """
         Constructor for the tile
-        :param x_coordinate: int, x coordinate on the board
-        :param y_coordinate: int, y coordinate on the board
+        :param row: int, x coordinate on the board
+        :param column: int, y coordinate on the board
         :param board_coordinate: str, named coordinate on the board
         :param piece: int, ID of the piece colour (1 for White, 2 for Black)
         """
