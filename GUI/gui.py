@@ -2,7 +2,7 @@ import pygame
 import thorpy
 from GUI.board import Board
 from Utility.constants import *
-from GUI.vector import Vector
+from Utility.enum import Vector
 from operator import itemgetter, attrgetter
 
 
