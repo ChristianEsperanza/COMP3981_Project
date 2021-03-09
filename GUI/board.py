@@ -112,9 +112,9 @@ class Board:
         project (barring geometry changes). Moves and tile changes should be handled
         outside of this method.
         """
-        unoccupied = pygame.image.load('../COMP3981_Project/Images/unoccupied.png')
-        black_stone_image = pygame.image.load('../COMP3981_Project/Images/resize_black.png')
-        white_stone_image = pygame.image.load('../COMP3981_Project/Images/resize_white.png')
+        unoccupied = pygame.image.load('Images/unoccupied.png')
+        black_stone_image = pygame.image.load('Images/resize_black.png')
+        white_stone_image = pygame.image.load('Images/resize_white.png')
 
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
         # beginning has 25 X diff, end of row has a 40 X diff
