@@ -1,5 +1,5 @@
 import pygame
-import math
+
 from GUI.tile import Tile
 from Utility.constants import *
 

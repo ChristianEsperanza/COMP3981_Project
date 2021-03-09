@@ -1,10 +1,11 @@
-import random
-import pygame
 import thorpy
+import pygame
+import random
+
 from GUI.board import Board
 from Utility.constants import *
 from Utility.enum import Vector
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 
 
 class GUI:
@@ -30,6 +31,7 @@ class GUI:
         self.build_window()
         self.board.build_board(self.window)
         self.build_console(self.window)
+        event = None
 
         # TODO: Rename this function
         self.add_placeholders()
