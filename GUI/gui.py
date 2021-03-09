@@ -93,9 +93,12 @@ class GUI:
         reset_button.set_size((button_length, button_height))
         undo_button = thorpy.make_button("Undo", func=self.test_func)
         undo_button.set_size((button_length, button_height))
+        quit_button = thorpy.make_button("Quit", func=pygame.QUIT)
+        quit_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            starting_position_dropdown, start_button, stop_button, pause_button, reset_button, undo_button
+            starting_position_dropdown, start_button, stop_button, pause_button,
+            reset_button, undo_button, quit_button
         ])
 
         controls_box.set_topleft((console_start_x, console_start_y))
