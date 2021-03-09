@@ -26,3 +26,13 @@ class Tile:
 
     def get_rect(self):
         return self.rect
+
+    def __getitem__(self, item):
+        if item == 'row':
+            return self.row
+        elif item == 'column':
+            return self.column
+        elif item == 'board_coordinate':
+            return self.board_coordinate
+        else:
+            raise KeyError("Invalid item selection")

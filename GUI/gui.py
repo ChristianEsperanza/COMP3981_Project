@@ -3,6 +3,7 @@ import thorpy
 from GUI.board import Board
 from Utility.constants import *
 from GUI.vector import Vector
+from operator import itemgetter, attrgetter
 
 
 class GUI:
@@ -208,7 +209,6 @@ class GUI:
             print(f"Removed {tile.board_coordinate}")
         print([tile.board_coordinate for tile in self.selected_pieces])
 
-
     def test_func(self):
         print("In test func")
         self.board.set_default_tiles()
@@ -228,26 +228,39 @@ class GUI:
         try:
             print("Move: " + str(kwargs['vector']))
             vector_rep = kwargs['vector']
+
             vector = None
+            selected_pieces_sorted = None
+
+            # Moving of pieces. Sorting used for correct movement of pieces.
             if vector_rep == Vector.UP_LEFT:
                 vector = (1, 0)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
             elif vector_rep == Vector.UP_RIGHT:
                 vector = (1, 1)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
             elif vector_rep == Vector.LEFT:
                 vector = (0, -1)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
             elif vector_rep == Vector.RIGHT:
                 vector = (0, 1)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'), reverse=True)
             elif vector_rep == Vector.DOWN_LEFT:
                 vector = (-1, -1)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
             elif vector_rep == Vector.DOWN_RIGHT:
                 vector = (-1, 0)
+                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
 
-            for tile in self.selected_pieces:
+            # Swaps all tiles according to movement vector
+            for tile in selected_pieces_sorted:
                 print(f"Moving vector {vector}")
                 self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
             self.board.update_board(self.window)
+
         except KeyError:
             print("Middle Button pressed")
+
         finally:
             self.selected_pieces.clear()
 

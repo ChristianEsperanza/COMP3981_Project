@@ -94,7 +94,6 @@ class Board:
         temp = tile_b.piece
         tile_b.piece = tile_a.piece
         tile_a.piece = temp
-        # self.update_board()
 
 
 """        
