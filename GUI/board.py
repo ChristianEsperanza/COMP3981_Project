@@ -2,7 +2,7 @@ import pygame
 
 from GUI.tile import Tile
 from Utility.constants import *
-import file_reader
+from GUI.file_reader import FileReader
 
 
 class Board:
@@ -11,11 +11,13 @@ class Board:
     """
 
     def __init__(self):
-        self.board = []
+        self.board = dict()
         pass
 
     def build_board(self, window):
-        self.set_default_tiles()
+        result = FileReader.load_data("GUI/Test1.input")
+        gameState = FileReader.read_data(result)
+        self.generate_board(gameState[1])
         self.update_board(window)
         pygame.display.update()
 
@@ -108,16 +110,25 @@ class Board:
     def generate_board(self, marbles):
         """
         Sets up the current board based on the list of marble positions provided. Current implementation
-        designed to work with board of type hash table.
+        designed to work with board of type hash table. First the function will load in all current marbles
+        then the function will fill in the empty board positions for each row.
         """
-        boardOut = dict()
+        boardOut = {'A': [], 'B': [], 'C': [], 'D': [], 'E': [], 'F': [], 'G': [], 'H': [], 'I': []}
+        rows = ['A15', 'B16', 'C17', 'D18', 'E19', 'F29', 'G39', 'H49', 'I59']
         for marble in marbles:
             tile = Tile.generate_tile(marble)
-            if marble[0] in boardOut:
-                boardOut[marble[0]].append(tile)
-            else:
-                boardOut[marble[0]] = [tile]
-        print(boardOut)
+            boardOut[marble[0]].append(tile)
+        for row in rows:
+            currRow = boardOut[row[0]]
+            tilesOccupied = [x.get_coord() for x in currRow]
+            rowInt = ord(row[0]) - 65
+            start = int(row[1]) - 1
+            end = int(row[2])
+            for x in range(start, end):
+                tileID = row[0] + str(x + 1)
+                if tileID not in tilesOccupied:
+                    currRow.append(Tile(rowInt, x, tileID, None))
+        self.board = boardOut
 
     def update_board(self, window):
         """
@@ -131,14 +142,18 @@ class Board:
         black_stone_image = pygame.image.load('Images/resize_black.png')
         white_stone_image = pygame.image.load('Images/resize_white.png')
 
+
+
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
         # beginning has 25 X diff, end of row has a 40 X diff
         tile_counter = 0
         current_y = board_start_y + piece_radius
         for col in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
-            current_x = ((10 - col) * piece_radius) + piece_distance + board_start_x
-
+            current_x = ((10 - col) * piece_radius) + piece_radius + board_start_x
             for row in range(0, col):
+                # rect = window.blit(img, (current_x, current_y))
+                # self.board[tile_counter].set_rect(rect)
+
                 if self.board[tile_counter].piece is None:
                     rect = window.blit(unoccupied, (current_x, current_y))
                     self.board[tile_counter].set_rect(rect)
