@@ -2,6 +2,7 @@ import pygame
 
 from GUI.tile import Tile
 from Utility.constants import *
+import file_reader
 
 
 class Board:
@@ -107,6 +108,20 @@ class Board:
             Tile(0, 4, "A5", None),
         ]
         self.convert_to_dict()
+
+    def generate_board(self, marbles):
+        """
+        Sets up the current board based on the list of marble positions provided. Current implementation
+        designed to work with board of type hash table.
+        """
+        boardOut = dict()
+        for marble in marbles:
+            tile = Tile.generate_tile(marble)
+            if marble[0] in boardOut:
+                boardOut[marble[0]].append(tile)
+            else:
+                boardOut[marble[0]] = [tile]
+        print(boardOut)
 
     def update_board(self, window):
         """
