@@ -20,6 +20,21 @@ class Tile:
         self.piece = piece
         self.rect = None
 
+    @staticmethod
+    def generate_tile(marble):
+        """
+        Generates a Tile object based on the marble string passed in.
+        "C5b" is converted to a tile possessing the proper characteristics.
+        """
+        letter = marble[0]
+        position = marble[1]
+        if marble[2] == 'b':
+            color = 2
+        else:
+            color = 1
+        numLetter = ord(letter) - 65
+        return Tile(numLetter, position, letter + position, color)
+
     def set_rect(self, rect):
         """
         Setter for rect.
@@ -42,3 +57,6 @@ class Tile:
             return self.board_coordinate
         else:
             raise KeyError("Invalid item selection")
+
+    def __str__(self):
+        return "{0}".format(self.board_coordinate)
