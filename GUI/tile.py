@@ -42,3 +42,12 @@ class Tile:
             return self.board_coordinate
         else:
             raise KeyError("Invalid item selection")
+
+    def __str__(self):
+        return f"{self.row} {self.column} {self.piece} {self.board_coordinate}"
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__)\
+               and self.row == other.row\
+               and self.column == other.column\
+               and self.piece == other.piece
