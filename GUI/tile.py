@@ -42,3 +42,6 @@ class Tile:
             return self.board_coordinate
         else:
             raise KeyError("Invalid item selection")
+
+    def __str__(self) -> str:
+        return f"{self.board_coordinate}: Row:{self.row}, Column:{self.column}, Piece:{self.piece}"
