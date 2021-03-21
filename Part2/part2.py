@@ -53,31 +53,71 @@ opponent_coordinates = [tile.board_coordinate for tile in tile_layout if tile.pi
 moves = []
 new_layouts = []
 temp_tiles = []
+doubles = []
+triples = []
 
 
-def move_piece(r, c, change_row, change_column):
-    coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
+def move_piece(tile, change_row, change_column):
+    coor = "{row}{column}".format(row=RowMapper(tile.row).name, column=tile.column + 1)
     move_notation = "{coor}/{row_notation}{column_notation}".format(
         coor=coor, row_notation=MOVE_NOTATION_MAP[change_row], column_notation=MOVE_NOTATION_MAP[change_column])
-    r += change_row
-    c += change_column
+    r = tile.row + change_row
+    c = tile.column + change_column
     new_coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
     temp_tiles.append((Tile(r, c, new_coor, current_turn), move_notation))
 
 
-for tile in this_turn:
-    # Minus minus
-    move_piece(tile.row, tile.column, -1, -1)
-    # Minus zero
-    move_piece(tile.row, tile.column, -1, 0)
-    # Zero minus
-    move_piece(tile.row, tile.column, 0, -1)
+def find_doubles(tile):
     # Zero plus
-    move_piece(tile.row, tile.column, 0, 1)
+    r = tile.row
+    c = tile.column + 1
+    coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
+    zp = Tile(r, c, coor, current_turn)
     # Plus zero
-    move_piece(tile.row, tile.column, 1, 0)
+    r = tile.row + 1
+    c = tile.column
+    coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
+    pz = Tile(r, c, coor, current_turn)
     # Plus plus
-    move_piece(tile.row, tile.column, 1, 1)
+    r = tile.row + 1
+    c = tile.column + 1
+    coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
+    pp = Tile(r, c, coor, current_turn)
+
+    if zp in tile_layout:
+        doubles.append((tile, zp))
+    if pz in tile_layout:
+        doubles.append((tile, pz))
+    if pp in tile_layout:
+        doubles.append((tile, pp))
+
+
+def find_triples():
+    for pair in doubles:
+        first_piece = pair[0]
+        second_piece = pair[1]
+        r = 2 * second_piece.row - first_piece.row
+        c = 2 * second_piece.column - first_piece.column
+        coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
+        third_piece = Tile(r, c, coor, current_turn)
+        if third_piece in tile_layout:
+            triples.append((first_piece, second_piece, third_piece))
+
+
+for tile in this_turn:
+    find_doubles(tile)
+    # Minus minus
+    move_piece(tile, -1, -1)
+    # Minus zero
+    move_piece(tile, -1, 0)
+    # Zero minus
+    move_piece(tile, 0, -1)
+    # Zero plus
+    move_piece(tile, 0, 1)
+    # Plus zero
+    move_piece(tile, 1, 0)
+    # Plus plus
+    move_piece(tile, 1, 1)
 
     for tile_tuple in temp_tiles:
         layout_for_this_move = tile_layout.copy()
@@ -93,6 +133,8 @@ for tile in this_turn:
             moves.append(tile_tuple[1])
     temp_tiles.clear()
 
+find_triples()
+
 for layout in new_layouts:
     for tile in layout:
         print(tile, end=",")
@@ -100,3 +142,9 @@ for layout in new_layouts:
 
 for move in moves:
     print(move)
+
+for double in doubles:
+    print(f"({double[0]}, {double[1]})")
+
+for triple in triples:
+    print(f"({triple[0]}, {triple[1]}, {triple[2]})")
