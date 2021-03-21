@@ -52,19 +52,39 @@ opponent_coordinates = [tile.board_coordinate for tile in tile_layout if tile.pi
 
 moves = []
 new_layouts = []
-temp_tiles = []
+unvalidated_moves = []
 doubles = []
 triples = []
 
 
-def move_piece(tile, change_row, change_column):
+def move_single_piece(tile, change_row, change_column):
     coor = "{row}{column}".format(row=RowMapper(tile.row).name, column=tile.column + 1)
-    move_notation = "{coor}/{row_notation}{column_notation}".format(
+    move_note = "{coor}/{row_notation}{column_notation}".format(
         coor=coor, row_notation=MOVE_NOTATION_MAP[change_row], column_notation=MOVE_NOTATION_MAP[change_column])
     r = tile.row + change_row
     c = tile.column + change_column
     new_coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
-    temp_tiles.append((Tile(r, c, new_coor, current_turn), move_notation))
+    unvalidated_moves.append((Tile(r, c, new_coor, current_turn), move_note))
+
+
+def move_two_pieces(tile_double, change_row, change_column):
+    tile1 = tile_double[0]
+    tile2 = tile_double[1]
+    coor = "{row1}{column1}:{row2}{column2}".format(row1=RowMapper(tile1.row).name, column1=tile1.column + 1,
+                                                    row2=RowMapper(tile2.row).name, column2=tile2.column + 1)
+    move_notation = "{coor}/{row_notation}{column_notation}".format(
+        coor=coor, row_notation=MOVE_NOTATION_MAP[change_row], column_notation=MOVE_NOTATION_MAP[change_column])
+    r1 = tile1.row + change_row
+    c1 = tile1.column + change_column
+    r2 = tile2.row + change_row
+    c2 = tile2.column + change_column
+    sumito = True if abs(r2 - r1) == abs(change_row) and abs(c2 - c1) == abs(change_column) else False
+    coor1 = "{row}{column}".format(row=RowMapper(r1).name, column=c1 + 1)
+    coor2 = "{row}{column}".format(row=RowMapper(r2).name, column=c2 + 1)
+    new_tile1 = Tile(r1, c1, coor1, current_turn)
+    new_tile2 = Tile(r2, c2, coor2, current_turn)
+    new_pair = (new_tile1, new_tile2)
+    unvalidated_moves.append((new_pair, sumito, move_notation))
 
 
 def find_doubles(tile):
@@ -107,19 +127,19 @@ def find_triples():
 for tile in this_turn:
     find_doubles(tile)
     # Minus minus
-    move_piece(tile, -1, -1)
+    move_single_piece(tile, -1, -1)
     # Minus zero
-    move_piece(tile, -1, 0)
+    move_single_piece(tile, -1, 0)
     # Zero minus
-    move_piece(tile, 0, -1)
+    move_single_piece(tile, 0, -1)
     # Zero plus
-    move_piece(tile, 0, 1)
+    move_single_piece(tile, 0, 1)
     # Plus zero
-    move_piece(tile, 1, 0)
+    move_single_piece(tile, 1, 0)
     # Plus plus
-    move_piece(tile, 1, 1)
+    move_single_piece(tile, 1, 1)
 
-    for tile_tuple in temp_tiles:
+    for tile_tuple in unvalidated_moves:
         layout_for_this_move = tile_layout.copy()
         new_tile = tile_tuple[0]
         if 0 <= new_tile.row <= 8 \
@@ -131,11 +151,55 @@ for tile in this_turn:
             layout_for_this_move.sort()
             new_layouts.append(layout_for_this_move)
             moves.append(tile_tuple[1])
-    temp_tiles.clear()
+    unvalidated_moves.clear()
 
 find_triples()
 
+for double in doubles:
+    move_two_pieces(double, -1, -1)
+    move_two_pieces(double, -1, 0)
+    move_two_pieces(double, 0, -1)
+    move_two_pieces(double, 0, 1)
+    move_two_pieces(double, 1, 0)
+    move_two_pieces(double, 1, 1)
+
+    for pair_tuple in unvalidated_moves:
+        layout_for_this_move = tile_layout.copy()
+        new_pair = pair_tuple[0]
+        sumito = pair_tuple[1]
+        move_notation = pair_tuple[2]
+        tile1 = new_pair[0]
+        tile2 = new_pair[1]
+        # Board limits
+        tile1_bounded = True if 0 <= tile1.row <= 8 and tile1.column in BOARD_LIMITS[tile1.row] else False
+        tile2_bounded = True if 0 <= tile2.row <= 8 and tile2.column in BOARD_LIMITS[tile2.row] else False
+        if not (tile1_bounded and tile2_bounded):
+            continue
+        if not sumito:
+            # Own pieces in the way
+            tile1_open = True if tile1.board_coordinate not in my_coordinates else False
+            tile2_open = True if tile2.board_coordinate not in my_coordinates else False
+            if not (tile1_open and tile2_open):
+                continue
+            # Enemy pieces are in the way
+            tile1_free = True if tile1.board_coordinate not in opponent_coordinates else False
+            tile2_free = True if tile2.board_coordinate not in opponent_coordinates else False
+            if not (tile1_free and tile2_free):
+                continue
+            layout_for_this_move.remove(double[0])
+            layout_for_this_move.remove(double[1])
+            layout_for_this_move.append(tile1)
+            layout_for_this_move.append(tile2)
+            layout_for_this_move.sort()
+            new_layouts.append(layout_for_this_move)
+            moves.append(move_notation)
+    unvalidated_moves.clear()
+
+
+num = 1
 for layout in new_layouts:
+    print(num, end=". ")
+    num += 1
     for tile in layout:
         print(tile, end=",")
     print()
