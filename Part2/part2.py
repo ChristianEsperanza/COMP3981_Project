@@ -47,6 +47,8 @@ for piece in current_layout[1]:
     tile_layout.append(Tile(row, column, coordinates, piece_color))
 
 this_turn = (tile for tile in tile_layout if tile.piece == current_turn)
+my_coordinates = [tile.board_coordinate for tile in tile_layout if tile.piece == current_turn]
+opponent_coordinates = [tile.board_coordinate for tile in tile_layout if tile.piece != current_turn]
 
 moves = []
 new_layouts = []
@@ -82,7 +84,8 @@ for tile in this_turn:
         new_tile = tile_tuple[0]
         if 0 <= new_tile.row <= 8 \
                 and new_tile.column in BOARD_LIMITS[new_tile.row] \
-                and new_tile not in layout_for_this_move:
+                and new_tile.board_coordinate not in my_coordinates \
+                and new_tile.board_coordinate not in opponent_coordinates:
             layout_for_this_move.remove(tile)
             layout_for_this_move.append(new_tile)
             layout_for_this_move.sort()
