@@ -34,7 +34,6 @@ MOVE_NOTATION_MAP = {
     1: "+"
 }
 
-
 data = FileReader.load_data("Test1.input")
 current_layout = FileReader.read_data(data)
 current_turn_letter = current_layout[0]
@@ -52,10 +51,9 @@ this_turn = (tile for tile in tile_layout if tile.piece == current_turn)
 moves = []
 new_layouts = []
 temp_tiles = []
-tile = next(this_turn)
 
 
-def repeating_tasks(r, c, change_row, change_column):
+def move_piece(r, c, change_row, change_column):
     coor = "{row}{column}".format(row=RowMapper(r).name, column=c + 1)
     move_notation = "{coor}/{row_notation}{column_notation}".format(
         coor=coor, row_notation=MOVE_NOTATION_MAP[change_row], column_notation=MOVE_NOTATION_MAP[change_column])
@@ -65,35 +63,37 @@ def repeating_tasks(r, c, change_row, change_column):
     temp_tiles.append((Tile(r, c, new_coor, current_turn), move_notation))
 
 
-# Minus minus
-repeating_tasks(tile.row, tile.column, -1, -1)
-# Minus zero
-repeating_tasks(tile.row, tile.column, -1, 0)
-# Zero minus
-repeating_tasks(tile.row, tile.column, 0, -1)
-# Zero plus
-repeating_tasks(tile.row, tile.column, 0, 1)
-# Plus zero
-repeating_tasks(tile.row, tile.column, 1, 0)
-# Plus plus
-repeating_tasks(tile.row, tile.column, 1, 1)
+for tile in this_turn:
+    # Minus minus
+    move_piece(tile.row, tile.column, -1, -1)
+    # Minus zero
+    move_piece(tile.row, tile.column, -1, 0)
+    # Zero minus
+    move_piece(tile.row, tile.column, 0, -1)
+    # Zero plus
+    move_piece(tile.row, tile.column, 0, 1)
+    # Plus zero
+    move_piece(tile.row, tile.column, 1, 0)
+    # Plus plus
+    move_piece(tile.row, tile.column, 1, 1)
 
-for tile_tuple in temp_tiles:
-    tile = tile_tuple[0]
-    if 0 <= tile.row <= 8\
-            and tile.column in BOARD_LIMITS[tile.row]\
-            and tile not in tile_layout:
-        new_layouts.append(tile)
-        moves.append(tile_tuple[1])
+    for tile_tuple in temp_tiles:
+        layout_for_this_move = tile_layout.copy()
+        new_tile = tile_tuple[0]
+        if 0 <= new_tile.row <= 8 \
+                and new_tile.column in BOARD_LIMITS[new_tile.row] \
+                and new_tile not in layout_for_this_move:
+            layout_for_this_move.remove(tile)
+            layout_for_this_move.append(new_tile)
+            layout_for_this_move.sort()
+            new_layouts.append(layout_for_this_move)
+            moves.append(tile_tuple[1])
+    temp_tiles.clear()
 
-for tile in new_layouts:
-    print(tile)
+for layout in new_layouts:
+    for tile in layout:
+        print(tile, end=",")
+    print()
 
 for move in moves:
     print(move)
-
-
-
-# Filter only the black/white pieces, depending on whose turn it is.
-this_turn = (piece for piece in current_layout[1] if current_layout[0] in piece)
-

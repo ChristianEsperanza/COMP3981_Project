@@ -44,7 +44,15 @@ class Tile:
             raise KeyError("Invalid item selection")
 
     def __str__(self):
-        return f"{self.row} {self.column} {self.piece} {self.board_coordinate}"
+        piece = "w" if self.piece == 1 else "b"
+        return f"{self.board_coordinate}{piece}"
+
+    def __lt__(self, other):
+        this_piece = "w" if self.piece == 1 else "b"
+        other_piece = "w" if other.piece == 1 else "b"
+        this_str = f"{this_piece}{self.board_coordinate}"
+        other_str = f"{other_piece}{other.board_coordinate}"
+        return this_str < other_str
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)\
