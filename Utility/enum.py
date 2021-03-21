@@ -8,3 +8,8 @@ class Vector(enum.Enum):
     RIGHT = 4
     DOWN_LEFT = 5
     DOWN_RIGHT = 6
+
+
+class Turn(enum.Enum):
+    WHITE = 1
+    BLACK = 2

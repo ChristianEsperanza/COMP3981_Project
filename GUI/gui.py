@@ -5,6 +5,7 @@ import random
 from GUI.board import Board
 from Utility.constants import *
 from Utility.enum import Vector
+from Utility.enum import Turn
 from operator import itemgetter
 
 
@@ -22,6 +23,7 @@ class GUI:
         self.window = None
         self.console = None
         self.selected_pieces = []
+        self.player_turn = Turn.BLACK
 
     def run(self):
         """
@@ -32,6 +34,8 @@ class GUI:
         self.board.build_board(self.window)
         self.build_console(self.window)
         event = None
+
+        print(f"{self.player_turn.name} to move!")
 
         # TODO: Rename this function
         self.add_placeholders()
@@ -46,7 +50,8 @@ class GUI:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    for tile in self.board.board:
+                    # for tile in self.board.board:
+                    for key, tile in self.board.board_dict.items():
                         if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
                             print(f"Tile Coords: ({tile.row}, {tile.column})")
                             self.clicked_tile(tile)
@@ -258,9 +263,11 @@ class GUI:
         self.board.update_board(self.window)
 
     def test_func_move(self, **kwargs):
+        # print(f"{self.player_turn.name} to move!")
+        print("Move: " + str(kwargs['vector']))
+        vector_rep = kwargs['vector']
+
         try:
-            print("Move: " + str(kwargs['vector']))
-            vector_rep = kwargs['vector']
 
             vector = None
             selected_pieces_sorted = None
@@ -285,17 +292,64 @@ class GUI:
                 vector = (-1, 0)
                 selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
 
-            # Swaps all tiles according to movement vector
-            for tile in selected_pieces_sorted:
-                print(f"Moving vector {vector}")
-                self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
-            self.board.update_board(self.window)
+            if self.is_valid_selection() and self.is_valid_move(vector_rep):
+
+                # Swaps all tiles according to movement vector
+                for tile in selected_pieces_sorted:
+                    print(f"Moving vector {vector}")
+                    self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
+                self.board.update_board(self.window)
+
+                self.toggle_player_move()   # Other players turn.
+
+            else:
+                print("Invalid Move. Clearing selected pieces")
 
         except KeyError:
             print("Middle Button pressed")
 
         finally:
             self.selected_pieces.clear()
+
+    def is_valid_selection(self):
+        print("POG")
+        if len(self.selected_pieces) > 3:
+            return False
+        prev_tile = None
+        selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
+        for tile in selected_pieces_sorted:
+            print(tile)
+            if tile.piece != self.player_turn.value:
+                print("Wrong color")
+                return False
+            if prev_tile is not None:
+                if prev_tile.row != tile.row or prev_tile.column != tile.column - 1:
+                    print(f"{prev_tile.column}, {tile.column}")
+                    print("Inconsistent row selection")
+                    return False
+                else:
+                    prev_tile = tile
+            else:
+                prev_tile = tile
+        return True
+
+    def is_valid_move(self, vector_rep):
+        board_seq = ('I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
+                     'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
+                     'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
+                     'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5')
+        for tile in self.selected_pieces:
+            if tile.board_coordinate not in board_seq:
+                print("Can't move out of bounds.")
+                return False
+        return True
+
+    def toggle_player_move(self):
+        if self.player_turn == Turn.WHITE:
+            self.player_turn = Turn.BLACK
+        else:
+            self.player_turn = Turn.WHITE
+        print(f"{self.player_turn.name} to move!")
 
     def add_placeholders(self):
         """

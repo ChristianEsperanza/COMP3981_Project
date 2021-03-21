@@ -11,10 +11,11 @@ class Board:
 
     def __init__(self):
         self.board = []
-        pass
+        self.board_dict = {}
 
     def build_board(self, window):
         self.set_default_tiles()
+        self.convert_to_dict()  # Converts board from list to dict rep.
         self.update_board(window)
         pygame.display.update()
 
@@ -45,6 +46,7 @@ class Board:
             Tile(0, 0, "A1", black_piece_id), Tile(0, 1, "A2", black_piece_id), Tile(0, 2, "A3", black_piece_id),
             Tile(0, 3, "A4", black_piece_id), Tile(0, 4, "A5", black_piece_id),
         ]
+        self.convert_to_dict()
 
     def set_german_daisy_tiles(self):
         """
@@ -73,6 +75,7 @@ class Board:
             Tile(0, 0, "A1", black_piece_id), Tile(0, 1, "A2", black_piece_id), Tile(0, 2, "A3", None),
             Tile(0, 3, "A4", white_piece_id), Tile(0, 4, "A5", white_piece_id),
         ]
+        self.convert_to_dict()
 
     def set_belgian_daisy_tiles(self):
         """
@@ -103,6 +106,7 @@ class Board:
             Tile(0, 0, "A1", None), Tile(0, 1, "A2", None), Tile(0, 2, "A3", None), Tile(0, 3, "A4", None),
             Tile(0, 4, "A5", None),
         ]
+        self.convert_to_dict()
 
     def update_board(self, window):
         """
@@ -118,24 +122,30 @@ class Board:
 
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
         # beginning has 25 X diff, end of row has a 40 X diff
-        tile_counter = 0
+        # tile_counter = 0
+        board_seq = ['I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
+                     'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
+                     'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
+                     'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5']
+        board_seq_iter = iter(board_seq)
+
         current_y = board_start_y + piece_radius
         for col in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
+
             current_x = ((10 - col) * piece_radius) + piece_distance + board_start_x
 
             for row in range(0, col):
-                if self.board[tile_counter].piece is None:
+                coord = next(board_seq_iter)
+                if self.board_dict[coord].piece is None:
                     rect = window.blit(unoccupied, (current_x, current_y))
-                    self.board[tile_counter].set_rect(rect)
-                elif self.board[tile_counter].piece == white_piece_id:
+                    self.board_dict[coord].set_rect(rect)
+                elif self.board_dict[coord].piece == white_piece_id:
                     rect = window.blit(white_stone_image, (current_x, current_y))
-                    self.board[tile_counter].set_rect(rect)
-                elif self.board[tile_counter].piece == black_piece_id:
+                    self.board_dict[coord].set_rect(rect)
+                elif self.board_dict[coord].piece == black_piece_id:
                     rect = window.blit(black_stone_image, (current_x, current_y))
-                    self.board[tile_counter].set_rect(rect)
-
+                    self.board_dict[coord].set_rect(rect)
                 current_x += (piece_radius * 2) + piece_distance
-                tile_counter += 1
             current_y += (piece_radius * 2) + piece_distance
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
@@ -144,20 +154,23 @@ class Board:
         :param coord_a: int
         :param coord_b: int
         """
-        tile_a = None
-        for tile in self.board:
-            if tile.row == coord_a[0] and tile.column == coord_a[1]:
-                tile_a = tile
-                break
-        tile_b = None
-        for tile in self.board:
-            if tile.row == coord_b[0] and tile.column == coord_b[1]:
-                tile_b = tile
-                break
+        tile_a_coord_id = f"{chr(ord('A') + coord_a[0])}{coord_a[1] + 1}"
+        tile_a = self.board_dict[tile_a_coord_id]
+
+        tile_b_coord_id = f"{chr(ord('A') + coord_b[0])}{coord_b[1] + 1}"
+        tile_b = self.board_dict[tile_b_coord_id]
+
         print(f"Swapping {tile_a.board_coordinate} and {tile_b.board_coordinate}")
         temp = tile_b.piece
         tile_b.piece = tile_a.piece
         tile_a.piece = temp
+
+    def convert_to_dict(self):
+        board_dict = {}
+        for tile in self.board:
+            board_dict[tile.board_coordinate] = tile
+        self.board_dict = board_dict
+
 
 
 """        
