@@ -23,3 +23,17 @@ Setup:
   II. Click the play button next to the "if __name__ == '__main__'" statement.
   III. On the top dropdowns bar, click Run > Run 'main'.
 
+
+--------------------------------------
+
+Setup for StateSpace Generator:
+
+In order to test input files, add the input file to the GUI folder. You can now enter the name
+of the input file where "Test1.input" is written as a string. The program will automatically load and
+then generate all possible board configurations for the specified input file. Board and move files will be found
+in the GUI folder. 
+Note: Run the board.py file directly, using main.py will not provide access to the state generator.
+Note: The move file representation for each line is [[Old position], [New position], Movement_Performed]
+
+1. Complete setup noted above. 
+2. Using Pycharm, navigate to GUI > board.py, scroll to the bottom. Next to the statement "if __name__ == 'main'" and click the play button to the left of it.
