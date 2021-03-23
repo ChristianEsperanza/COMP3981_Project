@@ -1092,7 +1092,9 @@ class Board:
 In order to test input files, add the input file to the GUI folder. You can now enter the name
 of the input file where "Test1.input" is written as a string. The program will automatically load and
 then generate all possible board configurations for the specified input file. Board and move files will be found
-in the GUI folder. Note: Run the board.py file directly, using main.py will not provide access to the state generator.
+in the GUI folder. 
+Note: Run the board.py file directly, using main.py will not provide access to the state generator.
+Note: The move file representation for each line is [[Old position], [New position], Movement_Performed]
 """
 if __name__ == '__main__':
     board = Board()
