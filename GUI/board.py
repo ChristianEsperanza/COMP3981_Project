@@ -951,7 +951,7 @@ class Board:
         for move in triple_boards_push_moves:
             all_moves.append(move)
         move_file_out = file_name.split('.')[0] + ".move"
-        FileReader.write_data(move_file_out, all_moves)
+        FileReader.write_moves(move_file_out, all_moves)
 
     @staticmethod
     def read_marbles(board_state: list):
@@ -1098,4 +1098,4 @@ Note: The move file representation for each line is [[Old position], [New positi
 """
 if __name__ == '__main__':
     board = Board()
-    board.generate_all_boards("Test1.input")
+    board.generate_all_boards("Test2.input")
