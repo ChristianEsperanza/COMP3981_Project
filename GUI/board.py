@@ -1126,4 +1126,4 @@ Note: The move file representation for each line is [[Old position], [New positi
 """
 if __name__ == '__main__':
     board = Board()
-    board.generate_all_boards("Test2.input")
+    board.generate_all_boards("Test1.input")
