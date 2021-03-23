@@ -78,7 +78,8 @@ def move_two_pieces(tile_double, change_row, change_column):
     c1 = tile1.column + change_column
     r2 = tile2.row + change_row
     c2 = tile2.column + change_column
-    sumito = True if abs(r2 - r1) == abs(change_row) and abs(c2 - c1) == abs(change_column) else False
+    sumito = True if abs(tile2.row - tile1.row) == abs(change_row)\
+        and abs(tile2.column - tile1.column) == abs(change_column) else False
     coor1 = "{row}{column}".format(row=RowMapper(r1).name, column=c1 + 1)
     coor2 = "{row}{column}".format(row=RowMapper(r2).name, column=c2 + 1)
     new_tile1 = Tile(r1, c1, coor1, current_turn)
@@ -193,6 +194,8 @@ for double in doubles:
             layout_for_this_move.sort()
             new_layouts.append(layout_for_this_move)
             moves.append(move_notation)
+        else:
+            pass
     unvalidated_moves.clear()
 
 
