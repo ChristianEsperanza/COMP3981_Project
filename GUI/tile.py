@@ -26,6 +26,12 @@ class Tile:
         """
         return self.board_coordinate
 
+    def get_piece(self):
+        """
+        Gets the tile piece data
+        """
+        return self.piece
+
     def set_piece(self, piece):
         """
         Sets the tile board piece.

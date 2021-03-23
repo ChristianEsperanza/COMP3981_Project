@@ -1,3 +1,5 @@
+import copy
+
 import pygame
 
 from GUI.tile import Tile
@@ -12,6 +14,8 @@ class Board:
 
     def __init__(self):
         self.board = dict()
+        self.forbidden_spots = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
+                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10']
         pass
 
     def build_board(self, window):
@@ -112,9 +116,9 @@ class Board:
 
     def generate_board(self, marbles):
         """
-        Sets up the current board based on the list of marble positions provided. Current implementation
-        designed to work with board of type hash table. First the function will load in all current marbles
-        then the function will fill in the empty board positions for each row.
+        Function read_data in file reader provides positions to generate board. These positions are
+        turned into tiles and placed within the hashtable representing the board. The remainder of
+        the board is filled with empty tiles and the game board is updated.
         """
         boardOut = {'A': [], 'B': [], 'C': [], 'D': [], 'E': [], 'F': [], 'G': [], 'H': [], 'I': []}
         rows = ['A15', 'B16', 'C17', 'D18', 'E19', 'F29', 'G39', 'H49', 'I59']
@@ -133,6 +137,638 @@ class Board:
                     currRow.append(Tile(rowInt, x, tileID, None))
         self.board = boardOut
 
+    def generate_single_moves(self, black_marbles: list, white_marbles: list, turn: chr):
+        """
+        Checks all possible directions for a single marble to move then ensures
+        that the generated location is not occupied or out of bounds. The resulting array
+        consists of multiple board configurations, one for each move found possible.
+        """
+        forbidden = self.forbidden_spots
+        result = []
+        if turn == 'b':
+            marbles = black_marbles
+        else:
+            marbles = white_marbles
+        for marble in marbles:
+            letter, num = self.convert_to_nums(marble)
+            left = self.convert_to_string(letter, num - 1)
+            right = self.convert_to_string(letter, num + 1)
+            upL = self.convert_to_string(letter + 1, num)
+            upR = self.convert_to_string(letter + 1, num + 1)
+            downL = self.convert_to_string(letter - 1, num - 1)
+            downR = self.convert_to_string(letter - 1, num)
+            test_spots = [left, right, upL, upR, downL, downR]
+            for spot in test_spots:
+                # Deep copy needed for each turn to generate output for board file.
+                if turn == 'b':
+                    array_copy = copy.deepcopy(black_marbles)
+                else:
+                    array_copy = copy.deepcopy(white_marbles)
+                if spot not in white_marbles and black_marbles and forbidden:
+                    index = array_copy.index(marble)
+                    array_copy.remove(marble)
+                    array_copy.insert(index, spot)
+                    # Merges lists in black-white order for output
+                    if turn == 'b':
+                        final_output = array_copy + white_marbles
+                    else:
+                        final_output = black_marbles + array_copy
+                    result.append(final_output)
+        return result
+
+    def generate_double_sets(self, black_marbles: list, white_marbles: list, turn: chr):
+        """
+        Create pairs for marbles that can move together to assist in generating moves
+        for 2 marbles. Each marble pair is stored as a tuple and the result is a list
+        of tuples.
+        """
+        result = []
+        if turn == 'b':
+            marbles = black_marbles
+        else:
+            marbles = white_marbles
+        for marble in marbles:
+            letter, num = self.convert_to_nums(marble)
+            right = self.convert_to_string(letter, num + 1)
+            upL = self.convert_to_string(letter + 1, num)
+            upR = self.convert_to_string(letter + 1, num + 1)
+            pair_locations = [right, upL, upR]
+            for second_marble in pair_locations:
+                if second_marble in marbles:
+                    result.append((marble, second_marble))
+        return result
+
+    @staticmethod
+    def strip_active_marbles(marbles: list, active_marbles: tuple):
+        """
+        Helper function for generating moves. Returns a list of marbles with
+        the marbles currently being tested removed from the list.
+        """
+        result = copy.deepcopy(marbles)
+        for marble in active_marbles:
+            result.remove(marble)
+        return result
+
+    @staticmethod
+    def replace_marbles(marbles: list, old_positions: list, new_positions: list):
+        """
+        Helper function for generating moves. Replaces the previous configuration of marbles
+        with the new updated positions following a successful move.
+        """
+        final_marbles = copy.deepcopy(marbles)
+        for x in range(len(old_positions)):
+            index = final_marbles.index(old_positions[x])
+            final_marbles.remove(old_positions[x])
+            final_marbles.insert(index, new_positions[x])
+        return final_marbles
+
+    @staticmethod
+    def replace_marble(marbles: list, old_position: str, new_position: str):
+        """
+        Helper function for generating moves. Replaces a single old position with the new updated
+        position.
+        """
+        final_marbles = copy.deepcopy(marbles)
+        index = final_marbles.index(old_position)
+        final_marbles.remove(old_position)
+        final_marbles.insert(index, new_position)
+        return final_marbles
+
+    @staticmethod
+    def remove_marble(marbles: list, removed_marble: str):
+        """
+        Handles a marble falling out of the board and removes it from the list of marbles.
+        Returns the updated list.
+        """
+        final_marbles = copy.deepcopy(marbles)
+        final_marbles.remove(removed_marble)
+        return final_marbles
+
+    def generate_double_moves_without_collision(self, black_marbles: list, white_marbles: list,
+                                                turn: chr, marble_pairs: list):
+        """
+        Generates all moves for a pair of marbles that do not collide with any other marble
+        on the field, be it black or white.
+        """
+        result = []
+        forbidden = self.forbidden_spots
+        marbles = black_marbles + white_marbles
+        for marble_tuple in marble_pairs:
+            current_marbles = self.strip_active_marbles(marbles, marble_tuple)
+            one_letter, one_num = self.convert_to_nums(marble_tuple[0])
+            two_letter, two_num = self.convert_to_nums(marble_tuple[1])
+            # If the marbles are in-line horizontally.
+            if one_letter == two_letter:
+                one_left = self.convert_to_string(one_letter, one_num - 1)
+                one_right = self.convert_to_string(one_letter, one_num + 1)
+                if one_left not in current_marbles or forbidden:
+                    two_left = self.convert_to_string(two_letter, two_num - 1)
+                    if two_left not in current_marbles or forbidden:
+                        old_positions = [x for x in marble_tuple]
+                        new_positions = [one_left, two_left]
+                        if turn == 'b':
+                            final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                            final_output = final_black_marbles + white_marbles
+                        else:
+                            final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                            final_output = black_marbles + final_white_marbles
+                        result.append(final_output)
+                if one_right not in current_marbles or forbidden:
+                    two_right = self.convert_to_string(two_letter, two_num + 1)
+                    if two_right not in current_marbles or forbidden:
+                        old_positions = [x for x in marble_tuple]
+                        new_positions = [one_right, two_right]
+                        if turn == 'b':
+                            final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                            final_output = final_black_marbles + white_marbles
+                        else:
+                            final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                            final_output = black_marbles + final_white_marbles
+                        result.append(final_output)
+            # if the marbles are in-line diagonally.
+            else:
+                one_upL = self.convert_to_string(one_letter + 1, one_num)
+                one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
+                one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
+                one_downR = self.convert_to_string(one_letter - 1, one_num)
+                two_upL = self.convert_to_string(two_letter + 1, two_num)
+                two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
+                two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
+                two_downR = self.convert_to_string(two_letter - 1, two_num)
+                one_spots = [one_upL, one_upR, one_downL, one_downR]
+                two_spots = [two_upL, two_upR, two_downL, two_downR]
+                for spot in one_spots:
+                    if spot not in current_marbles or forbidden:
+                        index = one_spots.index(spot)
+                        second_spot = two_spots[index]
+                        if second_spot not in current_marbles or forbidden:
+                            old_positions = [x for x in marble_tuple]
+                            new_positions = [spot, second_spot]
+                            if turn == 'b':
+                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                                final_output = final_black_marbles + white_marbles
+                            else:
+                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                                final_output = black_marbles + final_white_marbles
+                            result.append(final_output)
+        return result
+
+    def double_marble_collisions(self, forbidden: list, black_marbles: list, white_marbles: list, turn: chr,
+                                 marble_spot_one_move: list,
+                                 marble_spot_two_move: list, marble_tuple: tuple, enemy_marbles: list,
+                                 current_marbles: list, result: list):
+        """
+        Checks if a given set of 2 marbles can make a push move on the board and stores all resulting board
+        configurations from each possible push.
+        """
+        for marble_move_one in marble_spot_one_move:
+            # One enemy marble next to column of 2 player marbles.
+            if marble_move_one in enemy_marbles and marble_move_one not in forbidden:
+                index = marble_spot_one_move.index(marble_move_one)
+                marble_move_two = marble_spot_two_move[index]
+                if marble_move_two in current_marbles:
+                    # Two consecutive enemy marbles or a friendly marble found blocking push, skip and continue
+                    continue
+                # One enemy marble at the edge of the board to be pushed off
+                elif marble_move_two in forbidden:
+                    if turn == 'b':
+                        final_enemy_marbles = self.remove_marble(white_marbles, marble_move_one)
+                        final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_player_marbles + final_enemy_marbles)
+                    else:
+                        final_enemy_marbles = self.remove_marble(black_marbles, marble_move_one)
+                        final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_enemy_marbles + final_player_marbles)
+                # Empty spot after enemy marble
+                else:
+                    if turn == 'b':
+                        final_enemy_marbles = self.replace_marble(white_marbles, marble_move_one, marble_move_two)
+                        final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_player_marbles + final_enemy_marbles)
+                    else:
+                        final_enemy_marbles = self.replace_marble(black_marbles, marble_move_one, marble_move_two)
+                        final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_enemy_marbles + final_player_marbles)
+
+    def generate_double_moves_with_collision(self, black_marbles: list, white_marbles: list,
+                                             turn: chr, marble_pairs: list):
+        """
+        Generates all possible board configurations from moving two marbles and pushing an
+        opponents marble.
+        """
+        result = []
+        marbles = black_marbles + white_marbles
+        forbidden = self.forbidden_spots
+        if turn == 'b':
+            enemy_marbles = white_marbles
+        else:
+            enemy_marbles = black_marbles
+        for marble_tuple in marble_pairs:
+            current_marbles = self.strip_active_marbles(marbles, marble_tuple)
+            one_letter, one_num = self.convert_to_nums(marble_tuple[0])
+            two_letter, two_num = self.convert_to_nums(marble_tuple[1])
+            # Marbles in-line horizontally
+            if one_letter == two_letter:
+                marble_spots_one_left = [self.convert_to_string(one_letter, one_num - 1),
+                                         self.convert_to_string(two_letter, two_num - 1)]
+                marble_spots_two_left = [self.convert_to_string(one_letter, one_num - 2),
+                                         self.convert_to_string(two_letter, two_num - 2)]
+                marble_spots_one_right = [self.convert_to_string(one_letter, one_num + 1),
+                                          self.convert_to_string(two_letter, two_num + 1)]
+                marble_spots_two_right = [self.convert_to_string(one_letter, one_num + 2),
+                                          self.convert_to_string(two_letter, two_num + 2)]
+                # Pushing marble left case
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_one_left,
+                                              marble_spots_two_left, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_one_right,
+                                              marble_spots_two_right, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+                return result
+            # Marbles in-line diagonally with left slant
+            elif one_num == two_num:
+                marble_spots_upL_one = [self.convert_to_string(one_letter + 1, one_num),
+                                        self.convert_to_string(two_letter + 1, two_num)]
+                marble_spots_upL_two = [self.convert_to_string(one_letter + 2, one_num),
+                                        self.convert_to_string(two_letter + 2, two_num)]
+                marble_spots_downR_one = [self.convert_to_string(one_letter - 1, one_num),
+                                          self.convert_to_string(two_letter - 1, two_num)]
+                marble_spots_downR_two = [self.convert_to_string(one_letter - 2, one_num),
+                                          self.convert_to_string(two_letter - 2, two_num)]
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_upL_one,
+                                              marble_spots_upL_two, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_downR_one,
+                                              marble_spots_downR_two, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+            # Marbles in-line diagonally with right slant
+            else:
+                marble_spots_upR_one = [self.convert_to_string(one_letter + 1, one_num + 1),
+                                        self.convert_to_string(two_letter + 1, two_num + 1)]
+                marble_spots_upR_two = [self.convert_to_string(one_letter + 2, one_num + 2),
+                                        self.convert_to_string(two_letter + 2, two_num + 2)]
+                marble_spots_downL_one = [self.convert_to_string(one_letter - 1, one_num - 1),
+                                          self.convert_to_string(two_letter - 1, two_num - 1)]
+                marble_spots_downL_two = [self.convert_to_string(one_letter - 2, one_num - 2),
+                                          self.convert_to_string(two_letter - 2, two_num - 2)]
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_upR_one,
+                                              marble_spots_upR_two, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+                self.double_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_downL_one,
+                                              marble_spots_downL_two, marble_tuple, enemy_marbles, current_marbles,
+                                              result)
+        return result
+
+    def generate_triple_sets(self, black_marbles: list, white_marbles: list, turn: chr):
+        """
+        Create triplets for marbles that can move together to assist in generating moves
+        for 3 marbles. Each marble triplet is stored as a tuple and the result is a list
+        of tuples.
+        """
+        result = []
+        if turn == 'b':
+            marbles = black_marbles
+        else:
+            marbles = white_marbles
+        for marble in marbles:
+            letter, num = self.convert_to_nums(marble)
+            right = self.convert_to_string(letter, num + 1)
+            upL = self.convert_to_string(letter + 1, num)
+            upR = self.convert_to_string(letter + 1, num + 1)
+            potential_pair_one_spot = [right, upL, upR]
+            right_2 = self.convert_to_string(letter, num + 2)
+            upL_2 = self.convert_to_string(letter + 2, num)
+            upR_2 = self.convert_to_string(letter + 2, num + 2)
+            potential_pair_two_spots = [right_2, upL_2, upR_2]
+            for second_marble in potential_pair_one_spot:
+                if second_marble in marbles:
+                    index = potential_pair_one_spot.index(second_marble)
+                    third_marble = potential_pair_two_spots[index]
+                    if third_marble in black_marbles:
+                        result.append((marble, second_marble, third_marble))
+        return result
+
+    def generate_triple_moves_without_collision(self, black_marbles: list, white_marbles: list,
+                                                turn: chr, marble_pairs: list):
+        """
+        Generates all moves for a triplet of marbles that do not collide with any other marble
+        on the field, be it black or white.
+        """
+        result = []
+        forbidden = self.forbidden_spots
+        marbles = black_marbles + white_marbles
+        for marble_tuple in marble_pairs:
+            current_marbles = self.strip_active_marbles(marbles, marble_tuple)
+            one_letter, one_num = self.convert_to_nums(marble_tuple[0])
+            two_letter, two_num = self.convert_to_nums(marble_tuple[1])
+            three_letter, three_num = self.convert_to_nums(marble_tuple[2])
+            # If the marbles are in-line horizontally.
+            if one_letter == two_letter:
+                one_left = self.convert_to_string(one_letter, one_num - 1)
+                one_right = self.convert_to_string(one_letter, one_num + 1)
+                if one_left not in current_marbles or forbidden:
+                    two_left = self.convert_to_string(two_letter, two_num - 1)
+                    if two_left not in current_marbles or forbidden:
+                        three_left = self.convert_to_string(three_letter, three_num - 1)
+                        if three_left not in current_marbles or forbidden:
+                            old_positions = [x for x in marble_tuple]
+                            new_positions = [one_left, two_left, three_left]
+                            if turn == 'b':
+                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                                final_output = final_black_marbles + white_marbles
+                            else:
+                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                                final_output = black_marbles + final_white_marbles
+                            result.append(final_output)
+                if one_right not in current_marbles or forbidden:
+                    two_right = self.convert_to_string(two_letter, two_num + 1)
+                    if two_right not in current_marbles or forbidden:
+                        three_right = self.convert_to_string(three_letter, three_num - 1)
+                        if three_right not in current_marbles or forbidden:
+                            old_positions = [x for x in marble_tuple]
+                            new_positions = [one_right, two_right, three_right]
+                            if turn == 'b':
+                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                                final_output = final_black_marbles + white_marbles
+                            else:
+                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                                final_output = black_marbles + final_white_marbles
+                            result.append(final_output)
+            # if the marbles are in-line diagonally.
+            else:
+                one_upL = self.convert_to_string(one_letter + 1, one_num)
+                one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
+                one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
+                one_downR = self.convert_to_string(one_letter - 1, one_num)
+                two_upL = self.convert_to_string(two_letter + 1, two_num)
+                two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
+                two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
+                two_downR = self.convert_to_string(two_letter - 1, two_num)
+                three_upL = self.convert_to_string(three_letter + 1, three_num)
+                three_upR = self.convert_to_string(three_letter + 1, three_num + 1)
+                three_downL = self.convert_to_string(three_letter - 1, three_num - 1)
+                three_downR = self.convert_to_string(three_letter - 1, three_num)
+                one_spots = [one_upL, one_upR, one_downL, one_downR]
+                two_spots = [two_upL, two_upR, two_downL, two_downR]
+                three_spots = [three_upL, three_upR, three_downL, three_downR]
+                for spot in one_spots:
+                    if spot not in current_marbles or forbidden:
+                        index = one_spots.index(spot)
+                        second_spot = two_spots[index]
+                        if second_spot not in current_marbles or forbidden:
+                            third_spot = three_spots[index]
+                            if third_spot not in current_marbles or forbidden:
+                                old_positions = [x for x in marble_tuple]
+                                new_positions = [spot, second_spot, third_spot]
+                                if turn == 'b':
+                                    final_black_marbles = self.replace_marbles(black_marbles, old_positions,
+                                                                               new_positions)
+                                    final_output = final_black_marbles + white_marbles
+                                else:
+                                    final_white_marbles = self.replace_marbles(white_marbles, old_positions,
+                                                                               new_positions)
+                                    final_output = black_marbles + final_white_marbles
+                                result.append(final_output)
+        return result
+
+    def triple_marble_collisions(self, forbidden: list, black_marbles: list, white_marbles: list, turn: chr,
+                                 marble_spot_one_move: list, marble_spot_two_move: list,
+                                 marble_spot_three_move: list, marble_tuple: tuple,
+                                 enemy_marbles: list, current_marbles: list, result: list):
+        """
+        Checks if a given set of 3 marbles can make a push move on the board and stores all resulting board
+        configurations from each possible push.
+        """
+        for marble_move_one in marble_spot_one_move:
+            # One enemy marble next to column of 3 player marbles.
+            if marble_move_one in enemy_marbles and marble_move_one not in forbidden:
+                index = marble_spot_one_move.index(marble_move_one)
+                marble_move_two = marble_spot_two_move[index]
+                # Two enemy marbles in-line side by side
+                if marble_move_two in enemy_marbles:
+                    marble_move_three = marble_spot_three_move[index]
+                    # Third spot is occupied by enemy or friendly marble, push cannot occur.
+                    if marble_move_three in current_marbles:
+                        continue
+                    # Third spot off board, pushing 2 marbles and 1 falls out
+                    elif marble_move_three in forbidden:
+                        if turn == 'b':
+                            final_enemy_marbles = self.replace_marble(white_marbles, marble_move_one, marble_move_two)
+                            final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                        marble_spot_one_move)
+                            result.append(final_player_marbles + final_enemy_marbles)
+                        else:
+                            final_enemy_marbles = self.replace_marble(black_marbles, marble_move_one, marble_move_two)
+                            final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                        marble_spot_one_move)
+                            result.append(final_enemy_marbles + final_player_marbles)
+                    # Third spot empty, pushing 2 marbles
+                    else:
+                        if turn == 'b':
+                            final_enemy_marbles = self.replace_marbles(white_marbles,
+                                                                       [marble_move_one, marble_move_two],
+                                                                       [marble_move_two, marble_move_three])
+                            final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                        marble_spot_one_move)
+                            result.append(final_player_marbles + final_enemy_marbles)
+                        else:
+                            final_enemy_marbles = self.replace_marbles(black_marbles,
+                                                                       [marble_move_one, marble_move_two],
+                                                                       [marble_move_two, marble_move_three])
+                            final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                        marble_spot_one_move)
+                            result.append(final_enemy_marbles + final_player_marbles)
+                # One enemy marble at the edge of the board to be pushed off
+                elif marble_move_two in forbidden:
+                    if turn == 'b':
+                        final_enemy_marbles = self.remove_marble(white_marbles, marble_move_one)
+                        final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_player_marbles + final_enemy_marbles)
+                    else:
+                        final_enemy_marbles = self.remove_marble(black_marbles, marble_move_one)
+                        final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_enemy_marbles + final_player_marbles)
+                # Friendly marble on the opposite side of the enemy marble blocking the push by 3 marbles.
+                elif marble_move_two not in enemy_marbles or forbidden and marble_move_two in current_marbles:
+                    continue
+                # Empty spot after enemy marble
+                else:
+                    if turn == 'b':
+                        final_enemy_marbles = self.replace_marble(white_marbles, marble_move_one, marble_move_two)
+                        final_player_marbles = self.replace_marbles(black_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_player_marbles + final_enemy_marbles)
+                    else:
+                        final_enemy_marbles = self.replace_marble(black_marbles, marble_move_one, marble_move_two)
+                        final_player_marbles = self.replace_marbles(white_marbles, [x for x in marble_tuple],
+                                                                    marble_spot_one_move)
+                        result.append(final_enemy_marbles + final_player_marbles)
+
+    def generate_triple_moves_with_collision(self, black_marbles: list, white_marbles: list,
+                                             turn: chr, marble_pairs: list):
+        """
+        Generates all possible board configurations from moving three marbles and pushing
+        opponents marble(s).
+        """
+        result = []
+        marbles = black_marbles + white_marbles
+        forbidden = self.forbidden_spots
+        if turn == 'b':
+            enemy_marbles = white_marbles
+        else:
+            enemy_marbles = black_marbles
+        for marble_tuple in marble_pairs:
+            if marble_tuple[0][0] == marble_tuple[1][0]:
+                current_marbles = self.strip_active_marbles(marbles, marble_tuple)
+                one_letter, one_num = self.convert_to_nums(marble_tuple[0])
+                two_letter, two_num = self.convert_to_nums(marble_tuple[1])
+                three_letter, three_num = self.convert_to_nums(marble_tuple[2])
+                # Marbles in-line horizontally
+                if one_letter == two_letter:
+                    marble_spots_one_left = [self.convert_to_string(one_letter, one_num - 1),
+                                             self.convert_to_string(two_letter, two_num - 1),
+                                             self.convert_to_string(three_letter, three_num - 1)]
+                    marble_spots_two_left = [self.convert_to_string(one_letter, one_num - 2),
+                                             self.convert_to_string(two_letter, two_num - 2),
+                                             self.convert_to_string(three_letter, three_num - 2)]
+                    marble_spots_three_left = [self.convert_to_string(one_letter, one_num - 3),
+                                               self.convert_to_string(two_letter, two_num - 3),
+                                               self.convert_to_string(three_letter, three_num - 3)]
+                    marble_spots_one_right = [self.convert_to_string(one_letter, one_num + 1),
+                                              self.convert_to_string(two_letter, two_num + 1),
+                                              self.convert_to_string(three_letter, three_num + 1)]
+                    marble_spots_two_right = [self.convert_to_string(one_letter, one_num + 2),
+                                              self.convert_to_string(two_letter, two_num + 2),
+                                              self.convert_to_string(three_letter, three_num + 2)]
+                    marble_spots_three_right = [self.convert_to_string(one_letter, one_num + 3),
+                                                self.convert_to_string(two_letter, two_num + 3),
+                                                self.convert_to_string(three_letter, three_num + 3)]
+                    # Pushing marble left case
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_one_left,
+                                                  marble_spots_two_left, marble_spots_three_left, marble_tuple,
+                                                  enemy_marbles,
+                                                  current_marbles, result)
+                    # Pushing marble right case
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_one_right,
+                                                  marble_spots_two_right, marble_spots_three_right, marble_tuple,
+                                                  enemy_marbles, current_marbles, result)
+                # Marbles in-line diagonally with left slant
+                elif one_num == two_num:
+                    marble_spots_upL_one = [self.convert_to_string(one_letter + 1, one_num),
+                                            self.convert_to_string(two_letter + 1, two_num),
+                                            self.convert_to_string(three_letter + 1, three_num)]
+                    marble_spots_upL_two = [self.convert_to_string(one_letter + 2, one_num),
+                                            self.convert_to_string(two_letter + 2, two_num),
+                                            self.convert_to_string(three_letter + 2, three_num)]
+                    marble_spots_upL_three = [self.convert_to_string(one_letter + 3, one_num),
+                                              self.convert_to_string(two_letter + 3, two_num),
+                                              self.convert_to_string(three_letter + 3, three_num)]
+                    marble_spots_downR_one = [self.convert_to_string(one_letter - 1, one_num),
+                                              self.convert_to_string(two_letter - 1, two_num),
+                                              self.convert_to_string(three_letter - 1, three_num)]
+                    marble_spots_downR_two = [self.convert_to_string(one_letter - 2, one_num),
+                                              self.convert_to_string(two_letter - 2, two_num),
+                                              self.convert_to_string(three_letter - 2, three_num)]
+                    marble_spots_downR_three = [self.convert_to_string(one_letter - 3, one_num),
+                                                self.convert_to_string(two_letter - 3, two_num),
+                                                self.convert_to_string(three_letter - 3, three_num)]
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_upL_one,
+                                                  marble_spots_upL_two, marble_spots_upL_three, marble_tuple,
+                                                  enemy_marbles, current_marbles, result)
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_downR_one,
+                                                  marble_spots_downR_two, marble_spots_downR_three, marble_tuple,
+                                                  enemy_marbles, current_marbles, result)
+
+                # Marbles in-line diagonally with right slant
+                else:
+                    marble_spots_upR_one = [self.convert_to_string(one_letter + 1, one_num + 1),
+                                            self.convert_to_string(two_letter + 1, two_num + 1),
+                                            self.convert_to_string(three_letter + 1, three_num + 1)]
+                    marble_spots_upR_two = [self.convert_to_string(one_letter + 2, one_num + 2),
+                                            self.convert_to_string(two_letter + 2, two_num + 2),
+                                            self.convert_to_string(three_letter + 2, three_num + 2)]
+                    marble_spots_upR_three = [self.convert_to_string(one_letter + 3, one_num + 3),
+                                              self.convert_to_string(two_letter + 3, two_num + 3),
+                                              self.convert_to_string(three_letter + 3, three_num + 3)]
+                    marble_spots_downL_one = [self.convert_to_string(one_letter - 1, one_num - 1),
+                                              self.convert_to_string(two_letter - 1, two_num - 1),
+                                              self.convert_to_string(three_letter - 1, three_num - 1)]
+                    marble_spots_downL_two = [self.convert_to_string(one_letter - 2, one_num - 2),
+                                              self.convert_to_string(two_letter - 2, two_num - 2),
+                                              self.convert_to_string(three_letter - 2, three_num - 2)]
+                    marble_spots_downL_three = [self.convert_to_string(one_letter - 3, one_num - 3),
+                                                self.convert_to_string(two_letter - 3, two_num - 3),
+                                                self.convert_to_string(three_letter - 3, three_num - 3)]
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_upR_one,
+                                                  marble_spots_upR_two, marble_spots_upR_three, marble_tuple,
+                                                  enemy_marbles, current_marbles, result)
+                    self.triple_marble_collisions(forbidden, black_marbles, white_marbles, turn, marble_spots_downL_one,
+                                                  marble_spots_downL_two, marble_spots_downL_three, marble_tuple,
+                                                  enemy_marbles, current_marbles, result)
+        return result
+
+    def generate_all_boards(self, file_name: str):
+        turn, current_board = FileReader.read_data(FileReader.load_data(file_name))
+        black_marbles, white_marbles = self.read_marbles(current_board)
+        double_marble_sets = self.generate_double_sets(black_marbles, white_marbles, turn)
+        triple_marble_sets = self.generate_triple_sets(black_marbles, white_marbles, turn)
+        all_single_boards = self.generate_single_moves(black_marbles, white_marbles, turn)
+        double_boards_no_push = self.generate_double_moves_with_collision(black_marbles, white_marbles, turn, double_marble_sets)
+        double_boards_push = self.generate_double_moves_with_collision(black_marbles, white_marbles, turn, double_marble_sets)
+        triple_boards_no_push = self.generate_triple_moves_without_collision(black_marbles, white_marbles, turn, triple_marble_sets)
+        triple_boards_push = self.generate_triple_moves_with_collision(black_marbles, white_marbles, turn, triple_marble_sets)
+        output = []
+        for result_board in all_single_boards:
+            output.append(result_board)
+        for result_board in double_boards_no_push:
+            output.append(result_board)
+        for result_board in double_boards_push:
+            output.append(result_board)
+        for result_board in triple_boards_no_push:
+            output.append(result_board)
+        for result_board in triple_boards_push:
+            output.append(result_board)
+        FileReader.write_data("Test1.board", output)
+
+    @staticmethod
+    def read_marbles(board_state: list):
+        """
+        Takes the position output of the read data method in File Reader module and returns
+        lists of marbles of both players separately.
+        """
+        black_marbles = []
+        white_marbles = []
+        for marble in board_state:
+            if marble[2] == 'b':
+                black_marbles.append(marble[0:2])
+            else:
+                white_marbles.append(marble[0:2])
+        return black_marbles, white_marbles
+
+    @staticmethod
+    def convert_to_nums(marble_string):
+        """
+        Coverts a marble string representation from "A1" to 65, 1 for use in
+        generating moves.
+        """
+        letter = ord(marble_string[0])
+        num = int(marble_string[1])
+        return letter, num
+
+    @staticmethod
+    def convert_to_string(letter, num):
+        """
+        Coverts a numeric representation of the letter and number for a tile position
+        to a string. 65, 1 --> "A1"
+        """
+        return chr(letter) + str(num)
+
     def update_board(self, window):
         """
         Updates the current board, going through the tiles and redrawing the
@@ -144,8 +780,6 @@ class Board:
         unoccupied = pygame.image.load('Images/unoccupied.png')
         black_stone_image = pygame.image.load('Images/resize_black.png')
         white_stone_image = pygame.image.load('Images/resize_white.png')
-
-
 
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
         # beginning has 25 X diff, end of row has a 40 X diff
@@ -173,6 +807,31 @@ class Board:
                     rect = window.blit(black_stone_image, (current_x, current_y))
                     self.board_dict[coord].set_rect(rect)
                 current_x += (piece_radius * 2) + piece_distance
+        keys = list(self.board.keys())
+        keys.reverse()
+
+        tile_counter = 0
+        current_y = board_start_y + piece_radius
+        for col in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
+            current_x = ((10 - col) * piece_radius) + piece_radius + board_start_x
+            for row in range(0, col):
+                # rect = window.blit(img, (current_x, current_y))
+                # self.board[tile_counter].set_rect(rect)
+                tiles = self.board[keys[tile_counter]]
+
+                if tiles[row].piece is None:
+                    rect = window.blit(unoccupied, (current_x, current_y))
+                    tiles[row].set_rect(rect)
+                elif tiles[row].piece == white_piece_id:
+                    print(tiles[row])
+                    rect = window.blit(white_stone_image, (current_x, current_y))
+                    tiles[row].set_rect(rect)
+                elif tiles[row].piece == black_piece_id:
+                    rect = window.blit(black_stone_image, (current_x, current_y))
+                    tiles[row].set_rect(rect)
+
+                current_x += (piece_radius * 2) + piece_distance
+            tile_counter += 1
             current_y += (piece_radius * 2) + piece_distance
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
@@ -239,3 +898,6 @@ class Board:
         # }
         # [[tile.draw(window, len(tiles[x])) for tile in tiles[x]] for x in tiles.keys()]
 """
+if __name__ == '__main__':
+    board = Board()
+    board.generate_all_boards("Test1.input")

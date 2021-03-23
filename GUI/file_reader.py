@@ -26,3 +26,11 @@ class FileReader:
         turn = data[0]
         positions = [x.strip() for x in data[2:].split(',')]
         return turn, positions
+
+    @staticmethod
+    def write_data(path, data):
+        file_path = Path(path)
+        if not file_path.exists():
+            raise FileNotFoundError("File path was invalid.")
+        with open(path, mode="w", encoding="utf-8") as file:
+            [file.write(str(line) + '\n') for line in data]
