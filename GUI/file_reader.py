@@ -34,7 +34,8 @@ class FileReader:
         """
         file_path = Path(path)
         with open(path, mode="w", encoding="utf-8") as file:
-            [file.write(str(line).replace('[', '').replace(']', '').replace('\'', '') + '\n') for line in data]
+            [file.write(str(line).replace('[', '').replace(']', '').replace('\'', '').replace(' ', '') + '\n')
+             for line in data]
 
     @staticmethod
     def write_moves(path, data):
