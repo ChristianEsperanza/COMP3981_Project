@@ -126,112 +126,120 @@ def find_triples():
             triples.append((first_piece, second_piece, third_piece))
 
 
-for tile in this_turn:
-    find_doubles(tile)
-    # Minus minus
-    move_single_piece(tile, -1, -1)
-    # Minus zero
-    move_single_piece(tile, -1, 0)
-    # Zero minus
-    move_single_piece(tile, 0, -1)
-    # Zero plus
-    move_single_piece(tile, 0, 1)
-    # Plus zero
-    move_single_piece(tile, 1, 0)
-    # Plus plus
-    move_single_piece(tile, 1, 1)
+def move_all_single_pieces():
+    for tile in this_turn:
+        find_doubles(tile)
+        # Minus minus
+        move_single_piece(tile, -1, -1)
+        # Minus zero
+        move_single_piece(tile, -1, 0)
+        # Zero minus
+        move_single_piece(tile, 0, -1)
+        # Zero plus
+        move_single_piece(tile, 0, 1)
+        # Plus zero
+        move_single_piece(tile, 1, 0)
+        # Plus plus
+        move_single_piece(tile, 1, 1)
 
-    for tile_tuple in unvalidated_moves:
-        layout_for_this_move = tile_layout.copy()
-        new_tile = tile_tuple[0]
-        if 0 <= new_tile.row <= 8 \
-                and new_tile.column in BOARD_LIMITS[new_tile.row] \
-                and new_tile.board_coordinate not in my_coordinates \
-                and new_tile.board_coordinate not in opponent_coordinates:
-            layout_for_this_move.remove(tile)
-            layout_for_this_move.append(new_tile)
+        for tile_tuple in unvalidated_moves:
+            layout_for_this_move = tile_layout.copy()
+            new_tile = tile_tuple[0]
+            if 0 <= new_tile.row <= 8 \
+                    and new_tile.column in BOARD_LIMITS[new_tile.row] \
+                    and new_tile.board_coordinate not in my_coordinates \
+                    and new_tile.board_coordinate not in opponent_coordinates:
+                layout_for_this_move.remove(tile)
+                layout_for_this_move.append(new_tile)
+                layout_for_this_move.sort()
+                new_layouts.append(layout_for_this_move)
+                moves.append(tile_tuple[1])
+        unvalidated_moves.clear()
+
+
+def move_all_double_pieces():
+    for double in doubles:
+        move_two_pieces(double, -1, -1)
+        move_two_pieces(double, -1, 0)
+        move_two_pieces(double, 0, -1)
+        move_two_pieces(double, 0, 1)
+        move_two_pieces(double, 1, 0)
+        move_two_pieces(double, 1, 1)
+
+        for pair_tuple in unvalidated_moves:
+            layout_for_this_move = tile_layout.copy()
+            new_pair = pair_tuple[0]
+            sumito = pair_tuple[1]
+            move_notation = pair_tuple[2]
+            tile1 = new_pair[0]
+            tile2 = new_pair[1]
+            # Board limits
+            tile1_bounded = True if 0 <= tile1.row <= 8 and tile1.column in BOARD_LIMITS[tile1.row] else False
+            tile2_bounded = True if 0 <= tile2.row <= 8 and tile2.column in BOARD_LIMITS[tile2.row] else False
+            if not (tile1_bounded and tile2_bounded):
+                continue
+            if not sumito:
+                # Own pieces in the way
+                tile1_open = True if tile1.board_coordinate not in my_coordinates else False
+                tile2_open = True if tile2.board_coordinate not in my_coordinates else False
+                if not (tile1_open and tile2_open):
+                    continue
+                # Enemy pieces are in the way
+                tile1_free = True if tile1.board_coordinate not in opponent_coordinates else False
+                tile2_free = True if tile2.board_coordinate not in opponent_coordinates else False
+                if not (tile1_free and tile2_free):
+                    continue
+            else:
+                tile_1_is_leader = pair_tuple[3]
+                change_row = pair_tuple[4]
+                change_column = pair_tuple[5]
+                lead_tile = tile1 if tile_1_is_leader else tile2
+                # Own pieces in the way
+                if lead_tile.board_coordinate in my_coordinates:
+                    continue
+                if lead_tile.board_coordinate in opponent_coordinates:
+                    next_enemy_row = lead_tile.row + change_row
+                    next_enemy_column = lead_tile.column + change_column
+                    enemy_coor = "{row}{column}".format(row=RowMapper(next_enemy_row).name,
+                                                        column=next_enemy_column + 1)
+                    if enemy_coor in opponent_coordinates:
+                        continue
+                    enemy_color = 2 if lead_tile.piece == 1 else 1
+                    enemy_previous_position = Tile(lead_tile.row, lead_tile.column,
+                                                   lead_tile.board_coordinate, enemy_color)
+                    enemy_next_position = Tile(next_enemy_row, next_enemy_column, enemy_coor, enemy_color)
+                    layout_for_this_move.remove(enemy_previous_position)
+                    if 0 <= enemy_next_position.row <= 8 \
+                            and enemy_next_position.column in BOARD_LIMITS[enemy_next_position.row]:
+                        layout_for_this_move.append(enemy_next_position)
+            layout_for_this_move.remove(double[0])
+            layout_for_this_move.remove(double[1])
+            layout_for_this_move.append(tile1)
+            layout_for_this_move.append(tile2)
             layout_for_this_move.sort()
             new_layouts.append(layout_for_this_move)
-            moves.append(tile_tuple[1])
-    unvalidated_moves.clear()
+            moves.append(move_notation)
+        unvalidated_moves.clear()
 
+
+move_all_single_pieces()
 find_triples()
-
-for double in doubles:
-    move_two_pieces(double, -1, -1)
-    move_two_pieces(double, -1, 0)
-    move_two_pieces(double, 0, -1)
-    move_two_pieces(double, 0, 1)
-    move_two_pieces(double, 1, 0)
-    move_two_pieces(double, 1, 1)
-
-    for pair_tuple in unvalidated_moves:
-        layout_for_this_move = tile_layout.copy()
-        new_pair = pair_tuple[0]
-        sumito = pair_tuple[1]
-        move_notation = pair_tuple[2]
-        tile1 = new_pair[0]
-        tile2 = new_pair[1]
-        # Board limits
-        tile1_bounded = True if 0 <= tile1.row <= 8 and tile1.column in BOARD_LIMITS[tile1.row] else False
-        tile2_bounded = True if 0 <= tile2.row <= 8 and tile2.column in BOARD_LIMITS[tile2.row] else False
-        if not (tile1_bounded and tile2_bounded):
-            continue
-        if not sumito:
-            # Own pieces in the way
-            tile1_open = True if tile1.board_coordinate not in my_coordinates else False
-            tile2_open = True if tile2.board_coordinate not in my_coordinates else False
-            if not (tile1_open and tile2_open):
-                continue
-            # Enemy pieces are in the way
-            tile1_free = True if tile1.board_coordinate not in opponent_coordinates else False
-            tile2_free = True if tile2.board_coordinate not in opponent_coordinates else False
-            if not (tile1_free and tile2_free):
-                continue
-        else:
-            tile_1_is_leader = pair_tuple[3]
-            change_row = pair_tuple[4]
-            change_column = pair_tuple[5]
-            lead_tile = tile1 if tile_1_is_leader else tile2
-            # Own pieces in the way
-            if lead_tile.board_coordinate in my_coordinates:
-                continue
-            if lead_tile.board_coordinate in opponent_coordinates:
-                next_enemy_row = lead_tile.row + change_row
-                next_enemy_column = lead_tile.column + change_column
-                enemy_coor = "{row}{column}".format(row=RowMapper(next_enemy_row).name, column=next_enemy_column + 1)
-                if enemy_coor in opponent_coordinates:
-                    continue
-                enemy_color = 2 if lead_tile.piece == 1 else 1
-                enemy_previous_position = Tile(lead_tile.row, lead_tile.column, lead_tile.board_coordinate, enemy_color)
-                enemy_next_position = Tile(next_enemy_row, next_enemy_column, enemy_coor, enemy_color)
-                layout_for_this_move.remove(enemy_previous_position)
-                if 0 <= enemy_next_position.row <= 8 \
-                        and enemy_next_position.column in BOARD_LIMITS[enemy_next_position.row]:
-                    layout_for_this_move.append(enemy_next_position)
-        layout_for_this_move.remove(double[0])
-        layout_for_this_move.remove(double[1])
-        layout_for_this_move.append(tile1)
-        layout_for_this_move.append(tile2)
-        layout_for_this_move.sort()
-        new_layouts.append(layout_for_this_move)
-        moves.append(move_notation)
-    unvalidated_moves.clear()
-
+move_all_double_pieces()
 
 num = 1
-for layout in new_layouts:
-    # print(num, end=". ")
-    # num += 1
-    for tile in layout:
-        print(tile, end=",")
-    print()
+with open("test.board", mode="w", encoding="utf-8") as board_file:
+    for layout in new_layouts:
+        for tile in layout:
+            board_file.write(tile.__str__())
+            board_file.write(",")
+        board_file.write("\n")
 
-for move in moves:
-    print(move)
+with open("test.move", mode="w", encoding="utf-8") as move_file:
+    for move in moves:
+        move_file.write(f"{move}\n")
 
-for double in doubles:
-    print(f"({double[0]}, {double[1]})")
+# for two_pieces in doubles:
+#     print(f"({two_pieces[0]}, {two_pieces[1]})")
 
 for triple in triples:
     print(f"({triple[0]}, {triple[1]}, {triple[2]})")
