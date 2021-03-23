@@ -23,7 +23,8 @@ class Board:
     """
 
     def __init__(self):
-        self.board = dict()
+        self.board = []
+        self.board_dict = {}
         self.forbidden_spots = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
                                 'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10']
         self.movements = [Movement.Left, Movement.Right, Movement.UpLeft, Movement.UpRight,
@@ -31,9 +32,8 @@ class Board:
         pass
 
     def build_board(self, window):
-        result = FileReader.load_data("GUI/Test1.input")
-        gameState = FileReader.read_data(result)
-        self.generate_board(gameState[1])
+        self.set_default_tiles()
+        self.convert_to_dict()  # Converts board from list to dict rep.
         self.update_board(window)
         pygame.display.update()
 
@@ -1024,31 +1024,6 @@ class Board:
                     rect = window.blit(black_stone_image, (current_x, current_y))
                     self.board_dict[coord].set_rect(rect)
                 current_x += (piece_radius * 2) + piece_distance
-        keys = list(self.board.keys())
-        keys.reverse()
-
-        tile_counter = 0
-        current_y = board_start_y + piece_radius
-        for col in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
-            current_x = ((10 - col) * piece_radius) + piece_radius + board_start_x
-            for row in range(0, col):
-                # rect = window.blit(img, (current_x, current_y))
-                # self.board[tile_counter].set_rect(rect)
-                tiles = self.board[keys[tile_counter]]
-
-                if tiles[row].piece is None:
-                    rect = window.blit(unoccupied, (current_x, current_y))
-                    tiles[row].set_rect(rect)
-                elif tiles[row].piece == white_piece_id:
-                    print(tiles[row])
-                    rect = window.blit(white_stone_image, (current_x, current_y))
-                    tiles[row].set_rect(rect)
-                elif tiles[row].piece == black_piece_id:
-                    rect = window.blit(black_stone_image, (current_x, current_y))
-                    tiles[row].set_rect(rect)
-
-                current_x += (piece_radius * 2) + piece_distance
-            tile_counter += 1
             current_y += (piece_radius * 2) + piece_distance
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
