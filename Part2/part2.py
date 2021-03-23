@@ -85,7 +85,8 @@ def move_two_pieces(tile_double, change_row, change_column):
     new_tile1 = Tile(r1, c1, coor1, current_turn)
     new_tile2 = Tile(r2, c2, coor2, current_turn)
     new_pair = (new_tile1, new_tile2)
-    unvalidated_moves.append((new_pair, sumito, move_notation))
+    tile_1_is_leader = True if change_row + change_column < 0 else False
+    unvalidated_moves.append((new_pair, sumito, move_notation, tile_1_is_leader, change_row, change_column))
 
 
 def find_doubles(tile):
@@ -187,22 +188,41 @@ for double in doubles:
             tile2_free = True if tile2.board_coordinate not in opponent_coordinates else False
             if not (tile1_free and tile2_free):
                 continue
-            layout_for_this_move.remove(double[0])
-            layout_for_this_move.remove(double[1])
-            layout_for_this_move.append(tile1)
-            layout_for_this_move.append(tile2)
-            layout_for_this_move.sort()
-            new_layouts.append(layout_for_this_move)
-            moves.append(move_notation)
         else:
-            pass
+            tile_1_is_leader = pair_tuple[3]
+            change_row = pair_tuple[4]
+            change_column = pair_tuple[5]
+            lead_tile = tile1 if tile_1_is_leader else tile2
+            # Own pieces in the way
+            if lead_tile.board_coordinate in my_coordinates:
+                continue
+            if lead_tile.board_coordinate in opponent_coordinates:
+                next_enemy_row = lead_tile.row + change_row
+                next_enemy_column = lead_tile.column + change_column
+                enemy_coor = "{row}{column}".format(row=RowMapper(next_enemy_row).name, column=next_enemy_column + 1)
+                if enemy_coor in opponent_coordinates:
+                    continue
+                enemy_color = 2 if lead_tile.piece == 1 else 1
+                enemy_previous_position = Tile(lead_tile.row, lead_tile.column, lead_tile.board_coordinate, enemy_color)
+                enemy_next_position = Tile(next_enemy_row, next_enemy_column, enemy_coor, enemy_color)
+                layout_for_this_move.remove(enemy_previous_position)
+                if 0 <= enemy_next_position.row <= 8 \
+                        and enemy_next_position.column in BOARD_LIMITS[enemy_next_position.row]:
+                    layout_for_this_move.append(enemy_next_position)
+        layout_for_this_move.remove(double[0])
+        layout_for_this_move.remove(double[1])
+        layout_for_this_move.append(tile1)
+        layout_for_this_move.append(tile2)
+        layout_for_this_move.sort()
+        new_layouts.append(layout_for_this_move)
+        moves.append(move_notation)
     unvalidated_moves.clear()
 
 
 num = 1
 for layout in new_layouts:
-    print(num, end=". ")
-    num += 1
+    # print(num, end=". ")
+    # num += 1
     for tile in layout:
         print(tile, end=",")
     print()
