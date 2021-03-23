@@ -204,6 +204,8 @@ def move_all_double_pieces():
                                                         column=next_enemy_column + 1)
                     if enemy_coor in opponent_coordinates:
                         continue
+                    if enemy_coor in my_coordinates:
+                        continue
                     enemy_color = 2 if lead_tile.piece == 1 else 1
                     enemy_previous_position = Tile(lead_tile.row, lead_tile.column,
                                                    lead_tile.board_coordinate, enemy_color)
