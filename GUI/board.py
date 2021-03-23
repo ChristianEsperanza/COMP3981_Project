@@ -284,15 +284,74 @@ class Board:
             current_marbles = self.strip_active_marbles(marbles, marble_tuple)
             one_letter, one_num = self.convert_to_nums(marble_tuple[0])
             two_letter, two_num = self.convert_to_nums(marble_tuple[1])
-            # If the marbles are in-line horizontally.
-            if one_letter == two_letter:
-                one_left = self.convert_to_string(one_letter, one_num - 1)
-                one_right = self.convert_to_string(one_letter, one_num + 1)
-                if one_left not in current_marbles and one_left not in forbidden:
-                    two_left = self.convert_to_string(two_letter, two_num - 1)
-                    if two_left not in current_marbles and two_left not in forbidden:
+
+            one_left = self.convert_to_string(one_letter, one_num - 1)
+            one_right = self.convert_to_string(one_letter, one_num + 1)
+            if one_left not in current_marbles and one_left not in forbidden:
+                two_left = self.convert_to_string(two_letter, two_num - 1)
+                if two_left not in current_marbles and two_left not in forbidden:
+                    old_positions = [x for x in marble_tuple]
+                    new_positions = [one_left, two_left]
+                    if turn == 'b':
+                        final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                        final_black_marbles.sort()
+                        final_black_marbles = [x + 'b' for x in final_black_marbles]
+                        white_marbles_out = [x + 'w' for x in white_marbles]
+                        final_output = final_black_marbles + white_marbles_out
+
+                        move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Left]
+                    else:
+                        final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                        final_white_marbles.sort()
+                        final_white_marbles = [x + 'w' for x in final_white_marbles]
+                        black_marbles_out = [x + 'b' for x in black_marbles]
+                        final_output = black_marbles_out + final_white_marbles
+
+                        move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Left]
+                    moves.append(move)
+                    result.append(final_output)
+            if one_right not in current_marbles and one_right not in forbidden:
+                two_right = self.convert_to_string(two_letter, two_num + 1)
+                if two_right not in current_marbles and two_right not in forbidden:
+                    old_positions = [x for x in marble_tuple]
+                    new_positions = [one_right, two_right]
+                    if turn == 'b':
+                        final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                        final_black_marbles.sort()
+                        final_black_marbles = [x + 'b' for x in final_black_marbles]
+                        white_marbles_out = [x + 'w' for x in white_marbles]
+                        final_output = final_black_marbles + white_marbles_out
+
+                        move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Right]
+                    else:
+                        final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                        final_white_marbles.sort()
+                        final_white_marbles = [x + 'w' for x in final_white_marbles]
+                        black_marbles_out = [x + 'b' for x in black_marbles]
+                        final_output = black_marbles_out + final_white_marbles
+
+                        move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Right]
+                    moves.append(move)
+                    result.append(final_output)
+
+
+            one_upL = self.convert_to_string(one_letter + 1, one_num)
+            one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
+            one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
+            one_downR = self.convert_to_string(one_letter - 1, one_num)
+            two_upL = self.convert_to_string(two_letter + 1, two_num)
+            two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
+            two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
+            two_downR = self.convert_to_string(two_letter - 1, two_num)
+            one_spots = [one_upL, one_upR, one_downL, one_downR]
+            two_spots = [two_upL, two_upR, two_downL, two_downR]
+            for spot in one_spots:
+                if spot not in current_marbles and spot not in forbidden:
+                    index = one_spots.index(spot)
+                    second_spot = two_spots[index]
+                    if second_spot not in current_marbles and second_spot not in forbidden:
                         old_positions = [x for x in marble_tuple]
-                        new_positions = [one_left, two_left]
+                        new_positions = [spot, second_spot]
                         if turn == 'b':
                             final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
                             final_black_marbles.sort()
@@ -300,7 +359,8 @@ class Board:
                             white_marbles_out = [x + 'w' for x in white_marbles]
                             final_output = final_black_marbles + white_marbles_out
 
-                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Left]
+                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
+                                    movements[index + 2]]
                         else:
                             final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                             final_white_marbles.sort()
@@ -308,71 +368,10 @@ class Board:
                             black_marbles_out = [x + 'b' for x in black_marbles]
                             final_output = black_marbles_out + final_white_marbles
 
-                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Left]
+                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
+                                    movements[index + 2]]
                         moves.append(move)
                         result.append(final_output)
-                if one_right not in current_marbles and one_right not in forbidden:
-                    two_right = self.convert_to_string(two_letter, two_num + 1)
-                    if two_right not in current_marbles and two_right not in forbidden:
-                        old_positions = [x for x in marble_tuple]
-                        new_positions = [one_right, two_right]
-                        if turn == 'b':
-                            final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
-                            final_black_marbles.sort()
-                            final_black_marbles = [x + 'b' for x in final_black_marbles]
-                            white_marbles_out = [x + 'w' for x in white_marbles]
-                            final_output = final_black_marbles + white_marbles_out
-
-                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Right]
-                        else:
-                            final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
-                            final_white_marbles.sort()
-                            final_white_marbles = [x + 'w' for x in final_white_marbles]
-                            black_marbles_out = [x + 'b' for x in black_marbles]
-                            final_output = black_marbles_out + final_white_marbles
-
-                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Right]
-                        moves.append(move)
-                        result.append(final_output)
-            # if the marbles are in-line diagonally.
-            else:
-                one_upL = self.convert_to_string(one_letter + 1, one_num)
-                one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
-                one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
-                one_downR = self.convert_to_string(one_letter - 1, one_num)
-                two_upL = self.convert_to_string(two_letter + 1, two_num)
-                two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
-                two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
-                two_downR = self.convert_to_string(two_letter - 1, two_num)
-                one_spots = [one_upL, one_upR, one_downL, one_downR]
-                two_spots = [two_upL, two_upR, two_downL, two_downR]
-                for spot in one_spots:
-                    if spot not in current_marbles and spot not in forbidden:
-                        index = one_spots.index(spot)
-                        second_spot = two_spots[index]
-                        if second_spot not in current_marbles and second_spot not in forbidden:
-                            old_positions = [x for x in marble_tuple]
-                            new_positions = [spot, second_spot]
-                            if turn == 'b':
-                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
-                                final_black_marbles.sort()
-                                final_black_marbles = [x + 'b' for x in final_black_marbles]
-                                white_marbles_out = [x + 'w' for x in white_marbles]
-                                final_output = final_black_marbles + white_marbles_out
-
-                                move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                        movements[index + 2]]
-                            else:
-                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
-                                final_white_marbles.sort()
-                                final_white_marbles = [x + 'w' for x in final_white_marbles]
-                                black_marbles_out = [x + 'b' for x in black_marbles]
-                                final_output = black_marbles_out + final_white_marbles
-
-                                move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                        movements[index + 2]]
-                            moves.append(move)
-                            result.append(final_output)
         return result, moves
 
     def double_marble_collisions(self, forbidden: list, black_marbles: list, white_marbles: list, turn: chr,
@@ -558,112 +557,110 @@ class Board:
             one_letter, one_num = self.convert_to_nums(marble_tuple[0])
             two_letter, two_num = self.convert_to_nums(marble_tuple[1])
             three_letter, three_num = self.convert_to_nums(marble_tuple[2])
-            # If the marbles are in-line horizontally.
-            if one_letter == two_letter:
-                one_left = self.convert_to_string(one_letter, one_num - 1)
-                one_right = self.convert_to_string(one_letter, one_num + 1)
-                if one_left not in current_marbles and one_left not in forbidden:
-                    two_left = self.convert_to_string(two_letter, two_num - 1)
-                    if two_left not in current_marbles and two_left not in forbidden:
-                        three_left = self.convert_to_string(three_letter, three_num - 1)
-                        if three_left not in current_marbles and three_left not in forbidden:
+
+            one_left = self.convert_to_string(one_letter, one_num - 1)
+            one_right = self.convert_to_string(one_letter, one_num + 1)
+            if one_left not in current_marbles and one_left not in forbidden:
+                two_left = self.convert_to_string(two_letter, two_num - 1)
+                if two_left not in current_marbles and two_left not in forbidden:
+                    three_left = self.convert_to_string(three_letter, three_num - 1)
+                    if three_left not in current_marbles and three_left not in forbidden:
+                        old_positions = [x for x in marble_tuple]
+                        new_positions = [one_left, two_left, three_left]
+                        if turn == 'b':
+                            final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                            final_black_marbles.sort()
+                            final_black_marbles = [x + 'b' for x in final_black_marbles]
+                            white_marbles_out = [x + 'w' for x in white_marbles]
+                            final_output = final_black_marbles + white_marbles_out
+
+                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
+                                    Movement.Left]
+                        else:
+                            final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                            final_white_marbles.sort()
+                            final_white_marbles = [x + 'w' for x in final_white_marbles]
+                            black_marbles_out = [x + 'b' for x in black_marbles]
+                            final_output = black_marbles_out + final_white_marbles
+
+                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
+                                    Movement.Left]
+                        moves.append(move)
+                        result.append(final_output)
+            if one_right not in current_marbles and one_right not in forbidden:
+                two_right = self.convert_to_string(two_letter, two_num + 1)
+                if two_right not in current_marbles and two_right not in forbidden:
+                    three_right = self.convert_to_string(three_letter, three_num + 1)
+                    if three_right not in current_marbles and three_right not in forbidden:
+                        old_positions = [x for x in marble_tuple]
+                        new_positions = [one_right, two_right, three_right]
+                        if turn == 'b':
+                            final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                            final_black_marbles.sort()
+                            final_black_marbles = [x + 'b' for x in final_black_marbles]
+                            white_marbles_out = [x + 'w' for x in white_marbles]
+                            final_output = final_black_marbles + white_marbles_out
+
+                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
+                                    Movement.Right]
+                        else:
+                            final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                            final_white_marbles.sort()
+                            final_white_marbles = [x + 'w' for x in final_white_marbles]
+                            black_marbles_out = [x + 'b' for x in black_marbles]
+                            final_output = black_marbles_out + final_white_marbles
+
+                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
+                                    Movement.Right]
+                        moves.append(move)
+                        result.append(final_output)
+
+            one_upL = self.convert_to_string(one_letter + 1, one_num)
+            one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
+            one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
+            one_downR = self.convert_to_string(one_letter - 1, one_num)
+            two_upL = self.convert_to_string(two_letter + 1, two_num)
+            two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
+            two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
+            two_downR = self.convert_to_string(two_letter - 1, two_num)
+            three_upL = self.convert_to_string(three_letter + 1, three_num)
+            three_upR = self.convert_to_string(three_letter + 1, three_num + 1)
+            three_downL = self.convert_to_string(three_letter - 1, three_num - 1)
+            three_downR = self.convert_to_string(three_letter - 1, three_num)
+            one_spots = [one_upL, one_upR, one_downL, one_downR]
+            two_spots = [two_upL, two_upR, two_downL, two_downR]
+            three_spots = [three_upL, three_upR, three_downL, three_downR]
+            for spot in one_spots:
+                if spot not in current_marbles and spot not in forbidden:
+                    index = one_spots.index(spot)
+                    second_spot = two_spots[index]
+                    if second_spot not in current_marbles and second_spot not in forbidden:
+                        third_spot = three_spots[index]
+                        if third_spot not in current_marbles and third_spot not in forbidden:
                             old_positions = [x for x in marble_tuple]
-                            new_positions = [one_left, two_left, three_left]
+                            new_positions = [spot, second_spot, third_spot]
                             if turn == 'b':
-                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
+                                final_black_marbles = self.replace_marbles(black_marbles, old_positions,
+                                                                           new_positions)
                                 final_black_marbles.sort()
                                 final_black_marbles = [x + 'b' for x in final_black_marbles]
                                 white_marbles_out = [x + 'w' for x in white_marbles]
                                 final_output = final_black_marbles + white_marbles_out
 
                                 move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                        Movement.Left]
+                                        movements[index + 2]]
                             else:
-                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
+                                final_white_marbles = self.replace_marbles(white_marbles, old_positions,
+                                                                           new_positions)
                                 final_white_marbles.sort()
                                 final_white_marbles = [x + 'w' for x in final_white_marbles]
                                 black_marbles_out = [x + 'b' for x in black_marbles]
                                 final_output = black_marbles_out + final_white_marbles
-
-                                move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                        Movement.Left]
-                            moves.append(move)
-                            result.append(final_output)
-                if one_right not in current_marbles and one_right not in forbidden:
-                    two_right = self.convert_to_string(two_letter, two_num + 1)
-                    if two_right not in current_marbles and two_right not in forbidden:
-                        three_right = self.convert_to_string(three_letter, three_num + 1)
-                        if three_right not in current_marbles and three_right not in forbidden:
-                            old_positions = [x for x in marble_tuple]
-                            new_positions = [one_right, two_right, three_right]
-                            if turn == 'b':
-                                final_black_marbles = self.replace_marbles(black_marbles, old_positions, new_positions)
-                                final_black_marbles.sort()
-                                final_black_marbles = [x + 'b' for x in final_black_marbles]
-                                white_marbles_out = [x + 'w' for x in white_marbles]
-                                final_output = final_black_marbles + white_marbles_out
 
                                 move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                        Movement.Right]
-                            else:
-                                final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
-                                final_white_marbles.sort()
-                                final_white_marbles = [x + 'w' for x in final_white_marbles]
-                                black_marbles_out = [x + 'b' for x in black_marbles]
-                                final_output = black_marbles_out + final_white_marbles
-
-                                move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                        Movement.Right]
+                                        movements[index + 2]]
                             moves.append(move)
                             result.append(final_output)
-            # if the marbles are in-line diagonally.
-            else:
-                one_upL = self.convert_to_string(one_letter + 1, one_num)
-                one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
-                one_downL = self.convert_to_string(one_letter - 1, one_num - 1)
-                one_downR = self.convert_to_string(one_letter - 1, one_num)
-                two_upL = self.convert_to_string(two_letter + 1, two_num)
-                two_upR = self.convert_to_string(two_letter + 1, two_num + 1)
-                two_downL = self.convert_to_string(two_letter - 1, two_num - 1)
-                two_downR = self.convert_to_string(two_letter - 1, two_num)
-                three_upL = self.convert_to_string(three_letter + 1, three_num)
-                three_upR = self.convert_to_string(three_letter + 1, three_num + 1)
-                three_downL = self.convert_to_string(three_letter - 1, three_num - 1)
-                three_downR = self.convert_to_string(three_letter - 1, three_num)
-                one_spots = [one_upL, one_upR, one_downL, one_downR]
-                two_spots = [two_upL, two_upR, two_downL, two_downR]
-                three_spots = [three_upL, three_upR, three_downL, three_downR]
-                for spot in one_spots:
-                    if spot not in current_marbles and spot not in forbidden:
-                        index = one_spots.index(spot)
-                        second_spot = two_spots[index]
-                        if second_spot not in current_marbles and second_spot not in forbidden:
-                            third_spot = three_spots[index]
-                            if third_spot not in current_marbles and third_spot not in forbidden:
-                                old_positions = [x for x in marble_tuple]
-                                new_positions = [spot, second_spot, third_spot]
-                                if turn == 'b':
-                                    final_black_marbles = self.replace_marbles(black_marbles, old_positions,
-                                                                               new_positions)
-                                    final_black_marbles.sort()
-                                    final_black_marbles = [x + 'b' for x in final_black_marbles]
-                                    white_marbles_out = [x + 'w' for x in white_marbles]
-                                    final_output = final_black_marbles + white_marbles_out
-
-                                    move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                            movements[index + 2]]
-                                else:
-                                    final_white_marbles = self.replace_marbles(white_marbles, old_positions,
-                                                                               new_positions)
-                                    final_white_marbles.sort()
-                                    final_white_marbles = [x + 'w' for x in final_white_marbles]
-                                    black_marbles_out = [x + 'b' for x in black_marbles]
-                                    final_output = black_marbles_out + final_white_marbles
-
-                                    move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                            movements[index + 2]]
-                                moves.append(move)
-                                result.append(final_output)
         return result, moves
 
     def triple_marble_collisions(self, forbidden: list, black_marbles: list, white_marbles: list, turn: chr,
