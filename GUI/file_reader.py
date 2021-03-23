@@ -30,7 +30,16 @@ class FileReader:
     @staticmethod
     def write_data(path, data):
         """
-        Writes the data passed in to the specified file path from a source array.
+        Writes the data passed in to the specified file path from a source array. Used for board states.
+        """
+        file_path = Path(path)
+        with open(path, mode="w", encoding="utf-8") as file:
+            [file.write(str(line).replace('[', '').replace(']', '').replace('\'', '') + '\n') for line in data]
+
+    @staticmethod
+    def write_moves(path, data):
+        """
+        Writes the data passed in to the specified file path from a source array. Used for moves.
         """
         file_path = Path(path)
         with open(path, mode="w", encoding="utf-8") as file:
