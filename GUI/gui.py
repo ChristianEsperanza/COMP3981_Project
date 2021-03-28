@@ -2,12 +2,13 @@ import thorpy
 import pygame
 import random
 
+from GUI import gui_controls
 from GUI.board import Board
 from Utility.constants import *
 from Utility.enum import Vector
 from Utility.enum import Turn
 from operator import itemgetter
-
+from GUI.gui_controls import *
 
 class GUI:
     """
@@ -116,15 +117,19 @@ class GUI:
 
         ##########  CONTROLS BOX  ##########
         # TODO: These should call their actual functions
-        start_button = thorpy.make_button("Start", func=self.test_func)
+        start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
         start_button.set_size((button_length, button_height))
-        stop_button = thorpy.make_button("Stop", func=self.test_func2)
+
+        stop_button = thorpy.make_button("Stop", func=lambda: gui_controls.stop_game_button(self))
         stop_button.set_size((button_length, button_height))
-        pause_button = thorpy.make_button("Pause", func=self.test_func3)
+
+        pause_button = thorpy.make_button("Pause", func=lambda: gui_controls.pause_game_button(self))
         pause_button.set_size((button_length, button_height))
-        reset_button = thorpy.make_button("Reset", func=self.test_func)
+
+        reset_button = thorpy.make_button("Reset", func=lambda: gui_controls.reset_game_button(self))
         reset_button.set_size((button_length, button_height))
-        undo_button = thorpy.make_button("Undo", func=self.test_func)
+
+        undo_button = thorpy.make_button("Undo", func=lambda: gui_controls.undo_move_button(self))
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
