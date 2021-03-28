@@ -33,13 +33,13 @@ class GUI:
         # Build window, board, console
         self.build_window()
         self.board.build_board(self.window)
-        self.build_console(self.window)
+        self.build_console()
         event = None
 
         print(f"{self.player_turn.name} to move!")
 
         # TODO: Rename this function
-        self.add_placeholders()
+        self.draw_score_and_time()
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
@@ -51,6 +51,7 @@ class GUI:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
+                    print(pos)
                     # for tile in self.board.board:
                     for key, tile in self.board.board_dict.items():
                         if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
@@ -58,7 +59,6 @@ class GUI:
                             self.clicked_tile(tile)
                 else:
                     self.handle_event(event, self.window)
-
             # self.dumb_stuff()
             self.console.react(event)
             pygame.display.update()
@@ -91,10 +91,16 @@ class GUI:
 
         self.window = window
 
-    def build_console(self, window):
+    def build_console(self):
         """
         Builds the buttons and widgets to be displayed to the right of the board
-        :param window:
+        The process of adding elements is as follows:
+            1. Create desired elements (button, text, etc.)
+            2. Make a new thorPy Box and add the new elements to the box
+            3. Set the size and position of the box
+            4. Call blit() then update() at the bottom of this function so other
+                elements are not overwritten
+            5. Add the box to self.console at the bottom of this function.
         :return:
         """
         ####################################################################
@@ -104,19 +110,29 @@ class GUI:
 
         ########## STARTING POSITIONS DROPDOWN ##########
         # TODO: Requires fixing, crashes on selection
+
+        starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
+        starting_position_title.set_size((button_length, button_height))
+
+
         starting_positions = [
             "Standard",
             "German Daisy",
             "Belgian Daisy"
         ]
+        # starting_positions = [
+        #     ("Standard", self.board.set_default_tiles()),
+        #     ("German Daisy", self.board.set_german_daisy_tiles()),
+        #     ("Belgian Daisy", self.board.set_belgian_daisy_tiles())
+        # ]
         starting_position_dropdown = thorpy.DropDownListLauncher(const_text="Choose starting layout:",
                                                    var_text="",
                                                    titles=starting_positions)
+        # starting_position_dropdown = thorpy.DropDownList(titles=starting_positions)
         starting_position_dropdown.scale_to_title()
-        starting_position_dropdown.set_size((button_length, button_height))
+        starting_position_dropdown.set_size((button_length, button_height * 2))
 
         ##########  CONTROLS BOX  ##########
-        # TODO: These should call their actual functions
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
         start_button.set_size((button_length, button_height))
 
@@ -133,15 +149,12 @@ class GUI:
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            starting_position_dropdown, start_button, stop_button, pause_button, reset_button, undo_button
+            starting_position_dropdown, starting_position_title,
+            start_button, stop_button, pause_button, reset_button, undo_button
         ])
-
-        controls_box.set_topleft((console_start_x, console_start_y))
         controls_box.set_size((225, 450))
-        controls_box.blit()
-        controls_box.update()
 
-        ### SETTINGS ###
+        ### PLAYER SETTINGS ###
         black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
         black_settings_title.set_size((button_length, button_height))
 
@@ -151,8 +164,21 @@ class GUI:
         black_time_limit = thorpy.make_button("Time Limit", func=self.test_func)
         black_time_limit.set_size((button_length, button_height))
 
-        black_human_computer_choice = thorpy.make_button("Human or AI", func=self.test_func)
-        black_human_computer_choice.set_size((button_length, button_height))
+        # Black human or AI radio group
+        black_human_radio = thorpy.Checker.make("Human", type_="radio")
+        black_ai_radio = thorpy.Checker.make("AI", type_="radio")
+        black_radio_choices = [black_human_radio, black_ai_radio]
+        black_radio_group = thorpy.RadioPool(black_radio_choices,
+                                             first_value=black_radio_choices[0],
+                                             always_value=True)
+
+        # White human or AI radio group
+        white_human_radio = thorpy.Checker.make("Human", type_="radio")
+        white_ai_radio = thorpy.Checker.make("AI", type_="radio")
+        white_radio_choices = [white_human_radio, white_ai_radio]
+        white_radio_group = thorpy.RadioPool(white_radio_choices,
+                                             first_value=white_radio_choices[0],
+                                             always_value=True)
 
         white_settings_title = thorpy.make_text("White", 22, (0,0,0))
         white_settings_title.set_size((button_length, button_height))
@@ -167,13 +193,10 @@ class GUI:
         white_human_computer_choice.set_size((button_length, button_height))
 
         settings_box = thorpy.Box.make(elements=[
-            black_settings_title, black_move_limit, black_time_limit, black_human_computer_choice,
-            white_settings_title, white_move_limit, white_time_limit, white_human_computer_choice
+            black_settings_title, black_human_radio, black_ai_radio, black_move_limit, black_time_limit,
+            white_settings_title, white_human_radio, white_ai_radio, white_move_limit, white_time_limit,
         ])
-        settings_box.set_topleft((console_start_x + 225, 0))
         settings_box.set_size((225, 450))
-        settings_box.blit()
-        settings_box.update()
 
         ######## MOVEMENT CONTROLS ########
         # Row 1
@@ -215,21 +238,23 @@ class GUI:
         down_box.fit_children()
 
         move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
-        move_box.set_topleft((console_start_x, 450))
         move_box.set_size((225, 450))
+
+
+        # Set the position of each box, then place
+        controls_box.set_topleft((console_start_x, console_start_y))
+        controls_box.blit()
+        controls_box.update()
+
+        settings_box.set_topleft((console_start_x + 225, 0))
+        settings_box.blit()
+        settings_box.update()
+
+        move_box.set_topleft((console_start_x, 450))
         move_box.blit()
         move_box.update()
 
-
-        ########## CONSOLE BOX - Holds all groups ##########
-        # Add to this
-        elements = [controls_box]
-        console_box = thorpy.Box.make(elements=elements)
-        console_box.set_topleft((console_start_x, console_start_y))
-        console_box.blit()
-        console_box.update()
-
-        self.console = thorpy.Menu([console_box, move_box])
+        self.console = thorpy.Menu([controls_box, settings_box, move_box])
         for element in self.console.get_population():
             element.surface = self.window
 
@@ -356,31 +381,32 @@ class GUI:
             self.player_turn = Turn.WHITE
         print(f"{self.player_turn.name} to move!")
 
-    def add_placeholders(self):
+    def draw_score_and_time(self):
         """
         Builds the boxes for black and white score, time taken,
         and moves taken
         """
+        #TODO: Draw a box behind these
         black_score_title = thorpy.make_text("Black", 22, (0,0,0))
-        # black_score_title.set_size((button_length, button_height))
+        black_score_title.set_topleft((50, 640))
+        black_score_title.blit()
 
-        black_time_title = thorpy.make_text("Time Taken: 0.0", 16, (0,0,0))
-        black_moves_taken = thorpy.make_text("Moves Taken: 0", 16, (0,0,0))
+        font_text_time_label = pygame.font.SysFont('Ariel', 30)
+        black_total_time_taken = font_text_time_label.render("Total Time:", True, black)
+        self.window.blit(black_total_time_taken, (25, 675))
 
-        black_score_box  = thorpy.Box.make(elements=[
-            black_score_title, black_time_title, black_moves_taken
-        ])
-        black_score_box.set_topleft((39, 663))
-        black_score_box.blit()
-        black_score_box.update()
+        black_turn_time_taken = font_text_time_label.render("Turn Time:", True, black)
+        self.window.blit(black_turn_time_taken, (25, 705))
 
-        white_score_title = thorpy.make_text("White", 22, (0,0,0))
-        white_time_title = thorpy.make_text("Time Taken: 0.0", 16, (0,0,0))
-        white_moves_taken = thorpy.make_text("Moves Taken: 0", 16, (0,0,0))
+        white_score_title = thorpy.make_text("White:", 22, (0,0,0))
+        white_score_title.set_topleft((570, 640))
+        white_score_title.blit()
 
-        white_score_box  = thorpy.Box.make(elements=[
-            white_score_title, white_time_title, white_moves_taken
-        ])
-        white_score_box.set_topleft((568, 663))
-        white_score_box.blit()
-        white_score_box.update()
+        white_total_time_taken = font_text_time_label.render("Total Time:", True, black)
+        self.window.blit(white_total_time_taken, (545, 675))
+
+        white_turn_time_taken = font_text_time_label.render("Turn Time:", True, black)
+        self.window.blit(white_turn_time_taken, (545, 705))
+
+    def update_score_and_time(self):
+        pass

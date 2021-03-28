@@ -6,6 +6,7 @@ Constants to be used throughout the program.
 red = [255, 0, 0]
 green = [0, 255, 0]
 blue = [0, 0, 255]
+black = [0, 0, 0]
 
 # Dimensions
 window_width = 1300
@@ -35,3 +36,4 @@ num_rows = 9
 max_row = 9
 white_piece_id = 1
 black_piece_id = 2
+score_box_size = 150
