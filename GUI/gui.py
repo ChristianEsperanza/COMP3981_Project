@@ -103,14 +103,7 @@ class GUI:
             5. Add the box to self.console at the bottom of this function.
         :return:
         """
-        ####################################################################
-        ###### Note: Most of this is broken or placeholder right now #######
-        ####################################################################
-
-
-        ########## STARTING POSITIONS DROPDOWN ##########
         # TODO: Requires fixing, crashes on selection
-
         starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
         starting_position_title.set_size((button_length, button_height))
 
@@ -130,7 +123,7 @@ class GUI:
                                                    titles=starting_positions)
         # starting_position_dropdown = thorpy.DropDownList(titles=starting_positions)
         starting_position_dropdown.scale_to_title()
-        starting_position_dropdown.set_size((button_length, button_height * 2))
+        starting_position_dropdown.set_size((button_length, button_height))
 
         ##########  CONTROLS BOX  ##########
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
@@ -149,7 +142,7 @@ class GUI:
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            starting_position_dropdown, starting_position_title,
+            starting_position_title, starting_position_dropdown,
             start_button, stop_button, pause_button, reset_button, undo_button
         ])
         controls_box.set_size((225, 450))
