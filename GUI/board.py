@@ -1027,6 +1027,7 @@ class Board:
                     self.board_dict[coord].set_rect(rect)
                 current_x += (piece_radius * 2) + piece_distance
             current_y += (piece_radius * 2) + piece_distance
+        pygame.display.update()
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
         """

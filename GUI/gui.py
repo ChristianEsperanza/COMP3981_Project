@@ -36,34 +36,31 @@ class GUI:
         self.build_window()
         self.board.build_board(self.window)
         self.build_console()
+        self.draw_score_and_time()
+        self.set_scoreboard()
         event = None
 
         print(f"{self.player_turn.name} to move!")
-
-        # TODO: Rename this function
-        self.draw_score_and_time()
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
         while True:
             clock.tick(60)
             for event in pygame.event.get():
+                # GUI buttons react to event
+                self.console.react(event)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
-
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     print(pos)
-                    # for tile in self.board.board:
                     for key, tile in self.board.board_dict.items():
                         if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
                             print(f"Tile Coords: ({tile.row}, {tile.column})")
                             self.clicked_tile(tile)
-                else:
-                    self.handle_event(event, self.window)
-            # self.dumb_stuff()
-            self.console.react(event)
             pygame.display.update()
+
 
     def dumb_stuff(self):
         """
@@ -90,7 +87,6 @@ class GUI:
         # pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
         # pygame.mixer.music.set_volume(0.01)
         # pygame.mixer.music.play()
-
         self.window = window
 
     def build_console(self):
@@ -121,9 +117,8 @@ class GUI:
         #     ("Belgian Daisy", self.board.set_belgian_daisy_tiles())
         # ]
         starting_position_dropdown = thorpy.DropDownListLauncher(const_text="Choose starting layout:",
-                                                   var_text="",
-                                                   titles=starting_positions)
-        # starting_position_dropdown = thorpy.DropDownList(titles=starting_positions)
+                                                                 var_text="",
+                                                                 titles=starting_positions)
         starting_position_dropdown.scale_to_title()
         starting_position_dropdown.set_size((button_length, button_height))
 
@@ -153,11 +148,11 @@ class GUI:
         black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
         black_settings_title.set_size((button_length, button_height))
 
-        black_move_limit = thorpy.make_button("Move Limit", func=self.test_func)
-        black_move_limit.set_size((button_length, button_height))
+        black_move_limit = thorpy.Inserter("Move Limit:", value="")
+        black_move_limit.set_size((button_length/2, button_height/2))
 
-        black_time_limit = thorpy.make_button("Time Limit", func=self.test_func)
-        black_time_limit.set_size((button_length, button_height))
+        black_time_limit = thorpy.Inserter(name="Time Limit", value="")
+        black_time_limit.set_size((button_length/2, button_height/2))
 
         # Black human or AI radio group
         black_human_radio = thorpy.Checker.make("Human", type_="radio")
@@ -175,17 +170,17 @@ class GUI:
                                              first_value=white_radio_choices[0],
                                              always_value=True)
 
-        white_settings_title = thorpy.make_text("White", 22, (0,0,0))
+        white_settings_title = thorpy.make_text("White", 22, (0, 0, 0))
         white_settings_title.set_size((button_length, button_height))
 
-        white_move_limit = thorpy.make_button("Move Limit", func=self.test_func)
-        white_move_limit.set_size((button_length, button_height))
+        white_move_limit = thorpy.Inserter(name="Move Limit", value="")
+        white_move_limit.set_size((button_length/2, button_height/2))
 
-        white_time_limit = thorpy.make_button("Time Limit", func=self.test_func)
-        white_time_limit.set_size((button_length, button_height))
+        white_time_limit = thorpy.Inserter("Time Limit", value="")
+        white_time_limit.set_size((button_length/2, button_height/2))
 
-        white_human_computer_choice = thorpy.make_button("Human or AI", func=self.test_func)
-        white_human_computer_choice.set_size((button_length, button_height))
+        # Put this in a list for sanitization later
+        self.settings_inputs = [black_move_limit, black_time_limit, white_move_limit, white_time_limit]
 
         settings_box = thorpy.Box.make(elements=[
             black_settings_title, black_human_radio, black_ai_radio, black_move_limit, black_time_limit,
@@ -268,24 +263,6 @@ class GUI:
             self.selected_pieces.remove(tile)
             print(f"Removed {tile.board_coordinate}")
         print([tile.board_coordinate for tile in self.selected_pieces])
-
-    def test_func(self):
-        # TODO: Delete this
-        print("In test func")
-        self.board.set_default_tiles()
-        self.board.update_board(self.window)
-
-    def test_func2(self):
-        # TODO: Delete this
-        print("Func 2")
-        self.board.set_german_daisy_tiles()
-        self.board.update_board(self.window)
-
-    def test_func3(self):
-        # TODO: Delete this
-        print("func 3")
-        self.board.set_belgian_daisy_tiles()
-        self.board.update_board(self.window)
 
     def test_func_move(self, **kwargs):
         # # print(f"{self.player_turn.name} to move!")
@@ -384,6 +361,8 @@ class GUI:
 
                 if self.toggle_players:
                     self.toggle_player_move()  # Other players turn.
+                    # self.toggle_player_move()   # Other players turn.
+                    self.end_turn()
 
                 return True
             else:
@@ -546,6 +525,9 @@ class GUI:
                 return False
         return True
 
+    def end_turn(self):
+        self.toggle_player_move()
+        
     def is_linear_movement(self, vector: tuple, selected_pieces_sorted: list):
         print("Linear move test")
         if len(selected_pieces_sorted) == 1:
@@ -626,10 +608,11 @@ class GUI:
         Builds the boxes for black and white score, time taken,
         and moves taken
         """
-        #TODO: Draw a box behind these
-        black_score_title = thorpy.make_text("Black", 22, (0,0,0))
+        ##### BLACK #####
+        black_score_title = thorpy.make_text("Black", 24, (0,0,0))
         black_score_title.set_topleft((50, 640))
         black_score_title.blit()
+        black_score_title.update()
 
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
         black_total_time_taken = font_text_time_label.render("Total Time:", True, black)
@@ -638,15 +621,81 @@ class GUI:
         black_turn_time_taken = font_text_time_label.render("Turn Time:", True, black)
         self.window.blit(black_turn_time_taken, (25, 705))
 
-        white_score_title = thorpy.make_text("White:", 22, (0,0,0))
-        white_score_title.set_topleft((570, 640))
+        black_score = font_text_time_label.render("Score:", True, black)
+        self.window.blit(black_score, (25, 735))
+
+        black_moves_taken = font_text_time_label.render("Moves Taken:", True, black)
+        self.window.blit(black_moves_taken, (25, 765))
+
+
+        ##### WHITE #####
+        white_score_title = thorpy.make_text("White:", 24, (0,0,0))
+        white_score_title.set_topleft((550, 640))
         white_score_title.blit()
 
         white_total_time_taken = font_text_time_label.render("Total Time:", True, black)
-        self.window.blit(white_total_time_taken, (545, 675))
+        self.window.blit(white_total_time_taken, (525, 675))
 
         white_turn_time_taken = font_text_time_label.render("Turn Time:", True, black)
-        self.window.blit(white_turn_time_taken, (545, 705))
+        self.window.blit(white_turn_time_taken, (525, 705))
 
-    def update_score_and_time(self):
-        pass
+        white_score = font_text_time_label.render("Score:", True, black)
+        self.window.blit(white_score, (525, 735))
+
+        white_moves_taken = font_text_time_label.render("Moves Taken:", True, black)
+        self.window.blit(white_moves_taken, (525, 765))
+        pygame.display.update()
+
+    def set_scoreboard(self):
+        # For setting or resetting the score, time, etc.
+        self.draw_score_and_time()
+        self.update_total_time(Turn.BLACK, "0")
+        self.update_total_time(Turn.WHITE, "0")
+        self.update_turn_time(Turn.BLACK, "0")
+        self.update_turn_time(Turn.WHITE, "0")
+        self.update_score(Turn.BLACK, "0")
+        self.update_score(Turn.WHITE, "0")
+        self.update_moves_taken(Turn.BLACK, "0")
+        self.update_moves_taken(Turn.WHITE, "0")
+
+
+    def update_total_time(self, piece_enum, time):
+        font_text_time_label = pygame.font.SysFont('Ariel', 30)
+
+        if piece_enum == Turn.WHITE:
+            time_taken = font_text_time_label.render(time, True, black)
+            self.window.blit(time_taken, white_total_time_location)
+        elif piece_enum == Turn.BLACK:
+            time_taken = font_text_time_label.render(time, True, black)
+            self.window.blit(time_taken, black_total_time_location)
+
+    def update_turn_time(self, piece_enum, time):
+        font_text_time_label = pygame.font.SysFont('Ariel', 30)
+
+        if piece_enum == Turn.WHITE:
+            time_taken = font_text_time_label.render(time, True, black)
+            self.window.blit(time_taken, white_turn_time_taken_location)
+        elif piece_enum == Turn.BLACK:
+            time_taken = font_text_time_label.render(time, True, black)
+            self.window.blit(time_taken, black_turn_time_location)
+
+    def update_score(self, piece_enum, score):
+        font_text_time_label = pygame.font.SysFont('Ariel', 30)
+
+        if piece_enum == Turn.WHITE:
+            time_taken = font_text_time_label.render(score, True, black)
+            self.window.blit(time_taken, white_score_location)
+        elif piece_enum == Turn.BLACK:
+            time_taken = font_text_time_label.render(score, True, black)
+            self.window.blit(time_taken, black_score_location)
+
+    def update_moves_taken(self, piece_enum, moves_taken):
+        font_text_time_label = pygame.font.SysFont('Ariel', 30)
+
+        if piece_enum == Turn.WHITE:
+            time_taken = font_text_time_label.render(moves_taken, True, black)
+            self.window.blit(time_taken, white_moves_taken_location)
+        elif piece_enum == Turn.BLACK:
+            time_taken = font_text_time_label.render(moves_taken, True, black)
+            self.window.blit(time_taken, black_moves_taken_location)
+
