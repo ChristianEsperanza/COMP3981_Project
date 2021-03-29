@@ -146,6 +146,7 @@ def update_turn(context:GUI):
     # TODO: Call this in functions where the score changes (IE sumitos)
     context.board.update_scores()
 
+
     # TODO: append move history
 
     # Go through each turn state (ie black/white and human/ai)  and check what the player config
@@ -165,8 +166,10 @@ def update_turn(context:GUI):
 
     # Temporary, to be deleted later. This just changes the turn for now
     if game_state['game']['turn'] == 'black':
+        update_moves_taken(Turn.BLACK)
         game_state['game']['turn'] = 'white'
     else:
+        update_moves_taken(Turn.WHITE)
         game_state['game']['turn'] = 'black'
 
     gui_updater.update_gui(context)
