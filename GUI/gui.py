@@ -19,11 +19,13 @@ class GUI:
         """
         Initialize GUI with empty window and console, which are to be built after the GUI is initialized
         """
+        self.alternate_turns = True
+        self.toggle_players = True
         self.board = Board()
         self.window = None
         self.console = None
         self.selected_pieces = []
-        self.player_turn = Turn.BLACK
+        self.player_turn = Turn.WHITE
 
     def run(self):
         """
@@ -263,6 +265,53 @@ class GUI:
         self.board.update_board(self.window)
 
     def test_func_move(self, **kwargs):
+        # # print(f"{self.player_turn.name} to move!")
+        # print("Move: " + str(kwargs['vector']))
+        # vector_rep = kwargs['vector']
+        #
+        # try:
+        #
+        #     vector = None
+        #     selected_pieces_sorted = None
+        #
+        #     # Moving of pieces. Sorting used for correct movement of pieces.
+        #     if vector_rep == Vector.UP_LEFT:
+        #         vector = (1, 0)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
+        #     elif vector_rep == Vector.UP_RIGHT:
+        #         vector = (1, 1)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
+        #     elif vector_rep == Vector.LEFT:
+        #         vector = (0, -1)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
+        #     elif vector_rep == Vector.RIGHT:
+        #         vector = (0, 1)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'), reverse=True)
+        #     elif vector_rep == Vector.DOWN_LEFT:
+        #         vector = (-1, -1)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
+        #     elif vector_rep == Vector.DOWN_RIGHT:
+        #         vector = (-1, 0)
+        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
+        #
+        #     if self.is_valid_selection() and self.is_valid_move(vector_rep):
+        #
+        #         # Swaps all tiles according to movement vector
+        #         for tile in selected_pieces_sorted:
+        #             print(f"Moving vector {vector}")
+        #             self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
+        #         self.board.update_board(self.window)
+        #
+        #         self.toggle_player_move()   # Other players turn.
+        #
+        #     else:
+        #         print("Invalid Move. Clearing selected pieces")
+        #
+        # except KeyError:
+        #     print("Middle Button pressed")
+        #
+        # finally:
+        #     self.selected_pieces.clear()
         # print(f"{self.player_turn.name} to move!")
         print("Move: " + str(kwargs['vector']))
         vector_rep = kwargs['vector']
@@ -292,7 +341,17 @@ class GUI:
                 vector = (-1, 0)
                 selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
 
-            if self.is_valid_selection() and self.is_valid_move(vector_rep):
+            if len(selected_pieces_sorted) == 0:
+                print("No pieces to move")
+                return
+
+            if self.is_valid_selection() and self.is_valid_move(vector, selected_pieces_sorted):
+
+                target_coord = self.find_target_coord(vector, selected_pieces_sorted)
+
+                # # Evaluate push on opponent piece.
+                # if self.board.board_dict[target_coord].piece != (self.player_turn.value or None):
+                #     print(f"Evaluated Push Strength: {self.find_opposing_push_strength(target_coord, vector)}")
 
                 # Swaps all tiles according to movement vector
                 for tile in selected_pieces_sorted:
@@ -300,28 +359,65 @@ class GUI:
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
                 self.board.update_board(self.window)
 
-                self.toggle_player_move()   # Other players turn.
+                if self.toggle_players:
+                    self.toggle_player_move()  # Other players turn.
 
+                return True
             else:
                 print("Invalid Move. Clearing selected pieces")
+                return False
 
-        except KeyError:
-            print("Middle Button pressed")
+        # except KeyError:
+        #     print("Middle Button pressed")
 
         finally:
             self.selected_pieces.clear()
 
     def is_valid_selection(self):
-        print("POG")
+        # print("POG")
+        # if len(self.selected_pieces) > 3:
+        #     return False
+        # prev_tile = None
+        # selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
+        # for tile in selected_pieces_sorted:
+        #     print(tile)
+        #     if tile.piece != self.player_turn.value:
+        #         print("Wrong color")
+        #         return False
+        #     if prev_tile is not None:
+        #         if prev_tile.row != tile.row or prev_tile.column != tile.column - 1:
+        #             print(f"{prev_tile.column}, {tile.column}")
+        #             print("Inconsistent row selection")
+        #             return False
+        #         else:
+        #             prev_tile = tile
+        #     else:
+        #         prev_tile = tile
+        # return True
+        print("Evaluating for valid selection")
         if len(self.selected_pieces) > 3:
             return False
-        prev_tile = None
-        selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
-        for tile in selected_pieces_sorted:
+        # prev_tile = None
+        selected_pieces_sorted_col = sorted(self.selected_pieces, key=itemgetter('column'))
+        for tile in selected_pieces_sorted_col:
             print(tile)
-            if tile.piece != self.player_turn.value:
+            # Determine consistent piece selection
+            if self.alternate_turns and tile.piece != self.player_turn.value:
                 print("Wrong color")
                 return False
+
+        if not self.is_continuous_row_selection() and not self.is_continuous_diagonal_selection():
+            print("Non continuous selection")
+            return False
+        print("Invalid Selection")
+        return True
+
+    def is_continuous_row_selection(self):
+        prev_tile = None
+        selected_pieces_sorted_col = sorted(self.selected_pieces, key=itemgetter('column'))
+
+        # Determine continuous row selection
+        for tile in selected_pieces_sorted_col:
             if prev_tile is not None:
                 if prev_tile.row != tile.row or prev_tile.column != tile.column - 1:
                     print(f"{prev_tile.column}, {tile.column}")
@@ -333,16 +429,167 @@ class GUI:
                 prev_tile = tile
         return True
 
-    def is_valid_move(self, vector_rep):
-        board_seq = ('I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
-                     'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
-                     'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
-                     'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5')
-        for tile in self.selected_pieces:
-            if tile.board_coordinate not in board_seq:
-                print("Can't move out of bounds.")
+    def is_continuous_diagonal_selection(self):
+        # print("Starting Diagonal selection consistency Test.")
+        prev_tile = None
+        selected_pieces_sorted_row = sorted(self.selected_pieces, key=itemgetter('row'))
+        horizontal_vector = None  # Keeps track on either up-right or up-left consistency
+
+        # Determine Continuous diagonal selection
+        for tile in selected_pieces_sorted_row:
+
+            # Determine continuous row selection
+            if prev_tile is not None:
+                if horizontal_vector is None:
+                    # Assign horizontal vector based on first and second evaluation.
+                    if prev_tile.column + 1 == tile.column:
+                        horizontal_vector = 1
+                        # print("Looking for up-right diagonal")
+                    else:
+                        horizontal_vector = 0
+                        # print("Looking for up-left diagonal")
+                if prev_tile.row + 1 == tile.row:  # Row consistency (increasing)
+                    # print(f"Evaluating tile: {prev_tile.column}, {tile.column}")
+                    if horizontal_vector is not None:
+                        if prev_tile.column + horizontal_vector != tile.column:
+                            # print(f"Inconsistent column selection: c1:{prev_tile.column} c2:{tile.column}")
+                            return False
+                    else:
+                        print("Horizontal_vector wasn't assigned. Something went wrong")
+                else:
+                    # print("Inconsistent row selection")
+                    return False
+                prev_tile = tile
+            else:
+                # After first evaluation, assign some variables
+                prev_tile = tile
+        return True
+
+    def is_valid_move(self, vector: tuple, selected_pieces_sorted: list):
+        # board_seq = ('I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
+        #              'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
+        #              'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
+        #              'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5')
+        # for tile in self.selected_pieces:
+        #     if tile.board_coordinate not in board_seq:
+        #         print("Can't move out of bounds.")
+        #         return False
+        # return True
+        print("Evaluating if move is valid")
+        try:
+            target_coord = self.find_target_coord(vector, selected_pieces_sorted)
+            print("Target Coord:", end="")
+            print(target_coord)
+        except KeyError:
+            print("Can't move out of bounds.")
+            return False
+
+        # Friendly collisions
+        print("------Starting Friendly Piece Collision-----")
+        if self.determine_piece_collision(vector, selected_pieces_sorted, self.player_turn):
+            print("Cannot push your own piece.")
+            return False
+
+        if self.player_turn == Turn.BLACK:
+            opponent_piece = Turn.WHITE
+        else:
+            opponent_piece = Turn.BLACK
+
+        # Opponent piece collisions
+        # do_stuff = True
+        print("------Starting Opponent Piece Collision-----")
+        if self.determine_piece_collision(vector, selected_pieces_sorted, opponent_piece):
+            print("Collision with opponent piece. Do stuff")
+            print("\nDetermining Push")
+            if self.is_linear_movement(vector, selected_pieces_sorted):
+                print(f"Target Coord: {target_coord}")
+                opponent_push_strength = self.find_opposing_push_strength(target_coord, vector)
+                print(f"Opp push strength: "
+                      f"{opponent_push_strength}")
+                if (len(self.selected_pieces) > opponent_push_strength) and (opponent_push_strength != 0):
+                    print("SUMITO!!!!!")
+                    self.sumito(vector, target_coord)
+                    return True
+                else:
+                    print("Failed Push!")
+                    return False
+            else:
+                print("Collision with non-linear movement. Invalid Move")
+                print("Result Vector:")
+                print(vector)
+                print("Coord")
+                for tile in selected_pieces_sorted:
+                    print(tile.board_coordinate)
                 return False
         return True
+
+    def is_linear_movement(self, vector: tuple, selected_pieces_sorted: list):
+        print("Linear move test")
+        if len(selected_pieces_sorted) == 1:
+            return True
+        if self.change_coordinate_by_vector(vector, selected_pieces_sorted[1]) == selected_pieces_sorted[0].board_coordinate:
+            return True
+        else:
+            return False
+
+    def sumito(self, vector, target_coord):
+        current_tile = self.board.board_dict[target_coord]
+        temp_prev = None
+        # temp_curr = None
+        try:
+            while current_tile.piece is not None:
+                temp_curr = current_tile.piece
+                print(current_tile)
+                self.board.board_dict[current_tile.board_coordinate].piece = temp_prev
+                temp_prev = temp_curr
+                current_tile = self.board.board_dict[self.change_coordinate_by_vector(vector, current_tile)]
+
+            current_tile.piece = temp_prev
+            return
+        except KeyError:
+            return
+
+    def determine_piece_collision(self, vector: tuple, selected_pieces_sorted: list, collision_piece_id):
+        for tile in selected_pieces_sorted:
+            evaluated_next_coord = self.change_coordinate_by_vector(vector, tile)
+            evaluated_next_tile = self.board.board_dict[evaluated_next_coord]
+            print(f"Current:{tile.board_coordinate}-----Evaluated:{evaluated_next_coord}")
+            if evaluated_next_tile.piece == collision_piece_id.value \
+                    and evaluated_next_tile not in selected_pieces_sorted:
+                print(f"Collision with {collision_piece_id.name}")
+                return True
+        return False
+
+    @staticmethod
+    def change_coordinate_by_vector(vector: tuple, tile):
+        new_coord = f"{chr(ord(tile.board_coordinate[0]) + vector[0])}{int(tile.board_coordinate[1]) + vector[1]}"
+        return new_coord
+
+    def find_target_coord(self, vector, selected_pieces_sorted):
+        coord = self.change_coordinate_by_vector(vector, selected_pieces_sorted[0])
+        print("Target coord: ", end="")
+        print(coord)
+        return self.board.board_dict[coord].board_coordinate
+
+    def find_opposing_push_strength(self, contact_tile, vector):
+
+        push_strength = 0
+        try:
+            current_tile = self.board.board_dict[contact_tile]
+            while True:
+                print(f"Current Eval Coord: " + current_tile.board_coordinate + "----Piece: " + str(current_tile.piece))
+                if current_tile.piece is None:
+                    print("Out by None")
+                    return push_strength
+                else:
+                    next_coord = self.change_coordinate_by_vector(vector, current_tile)
+                    print(f"Next coord: {next_coord}")
+                    push_strength += 1
+                    current_tile = self.board.board_dict[next_coord]
+                    print("Incrementing push strength")
+                    print(f"Eval Coord: " + current_tile.board_coordinate + "----Piece: " + str(current_tile.piece))
+        except KeyError:
+            return push_strength
 
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
