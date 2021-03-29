@@ -33,6 +33,11 @@ class Board:
                           Movement.DownLeft, Movement.DownRight]
         pass
 
+    def set_board(self, board, board_dict):
+        # Function to set board easier when undoing a move
+        self.board = board
+        self.board_dict = board_dict
+
     def build_board(self, window):
         self.set_default_tiles()
         self.convert_to_dict()  # Converts board from list to dict rep.

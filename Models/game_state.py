@@ -39,6 +39,7 @@ game_state = {
 move_history_black = [[], []]
 move_history_white = [[], []]
 board_history = []
+state_history = []
 
 def start_game(context: GUI):
     # Can only start from a stopped position with valid text from inputs
@@ -48,27 +49,98 @@ def start_game(context: GUI):
         # TODO: Fill in code for valid start position
 
         set_game_config(context)
-
         # Start timer
-        pass
+
+
+def stop_game(context: GUI):
+    if game_state['game']['state'] == 'stopped':
+        return False
+    else:
+        game_state['game']['state'] = 'stopped'
 
 def pause_game(context: GUI):
-    if game_state['game']['state'] == 'started':
-        return True
-    elif game_state['game']['state'] == 'paused':
+    # Can only pause if game has started
+    if game_state['game']['state'] != 'started':
         return False
 
-def update_turn(context:GUI):
-    game_state_copy = copy.copy(game_state)
+    else:
+        # Set state and reset move timer
+        game_state['game']['state'] = 'paused'
+        if game_state['game']['turn'] == 'black':
+            game_state['black']['move_time'] = 0
+        else:
+            game_state['white']['move_time'] = 0
 
+def resume_game(context: GUI):
+    # Resuming the game will change the state to 'started'
+
+    if game_state['game']['state'] != 'paused':
+        return False
+    else:
+        game_state['game']['state'] = 'started'
+
+        #TODO: Start the timer again
+
+def reset_game(context: GUI):
+    # TODO: Is there a scenario where user should not be able to reset?
+
+    # Reset game state
+    game_state['game']['state'] = 'stopped'
+    game_state['game']['turn'] = 'black'
+    game_state['config']['starting_layout'] = ''
+    game_state['config']['time_elapsed'] = ''
+    game_state['black']['player'] = ''
+    game_state['black']['move_limit'] = 0
+    game_state['black']['time_limit'] = ''
+    game_state['black']['score'] = 0
+    game_state['black']['moves_taken'] = 0
+    game_state['black']['move_time'] = 0
+    game_state['black']['total_time'] = 0
+    game_state['white']['player'] = ''
+    game_state['white']['move_limit'] = 0
+    game_state['white']['time_limit'] = ''
+    game_state['white']['score'] = 0
+    game_state['white']['moves_taken'] = 0
+    game_state['white']['move_time'] = 0
+    game_state['white']['total_time'] = 0
+
+    # Reset GUI
+    context.selected_pieces.clear()
+    context.board.set_default_tiles()
+    context.set_scoreboard()
+
+    # Clear histories
+    move_history_black = [[], []]
+    move_history_white = [[], []]
+    board_history = []
+    gui_updater.update_gui(context)
+
+def undo_move(context: GUI):
+    # TODO: This does not work
+    global game_state
+    if game_state['game']['state'] != 'started' or len(board_history) == 0 or len(state_history) == 0:
+        return False
+
+    last_board = board_history.pop()
+    state = state_history.pop()
+
+    context.board.set_board(last_board.board, last_board.board_dict)
+    context.board.update_board(context.window)
+
+    game_state = copy.deepcopy(state)
+    gui_updater.update_gui(context)
+    context.toggle_player_move()
+
+
+def update_turn(context:GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
-    # Add to board history then update
+    # Add to board and state history then update
     board_history.append(context.board)
+    state_history.append(game_state)
     context.board.update_board(context.window)
 
-    # Update the GUI to account for the move/score/time, etc
 
     # Calculate the current score after movement
     # TODO: Call this in functions where the score changes (IE sumitos)
