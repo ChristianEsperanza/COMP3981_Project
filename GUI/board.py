@@ -25,7 +25,9 @@ class Board:
     def __init__(self):
         self.board = dict()
         self.forbidden_spots = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
-                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10']
+                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
+                                '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
+                                'J8', 'J9', 'J10']
         self.movements = [Movement.Left, Movement.Right, Movement.UpLeft, Movement.UpRight,
                           Movement.DownLeft, Movement.DownRight]
         pass
@@ -1095,4 +1097,4 @@ Note: The move file representation for each line is [[Old position], [New positi
 """
 if __name__ == '__main__':
     board = Board()
-    board.generate_all_boards("Test1.input")
+    board.generate_all_boards("Test4.input")
