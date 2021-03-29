@@ -17,25 +17,33 @@ def start_game_button(context: GUI):
         print("Starting game, black to move!")
 
 def stop_game_button(context: GUI):
-    print("Stopping game")
+    if game_state.stop_game(context) == False:
+        print("Game is already stopped")
+    else:
+        print("Stopping game")
 
 def pause_game_button(context: GUI):
-    print("Pausing game")
+    if game_state.pause_game(context) == False:
+        print("Can't pause game")
+    else:
+        print("Pausing game")
+
+def resume_game_button(context: GUI):
+    if game_state.resume_game(context) == False:
+        print("Can't resume game")
+    else:
+        print("Resuming game")
 
 def reset_game_button(context: GUI):
-    print("Resetting game")
+    if game_state.reset_game(context) == False:
+        print("Can't reset game")
+    else:
+        print("Resetting game")
     context.selected_pieces.clear()
     context.board.build_board(context.window)
 
 def undo_move_button(context: GUI):
-    print("Undoing move")
-
-def validate_config(context: GUI):
-    # 1. Check that a layout has been selected
-
-    # 2. Check Move limit is valid
-
-    # 3. Check time limit is valid
-
-    # 4. Check game is stopped
-    return True
+    if game_state.undo_move(context) == False:
+        print("Can't undo move")
+    else:
+        print("Undoing move")

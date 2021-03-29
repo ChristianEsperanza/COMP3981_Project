@@ -150,6 +150,9 @@ class GUI:
         pause_button = thorpy.make_button("Pause", func=lambda: gui_controls.pause_game_button(self))
         pause_button.set_size((button_length, button_height))
 
+        resume_button = thorpy.make_button("Resume", func=lambda: gui_controls.resume_game_button(self))
+        resume_button.set_size((button_length, button_height))
+
         reset_button = thorpy.make_button("Reset", func=lambda: gui_controls.reset_game_button(self))
         reset_button.set_size((button_length, button_height))
 
@@ -158,7 +161,7 @@ class GUI:
 
         controls_box = thorpy.Box.make(elements=[
             starting_position_title, starting_position_dropdown,
-            start_button, stop_button, pause_button, reset_button, undo_button
+            start_button, stop_button, pause_button, resume_button, reset_button, undo_button
         ])
         controls_box.set_size((225, 450))
 
@@ -266,10 +269,6 @@ class GUI:
         self.console = thorpy.Menu([controls_box, settings_box, move_box])
         for element in self.console.get_population():
             element.surface = self.window
-
-    def handle_event(self, event, window):
-        # TODO: Flesh out, should handle most click events
-        pos = pygame.mouse.get_pos()
 
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
@@ -711,9 +710,11 @@ class GUI:
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
+            pygame.draw.rect(self.window, red, (670, 705, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_turn_time_taken_location)
         elif piece_enum == Turn.BLACK:
+            pygame.draw.rect(self.window, red, (180, 705, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_turn_time_location)
 
