@@ -40,6 +40,8 @@ white_turn_time_taken_location = (670, 705)
 white_score_location = (670, 735)
 white_moves_taken_location = (670, 765)
 
+turn_label_location = (610, 55)
+
 # Misc
 num_rows = 9
 max_row = 9
