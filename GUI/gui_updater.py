@@ -12,6 +12,9 @@ are called.
 def update_gui(context: GUI):
     update_gui_total_time(context)
     update_gui_move_time(context)
+    update_gui_moves_taken(context)
+    update_gui_turn_label(context)
+    update_gui_score(context)
 
 def update_gui_total_time(context: GUI):
     context.update_total_time(Turn.WHITE, game_state.game_state['white']['total_time'])
@@ -28,5 +31,9 @@ def update_gui_moves_taken(context: GUI):
 def update_gui_turn_label(context: GUI):
     if game_state.game_state['game']['turn'] == 'white':
         context.update_turn_label(Turn.WHITE)
-    if game_state.game_state['game']['turn'] == 'black':
+    elif game_state.game_state['game']['turn'] == 'black':
         context.update_turn_label(Turn.BLACK)
+
+def update_gui_score(context:GUI):
+    context.update_score(Turn.WHITE, game_state.game_state['white']['score'])
+    context.update_score(Turn.BLACK, game_state.game_state['black']['score'])

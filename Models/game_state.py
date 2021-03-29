@@ -15,22 +15,22 @@ game_state = {
         'time_elapsed': '',
     },
     'black': {
-        'player': '',  # human, AI
-        'move_limit': '25',
+        'player': '',  # human, ai
+        'move_limit': 0,
         'time_limit': '',
         'score': 0,
         'moves_taken': 0,
-        'move_time': '',
-        'total_time': ''
+        'move_time': 0,
+        'total_time': 0
     },
     'white': {
-        'player': '',  # human, AI
-        'move_limit': '25',
+        'player': '',  # human, ai
+        'move_limit': 0,
         'time_limit': '',
         'score': 0,
         'moves_taken': 0,
-        'move_time': '',
-        'total_time': ''
+        'move_time': 0,
+        'total_time': 0
     }
 }
 
@@ -46,7 +46,8 @@ def start_game(context: GUI):
         return False
     else:
         # TODO: Fill in code for valid start position
-        # Iterate through the GUI buttons and config, setting the configs as needed
+
+        set_game_config(context)
 
         # Start timer
         pass
@@ -68,7 +69,6 @@ def update_turn(context:GUI):
     context.board.update_board(context.window)
 
     # Update the GUI to account for the move/score/time, etc
-    gui_updater.update_gui(context)
 
     # Calculate the current score after movement
     # TODO: Call this in functions where the score changes (IE sumitos)
@@ -91,10 +91,13 @@ def update_turn(context:GUI):
     #   - Reset turn timer to 0
     #   - Call the gui.update_time/moves/etc.
 
+    # Temporary, to be deleted later. This just changes the turn for now
     if game_state['game']['turn'] == 'black':
-        if game_state['black']['player'] == 'human':
-            pass
+        game_state['game']['turn'] = 'white'
+    else:
+        game_state['game']['turn'] = 'black'
 
+    gui_updater.update_gui(context)
     context.toggle_player_move()
 
 def update_moves_taken(piece_enum):
@@ -121,4 +124,34 @@ def validate_text_input(context: GUI):
         if not text_input.get_value().isdigit():
             return False
     return True
+
+def set_game_config(context: GUI):
+    # Get the game configs from the GUI
+
+    # Starting layout
+    #TODO: Currently default layout  only, once dropdown is fixed adjust this
+    context.board.set_default_tiles()
+
+    # Settings for black
+    if context.black_human_radio.get_value():
+        game_state['black']['player'] = 'human'
+    else:
+        game_state['black']['player'] = 'ai'
+    game_state['black']['move_limit'] = int(context.settings_inputs[0].get_value())
+    game_state['black']['time_limit'] = context.settings_inputs[1].get_value()
+
+    # Settings for White
+    if context.white_human_radio.get_value():
+        game_state['white']['player'] = 'human'
+    else:
+        game_state['white']['player'] = 'ai'
+    game_state['white']['move_limit'] = int(context.settings_inputs[2].get_value())
+    game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
+
+    # Set the turn
+    if game_state['black']['player'] == 'human':
+        game_state['game']['turn'] = 'black'
+        game_state['game']['state'] = 'started'
+    # TODO: Add AI option
+    gui_updater.update_gui(context)
 
