@@ -97,7 +97,6 @@ class GUI:
             4. Call blit() then update() at the bottom of this function so other
                 elements are not overwritten
             5. Add the box to self.console at the bottom of this function.
-        :return:
         """
         # TODO: Requires fixing, crashes on selection
         starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
@@ -266,9 +265,7 @@ class GUI:
         # print(f"{self.player_turn.name} to move!")
         print("Move: " + str(kwargs['vector']))
         vector_rep = kwargs['vector']
-
         try:
-
             vector = None
             selected_pieces_sorted = None
 
@@ -297,8 +294,8 @@ class GUI:
                 for tile in selected_pieces_sorted:
                     print(f"Moving vector {vector}")
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
-                self.board.update_board(self.window)
-
+                # TODO: The following two lines should be called in game_state
+                # self.board.update_board(self.window)
                 # self.toggle_player_move()   # Other players turn.
                 self.end_turn()
 
@@ -345,7 +342,8 @@ class GUI:
         return True
 
     def end_turn(self):
-        self.toggle_player_move()
+        # self.toggle_player_move()
+        game_state.update_turn(self)
 
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
@@ -356,8 +354,8 @@ class GUI:
 
     def draw_score_and_time(self):
         """
-        Builds the boxes for black and white score, time taken,
-        and moves taken
+        Builds the boxes for black and white score, time taken, and moves taken.
+        Should only be called on startup and resetting the board
         """
         ##### BLACK #####
         black_score_title = thorpy.make_text("Black", 24, (0,0,0))
@@ -395,6 +393,10 @@ class GUI:
 
         white_moves_taken = font_text_time_label.render("Moves Taken:", True, black)
         self.window.blit(white_moves_taken, (525, 765))
+
+        current_turn = font_text_time_label.render("Current Turn:", True, black)
+        self.window.blit(current_turn, (590, 25))
+
         pygame.display.update()
 
     def set_scoreboard(self):
@@ -408,6 +410,7 @@ class GUI:
         self.update_score(Turn.WHITE, "0")
         self.update_moves_taken(Turn.BLACK, "0")
         self.update_moves_taken(Turn.WHITE, "0")
+        self.update_turn_label(Turn.BLACK)
 
 
     def update_total_time(self, piece_enum, time):
@@ -450,3 +453,7 @@ class GUI:
             time_taken = font_text_time_label.render(moves_taken, True, black)
             self.window.blit(time_taken, black_moves_taken_location)
 
+    def update_turn_label(self, piece_enum):
+        font_text_time_lable = pygame.font.SysFont('Ariel', 30)
+        turn_label = font_text_time_lable.render(piece_enum.name, True, black)
+        self.window.blit(turn_label, turn_label_location)
