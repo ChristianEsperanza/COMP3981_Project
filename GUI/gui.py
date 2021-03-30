@@ -53,9 +53,36 @@ class GUI:
 
 
         pygame.display.set_caption("Abalone")
+
+        thread1 = threading.Thread(target=self.start_game_loop)
+        thread1.start()
+        thread1.run()
+        # clock = pygame.time.Clock()
+        # count = 0
+        # total_turn_time = 0
+        # while True:
+        #     clock.tick(60)
+        #
+        #     for event in pygame.event.get():
+        #         # GUI buttons react to event
+        #         self.console.react(event)
+        #
+        #         if event.type == pygame.QUIT:
+        #             pygame.quit()
+        #
+        #         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        #             pos = pygame.mouse.get_pos()
+        #             print(pos)
+        #
+        #             self.handle_click(pos)
+        #             # for key, tile in self.board.board_dict.items():
+        #             #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+        #             #         print(f"Tile Coords: ({tile.row}, {tile.column})")
+        #             #         self.clicked_tile(tile)
+        #     pygame.display.update()
+
+    def start_game_loop(self):
         clock = pygame.time.Clock()
-        count = 0
-        total_turn_time = 0
         while True:
             clock.tick(60)
 
@@ -75,33 +102,6 @@ class GUI:
                     #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
                     #         print(f"Tile Coords: ({tile.row}, {tile.column})")
                     #         self.clicked_tile(tile)
-
-
-            if game_state.game_state['game']['state'] == 'started':
-                count += 1
-                if count == 60:
-                    if self.player_turn == self.timer_focus:
-                        total_turn_time += 1
-                    else:  # Turn swap
-                        if self.timer_focus == Turn.WHITE:
-                            self.update_turn_time(Turn.WHITE, total_turn_time)
-                            game_state.game_state['white']['move_time'] = total_turn_time
-                        else:
-                            game_state.game_state['black']['move_time'] = total_turn_time
-                        self.timer_focus = self.player_turn
-                        total_turn_time = 0
-
-                    if self.player_turn == Turn.WHITE:
-                        self.total_agg_time_white += 1
-                        self.update_turn_time(Turn.WHITE, total_turn_time)
-                        self.update_total_time(Turn.WHITE, self.total_agg_time_white)
-                        game_state.game_state['white']['total_time'] = self.total_agg_time_white
-                    else:
-                        self.total_agg_time_black += 1
-                        self.update_turn_time(Turn.BLACK, total_turn_time)
-                        self.update_total_time(Turn.BLACK, self.total_agg_time_black)
-                        game_state.game_state['black']['total_time'] = self.total_agg_time_black
-                    count = 0
             pygame.display.update()
 
 
@@ -722,3 +722,5 @@ class GUI:
     def start_timer(self):
         self.run_timer = True
         self.is_started = True
+        while game_state.game_state['game']['state'] == ('started' or 'paused'):
+            print(game_state.game_state['game']['state'])
