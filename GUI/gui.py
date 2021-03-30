@@ -307,6 +307,7 @@ class GUI:
             font_text = pygame.font.SysFont('Ariel', 22)
             text_renderer= font_text.render(str(message), True, white)
             self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
+        pygame.display.update()
 
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
@@ -372,7 +373,7 @@ class GUI:
                     print(f"Moving vector {vector}")
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
 
-                self.board.update_board(self.window)
+                # self.board.update_board(self.window)
 
                 if self.toggle_players:
                     self.end_turn()
@@ -665,6 +666,7 @@ class GUI:
             pygame.draw.rect(self.window, red, (180, 675, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_total_time_location)
+        pygame.display.update()
 
     def update_turn_time(self, piece_enum, time):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
@@ -677,6 +679,7 @@ class GUI:
             pygame.draw.rect(self.window, red, (180, 705, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_turn_time_location)
+        pygame.display.update()
 
     def update_score(self, piece_enum, score):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
@@ -693,6 +696,8 @@ class GUI:
             pygame.draw.rect(self.window, red, (180, 735, 75, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, black_score_location)
+        pygame.display.update()
+
 
     def update_moves_taken(self, piece_enum, moves_taken):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
@@ -706,12 +711,14 @@ class GUI:
             pygame.draw.rect(self.window, red, (180, 765, 75, 20))
             time_taken = font_text_time_label.render(str(moves_taken), True, black)
             self.window.blit(time_taken, black_moves_taken_location)
+        pygame.display.update()
 
     def update_turn_label(self, piece_enum):
         pygame.draw.rect(self.window, red, (610, 55, 80, 25))
         font_text_time_lable = pygame.font.SysFont('Ariel', 30)
         turn_label = font_text_time_lable.render(piece_enum.name, True, black)
         self.window.blit(turn_label, turn_label_location)
+        pygame.display.update()
 
     def start_timer(self):
         self.run_timer = True

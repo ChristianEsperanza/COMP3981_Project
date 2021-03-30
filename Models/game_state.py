@@ -1,4 +1,5 @@
 import copy
+import threading
 
 import GUI
 from AI import ai_main
@@ -153,6 +154,7 @@ def update_turn(context:GUI):
         game_state['game']['turn'] = 'white'
         context.toggle_player_move()
         update_moves_taken(Turn.BLACK)
+        gui_updater.update_gui(context)
 
         if game_state['white']['player'] == 'ai':
             context.update_printer("AI is thinking...")
@@ -160,21 +162,21 @@ def update_turn(context:GUI):
 
         else:
             context.update_printer("White to move!")
-            gui_updater.update_gui(context)
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
         game_state['game']['turn'] = 'black'
         context.toggle_player_move()
         update_moves_taken(Turn.WHITE)
+        gui_updater.update_gui(context)
 
         if game_state['black']['player'] == 'ai':
             context.update_printer("AI is thinking...")
+            gui_updater.update_gui(context)
             ai_main.begin_turn(context, black_piece_id)
 
         else:
             context.update_printer("Black to move!")
-            gui_updater.update_gui(context)
 
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
@@ -277,15 +279,17 @@ def set_game_config(context: GUI):
 
     # Set the turn state
     if game_state['black']['player'] == 'human':
-        context.update_printer("White to move!")
-        game_state['game']['turn'] = 'black22'
+        context.update_printer("Black to move!")
+        game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        gui_updater.update_gui(context)
 
     elif game_state['black']['player'] == 'ai':
         game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        gui_updater.update_gui(context)
 
         context.update_printer("AI is thinking...")
         ai_main.begin_turn(context, black_piece_id)
 
-    gui_updater.update_gui(context)
+    # gui_updater.update_gui(context)

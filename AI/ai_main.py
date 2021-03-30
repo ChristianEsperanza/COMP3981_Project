@@ -1,3 +1,5 @@
+import threading
+
 import GUI
 from AI.Evaluator import Evaluator
 from GUI import gui_updater, movement
@@ -11,13 +13,14 @@ def begin_turn(context: GUI, piece_id):
     # movement.move_3_pieces(context, "A1", "B2", "C3", "D4", "C3", "B2")
 
     board_state = context.board.to_string_state()
-    turn = ('b', 'w')[piece_id == white_piece_id] #W
+    turn = ('b', 'w')[piece_id == white_piece_id]
     best_move = Evaluator.minimax(board_state, turn)
     find_and_execute_move(best_move, context)
 
     # End turn
-    gui_updater.update_gui(context)
+    # gui_updater.update_gui(context)
     game_state.update_turn(context)
+
 
 def find_and_execute_move(best_move, context: GUI):
     """
@@ -51,5 +54,6 @@ def find_and_execute_move(best_move, context: GUI):
                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), strip_coordinate(end_coordinates[2]))
 
 def strip_coordinate(move_string):
+    # Strip the colour from a given coordinate
     return move_string[0] + move_string[1]
 
