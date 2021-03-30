@@ -15,6 +15,7 @@ def start_game_button(context: GUI):
               f"text inputs are invalid")
     else:
         print("Starting game, white to move!")
+        context.start_timer()
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:

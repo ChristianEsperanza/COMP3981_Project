@@ -25,8 +25,10 @@ def update_gui_move_time(context: GUI):
     context.update_turn_time(Turn.BLACK, game_state.game_state['black']['move_time'])
 
 def update_gui_moves_taken(context: GUI):
-    context.update_moves_taken(Turn.WHITE, game_state.game_state['white']['moves_taken'])
-    context.update_moves_taken(Turn.BLACK, game_state.game_state['black']['moves_taken'])
+    # context.update_moves_taken(Turn.WHITE, game_state.game_state['white']['moves_taken'])
+    # context.update_moves_taken(Turn.BLACK, game_state.game_state['black']['moves_taken'])
+    context.update_moves_taken(Turn.WHITE, 0)
+    context.update_moves_taken(Turn.BLACK, 0)
 
 def update_gui_turn_label(context: GUI):
     if game_state.game_state['game']['turn'] == 'white':
