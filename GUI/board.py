@@ -4,6 +4,7 @@ import pygame
 from enum import Enum
 
 from GUI.tile import Tile
+from Models import game_state
 from Utility.constants import *
 from GUI.file_reader import FileReader
 
@@ -23,15 +24,19 @@ class Board:
     """
 
     def __init__(self):
+        # NOTE: the board [] is used for the GUI, and the board_dict is for state_space_gen
         self.board = []
         self.board_dict = {}
         self.forbidden_spots = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
-                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
-                                '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
-                                'J8', 'J9', 'J10']
+                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10']
         self.movements = [Movement.Left, Movement.Right, Movement.UpLeft, Movement.UpRight,
                           Movement.DownLeft, Movement.DownRight]
         pass
+
+    def set_board(self, board, board_dict):
+        # Function to set board easier when undoing a move
+        self.board = board
+        self.board_dict = board_dict
 
     def build_board(self, window):
         self.set_default_tiles()
@@ -1027,6 +1032,7 @@ class Board:
                     self.board_dict[coord].set_rect(rect)
                 current_x += (piece_radius * 2) + piece_distance
             current_y += (piece_radius * 2) + piece_distance
+        pygame.display.update()
 
     def swap_tiles(self, coord_a: tuple, coord_b: tuple):
         """
@@ -1050,6 +1056,25 @@ class Board:
         for tile in self.board:
             board_dict[tile.board_coordinate] = tile
         self.board_dict = board_dict
+
+    def update_scores(self):
+        #TODO: Call this in functions where the score changes (IE sumitos)
+        white_score = 0
+        black_score = 0
+
+        for tile in self.board:
+            if tile.piece == white_piece_id:
+                white_score += 1
+            if tile.piece == black_piece_id:
+                black_score += 1
+
+        # game_state.game_state['white']['score'] = 14 - white_score
+        # game_state.game_state['black']['score'] = 14 - black_score
+
+        # TODO: This is just placeholder so the score actually changes on movement
+        # Uncomment the above and delete the next two lines
+        game_state.game_state['white']['score'] = white_score
+        game_state.game_state['black']['score'] = black_score
 
 """        
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
