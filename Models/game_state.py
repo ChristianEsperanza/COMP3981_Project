@@ -2,7 +2,7 @@ import copy
 
 import GUI
 from AI import ai_main
-from GUI import gui_updater, movement
+from GUI import gui_updater
 from Utility.constants import *
 from Utility.enum import *
 
@@ -150,24 +150,26 @@ def update_turn(context:GUI):
     # If black just went
     if game_state['game']['turn'] == 'black':
         game_state['game']['turn'] = 'white'
+        context.toggle_player_move()
         update_moves_taken(Turn.BLACK)
 
         if game_state['white']['player'] == 'ai':
-            # TODO: Fill in with AI movement
-            # ai.begin_turn()
-            pass
+            context.update_printer("AI is thinking...")
+            ai_main.begin_turn(context, white_piece_id)
         else:
             gui_updater.update_gui(context)
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
         game_state['game']['turn'] = 'black'
+        context.toggle_player_move()
         update_moves_taken(Turn.WHITE)
 
         if game_state['black']['player'] == 'ai':
             # TODO: Fill in with AI movement
             # ai.begin_turn()
-            ai_main.begin_turn(context)
+            context.update_printer("AI is thinking...")
+            ai_main.begin_turn(context, black_piece_id)
 
         else:
             gui_updater.update_gui(context)
@@ -280,6 +282,6 @@ def set_game_config(context: GUI):
         game_state['game']['turn'] = 'white'
         game_state['game']['state'] = 'started'
 
-        # TODO: Add AI code
-        # ai.do_thing()
+        context.update_printer("AI is thinking...")
+        ai_main.begin_turn(context, white_piece_id)
     gui_updater.update_gui(context)

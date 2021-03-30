@@ -71,11 +71,6 @@ class GUI:
                     print(pos)
 
                     self.handle_click(pos)
-                    # for key, tile in self.board.board_dict.items():
-                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
-                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
-                    #         self.clicked_tile(tile)
-
 
             if game_state.game_state['game']['state'] == 'started':
                 count += 1
@@ -517,8 +512,8 @@ class GUI:
 
     def end_turn(self):
         game_state.update_turn(self)
-        self.toggle_player_move()
-        
+        # self.toggle_player_move()
+
     def is_linear_movement(self, vector: tuple, selected_pieces_sorted: list):
         print("Linear move test")
         if len(selected_pieces_sorted) == 1:

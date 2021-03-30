@@ -1161,6 +1161,15 @@ class Board:
         game_state.game_state['white']['score'] = 14 - black_score
         game_state.game_state['black']['score'] = 14 - white_score
 
+    def to_string_state(self):
+        # Get board in string state
+        board_state = []
+        for key in self.board_dict:
+            if self.board_dict[key].get_piece() == white_piece_id:
+                board_state.append(self.board_dict[key].board_coordinate + 'w')
+            elif self.board_dict[key].get_piece() == black_piece_id:
+                board_state.append(self.board_dict[key].board_coordinate + 'b')
+        return board_state
 
 """        
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
