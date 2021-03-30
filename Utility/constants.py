@@ -7,6 +7,7 @@ red = [255, 0, 0]
 green = [0, 255, 0]
 blue = [0, 0, 255]
 black = [0, 0, 0]
+white = [255, 255, 255]
 
 # Dimensions
 window_width = 1300
@@ -28,6 +29,11 @@ console_start_x = board_width
 console_start_y = 0
 button_length = 180
 button_height = 40
+
+printer_start_x = 975
+printer_start_y = 450
+printer_width = 225
+printer_height = 450
 
 # Dynamic text locations on the board using their top left location
 black_total_time_location = (180, 675)

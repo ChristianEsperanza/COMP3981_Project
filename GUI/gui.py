@@ -37,6 +37,7 @@ class GUI:
         self.board.build_board(self.window, 'default')
         self.build_console()
         self.draw_score_and_time()
+        self.update_printer()
         self.set_scoreboard()
         event = None
 
@@ -55,12 +56,7 @@ class GUI:
                     pos = pygame.mouse.get_pos()
                     print(pos)
 
-                    # TODO: Fill out handle click
                     self.handle_click(pos)
-                    # for key, tile in self.board.board_dict.items():
-                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
-                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
-                    #         self.clicked_tile(tile)
             pygame.display.update()
 
 
@@ -80,9 +76,9 @@ class GUI:
         # Only deal with board clicks, ThorPy will react to GUI clicks in main loop
         if pos[0] < console_start_x:
             if state == 'stopped':
-                print("Can't play, game is stopped")
+                self.update_printer("Can't play, game is stopped")
             elif state == 'paused':
-                print("Game is paused, unpause to continue")
+                self.update_printer("Game is paused, unpause to continue")
             elif state == 'started':
                 for key, tile in self.board.board_dict.items():
                     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
@@ -244,7 +240,6 @@ class GUI:
         move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
         move_box.set_size((225, 450))
 
-
         # Set the position of each box, then place
         controls_box.set_topleft((console_start_x, console_start_y))
         controls_box.blit()
@@ -262,6 +257,17 @@ class GUI:
         for element in self.console.get_population():
             element.surface = self.window
 
+    def update_printer(self, message=None):
+        # Print a string
+        pygame.draw.rect(self.window, black, (
+            printer_start_x, printer_start_y,
+            printer_width, printer_height
+        ))
+        if message is not None:
+            font_text = pygame.font.SysFont('Ariel', 22)
+            text_renderer= font_text.render(str(message), True, white)
+            self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
+
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
 
@@ -278,10 +284,10 @@ class GUI:
         # Check state first to see that game is in progress
         state = game_state.game_state['game']['state']
         if state == 'stopped':
-            print("Game is stopped")
+            self.update_printer(message="Game is stopped")
             return
         elif state == 'paused':
-            print("Game is paused")
+            self.update_printer(message="Game is paused")
             return
 
         print("Move: " + str(kwargs['vector']))
@@ -315,7 +321,6 @@ class GUI:
                 return
 
             if self.is_valid_selection() and self.is_valid_move(vector, selected_pieces_sorted):
-
                 target_coord = self.find_target_coord(vector, selected_pieces_sorted)
 
                 # # Evaluate push on opponent piece.
@@ -343,26 +348,6 @@ class GUI:
             self.selected_pieces.clear()
 
     def is_valid_selection(self):
-        # print("POG")
-        # if len(self.selected_pieces) > 3:
-        #     return False
-        # prev_tile = None
-        # selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
-        # for tile in selected_pieces_sorted:
-        #     print(tile)
-        #     if tile.piece != self.player_turn.value:
-        #         print("Wrong color")
-        #         return False
-        #     if prev_tile is not None:
-        #         if prev_tile.row != tile.row or prev_tile.column != tile.column - 1:
-        #             print(f"{prev_tile.column}, {tile.column}")
-        #             print("Inconsistent row selection")
-        #             return False
-        #         else:
-        #             prev_tile = tile
-        #     else:
-        #         prev_tile = tile
-        # return True
         print("Evaluating for valid selection")
         if len(self.selected_pieces) > 3:
             return False
@@ -371,14 +356,14 @@ class GUI:
         for tile in selected_pieces_sorted_col:
             print(tile)
             # Determine consistent piece selection
-            if self.alternate_turns and tile.piece != self.player_turn.value:
+            if tile.piece != self.player_turn.value:
                 print("Wrong color")
                 return False
 
         if not self.is_continuous_row_selection() and not self.is_continuous_diagonal_selection():
             print("Non continuous selection")
             return False
-        print("Invalid Selection")
+        print("Valid Selection")
         return True
 
     def is_continuous_row_selection(self):
@@ -435,15 +420,6 @@ class GUI:
         return True
 
     def is_valid_move(self, vector: tuple, selected_pieces_sorted: list):
-        # board_seq = ('I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
-        #              'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
-        #              'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
-        #              'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5')
-        # for tile in self.selected_pieces:
-        #     if tile.board_coordinate not in board_seq:
-        #         print("Can't move out of bounds.")
-        #         return False
-        # return True
         print("Evaluating if move is valid")
         try:
             target_coord = self.find_target_coord(vector, selected_pieces_sorted)

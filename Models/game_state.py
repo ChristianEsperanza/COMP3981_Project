@@ -46,10 +46,8 @@ def start_game(context: GUI):
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
         return False
     else:
-        # TODO: Fill in code for valid start position
-
         set_game_config(context)
-        # Start timer
+        # TODO Start timer
 
 
 def stop_game(context: GUI):
@@ -140,7 +138,6 @@ def update_turn(context:GUI):
     state_history.append(game_state)
     context.board.update_board(context.window)
 
-
     # Calculate the current score after movement
     # TODO: Call this in functions where the score changes (IE sumitos)
     context.board.update_scores()
@@ -204,29 +201,29 @@ def check_goal_state(context:GUI):
     #    Win (6 points)
     if game_state['white']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        print("White has won!")
+        context.update_printer("White has won!")
 
     elif game_state['black']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        print("Black has won!")
+        context.update_printer("Black has won!")
 
     #    No moves left on current player
     elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        print("Black has won")
+        context.update_printer("Black has won")
 
     elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        print("White has won")
+        context.update_printer("White has won")
 
     #    No time left on a player
     elif game_state['white']['time_limit'] == game_state['white']['total_time']:
         game_state['game']['state'] = 'stopped'
-        print("Black has won")
+        context.update_printer("Black has won")
 
     elif game_state['black']['time_limit'] == game_state['black']['total_time']:
         game_state['game']['state'] = 'stopped'
-        print("White has won")
+        context.update_printer("White has won")
 
 
 def validate_text_input(context: GUI):
@@ -277,4 +274,3 @@ def set_game_config(context: GUI):
         game_state['game']['state'] = 'started'
     # TODO: Add AI option
     gui_updater.update_gui(context)
-
