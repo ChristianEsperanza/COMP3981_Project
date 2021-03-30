@@ -156,7 +156,9 @@ def update_turn(context:GUI):
         if game_state['white']['player'] == 'ai':
             context.update_printer("AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
+
         else:
+            context.update_printer("White to move!")
             gui_updater.update_gui(context)
 
     # If white just went
@@ -166,12 +168,11 @@ def update_turn(context:GUI):
         update_moves_taken(Turn.WHITE)
 
         if game_state['black']['player'] == 'ai':
-            # TODO: Fill in with AI movement
-            # ai.begin_turn()
             context.update_printer("AI is thinking...")
             ai_main.begin_turn(context, black_piece_id)
 
         else:
+            context.update_printer("Black to move!")
             gui_updater.update_gui(context)
 
     # Update the GUI:
@@ -275,6 +276,7 @@ def set_game_config(context: GUI):
 
     # Set the turn state
     if game_state['white']['player'] == 'human':
+        context.update_printer("White to move!")
         game_state['game']['turn'] = 'white'
         game_state['game']['state'] = 'started'
 
