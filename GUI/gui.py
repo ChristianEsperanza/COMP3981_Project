@@ -331,6 +331,7 @@ class GUI:
                 for tile in selected_pieces_sorted:
                     print(f"Moving vector {vector}")
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
+
                 self.board.update_board(self.window)
 
                 if self.toggle_players:
