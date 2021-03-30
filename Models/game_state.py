@@ -17,7 +17,7 @@ game_state = {
     'black': {
         'player': '',  # human, ai
         'move_limit': 0,
-        'time_limit': '',
+        'time_limit': 0,
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -26,7 +26,7 @@ game_state = {
     'white': {
         'player': '',  # human, ai
         'move_limit': 0,
-        'time_limit': '',
+        'time_limit': 0,
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -152,7 +152,6 @@ def update_turn(context:GUI):
     # Go through each turn state (ie black/white and human/ai)  and check what the player config
     #   of the other player is. Update the current turn state to be the found config (ie human/ai).
 
-
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
     #   - Call context.update_score(enum, score from game_state)
@@ -183,16 +182,34 @@ def update_moves_taken(piece_enum):
         game_state['black']['moves_taken'] += 1
 
 def check_goal_state(context:GUI):
-    # Check for a following goal state:
-    #   - Win (6 points)
-    #   - No time left on current player
-    #   - No moves left on current player
+    # Check for goal states before finalizing a turn
+    #    Win (6 points)
+    if game_state['white']['score'] == 6:
+        game_state['game']['state'] = 'stopped'
+        print("White has won!")
 
-    # Change state to stopped state
+    elif game_state['black']['score'] == 6:
+        game_state['game']['state'] = 'stopped'
+        print("Black has won!")
 
-    # Print that b or w won
+    #    No moves left on current player
+    elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
+        game_state['game']['state'] = 'stopped'
+        print("Black has won")
 
-    pass
+    elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
+        game_state['game']['state'] = 'stopped'
+        print("White has won")
+
+    #    No time left on a player
+    elif game_state['white']['time_limit'] == game_state['white']['total_time']:
+        game_state['game']['state'] = 'stopped'
+        print("Black has won")
+
+    elif game_state['black']['time_limit'] == game_state['black']['total_time']:
+        game_state['game']['state'] = 'stopped'
+        print("White has won")
+
 
 def validate_text_input(context: GUI):
     for text_input in context.settings_inputs:

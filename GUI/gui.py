@@ -323,6 +323,8 @@ class GUI:
         # finally:
         #     self.selected_pieces.clear()
         # print(f"{self.player_turn.name} to move!")
+
+        # Check state first to see that game is in progress
         state = game_state.game_state['game']['state']
         if state == 'stopped':
             print("Game is stopped")
