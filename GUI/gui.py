@@ -654,7 +654,6 @@ class GUI:
         self.update_score(Turn.WHITE, "0")
         self.update_moves_taken(Turn.BLACK, "0")
         self.update_moves_taken(Turn.WHITE, "0")
-        self.update_turn_label(Turn.WHITE)
 
 
     def update_total_time(self, piece_enum, time):
@@ -666,7 +665,6 @@ class GUI:
             pygame.draw.rect(self.window, red, (670, 675, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_total_time_location)
-            # print("trying")
 
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
