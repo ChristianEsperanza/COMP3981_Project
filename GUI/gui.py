@@ -1,3 +1,8 @@
+import datetime
+import threading
+import time
+from threading import Timer, Thread
+
 import thorpy
 import pygame
 import random
@@ -28,6 +33,12 @@ class GUI:
         self.selected_pieces = []
         self.player_turn = Turn.WHITE
 
+        self.run_timer = False
+        self.total_agg_time_white = 0
+        self.total_agg_time_black = 0
+        self.timer_focus = Turn.WHITE
+        self.is_started = False
+
     def run(self):
         """
         Builds the GUI and then runs the main loop, calling methods to build different pieces
@@ -39,12 +50,15 @@ class GUI:
         self.draw_score_and_time()
         self.update_printer()
         self.set_scoreboard()
-        event = None
+
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
+        count = 0
+        total_turn_time = 0
         while True:
             clock.tick(60)
+
             for event in pygame.event.get():
                 # GUI buttons react to event
                 self.console.react(event)
@@ -57,7 +71,39 @@ class GUI:
                     print(pos)
 
                     self.handle_click(pos)
+                    # for key, tile in self.board.board_dict.items():
+                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
+                    #         self.clicked_tile(tile)
+
+
+            if game_state.game_state['game']['state'] == 'started':
+                count += 1
+                if count == 60:
+                    if self.player_turn == self.timer_focus:
+                        total_turn_time += 1
+                    else:  # Turn swap
+                        if self.timer_focus == Turn.WHITE:
+                            self.update_turn_time(Turn.WHITE, total_turn_time)
+                            game_state.game_state['white']['move_time'] = total_turn_time
+                        else:
+                            game_state.game_state['black']['move_time'] = total_turn_time
+                        self.timer_focus = self.player_turn
+                        total_turn_time = 0
+
+                    if self.player_turn == Turn.WHITE:
+                        self.total_agg_time_white += 1
+                        self.update_turn_time(Turn.WHITE, total_turn_time)
+                        self.update_total_time(Turn.WHITE, self.total_agg_time_white)
+                        game_state.game_state['white']['total_time'] = self.total_agg_time_white
+                    else:
+                        self.total_agg_time_black += 1
+                        self.update_turn_time(Turn.BLACK, total_turn_time)
+                        self.update_total_time(Turn.BLACK, self.total_agg_time_black)
+                        game_state.game_state['black']['total_time'] = self.total_agg_time_black
+                    count = 0
             pygame.display.update()
+
 
 
     def dumb_stuff(self):
@@ -547,6 +593,8 @@ class GUI:
         else:
             self.player_turn = Turn.WHITE
         print(f"{self.player_turn.name} to move!")
+        self.run_timer = False
+        self.start_timer()
 
     def draw_score_and_time(self):
         """
@@ -615,13 +663,14 @@ class GUI:
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
         if piece_enum == Turn.WHITE:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (670, 675, 25, 20))
+            pygame.draw.rect(self.window, red, (670, 675, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_total_time_location)
+            # print("trying")
 
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (180, 675, 25, 20))
+            pygame.draw.rect(self.window, red, (180, 675, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_total_time_location)
 
@@ -629,11 +678,11 @@ class GUI:
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
-            pygame.draw.rect(self.window, red, (670, 705, 25, 20))
+            pygame.draw.rect(self.window, red, (670, 705, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_turn_time_taken_location)
         elif piece_enum == Turn.BLACK:
-            pygame.draw.rect(self.window, red, (180, 705, 25, 20))
+            pygame.draw.rect(self.window, red, (180, 705, 75, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_turn_time_location)
 
@@ -642,13 +691,14 @@ class GUI:
 
         if piece_enum == Turn.WHITE:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (670, 735, 25, 20))
+            pygame.draw.rect(self.window, red, (670, 735, 75, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, white_score_location)
 
+
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (180, 735, 25, 20))
+            pygame.draw.rect(self.window, red, (180, 735, 75, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, black_score_location)
 
@@ -656,12 +706,12 @@ class GUI:
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
-            pygame.draw.rect(self.window, red, (670, 765, 25, 20))
+            pygame.draw.rect(self.window, red, (670, 765, 75, 20))
             time_taken = font_text_time_label.render(str(moves_taken), True, black)
             self.window.blit(time_taken, white_moves_taken_location)
 
         elif piece_enum == Turn.BLACK:
-            pygame.draw.rect(self.window, red, (180, 765, 25, 20))
+            pygame.draw.rect(self.window, red, (180, 765, 75, 20))
             time_taken = font_text_time_label.render(str(moves_taken), True, black)
             self.window.blit(time_taken, black_moves_taken_location)
 
@@ -670,3 +720,7 @@ class GUI:
         font_text_time_lable = pygame.font.SysFont('Ariel', 30)
         turn_label = font_text_time_lable.render(piece_enum.name, True, black)
         self.window.blit(turn_label, turn_label_location)
+
+    def start_timer(self):
+        self.run_timer = True
+        self.is_started = True

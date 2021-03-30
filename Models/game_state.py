@@ -48,7 +48,7 @@ def start_game(context: GUI):
         return False
     else:
         set_game_config(context)
-        # TODO Start timer
+        context.start_timer()
 
 
 def stop_game(context: GUI):
