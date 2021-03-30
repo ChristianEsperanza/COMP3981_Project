@@ -34,7 +34,7 @@ class GUI:
         """
         # Build window, board, console
         self.build_window()
-        self.board.build_board(self.window)
+        self.board.build_board(self.window, 'default')
         self.build_console()
         self.draw_score_and_time()
         self.set_scoreboard()
