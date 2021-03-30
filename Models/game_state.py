@@ -205,7 +205,7 @@ def set_game_config(context: GUI):
 
     # Starting layout
     #TODO: Currently default layout  only, once dropdown is fixed adjust this
-    context.board.set_default_tiles()
+    context.board.build_board(context.window, 'default')
 
     # Settings for black
     if context.black_human_radio.get_value():

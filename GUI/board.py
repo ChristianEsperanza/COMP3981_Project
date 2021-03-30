@@ -40,8 +40,17 @@ class Board:
         self.board = board
         self.board_dict = board_dict
 
-    def build_board(self, window):
-        self.set_default_tiles()
+    def build_board(self, window, layout):
+        # Build the board from scratch
+        self.board = []
+        self.board_dict = {}
+
+        if layout == 'default':
+            self.set_default_tiles()
+        elif layout == 'german_daisy':
+            self.set_german_daisy_tiles()
+        elif layout == 'belgian_daisy':
+            self.set_belgian_daisy_tiles()
         self.convert_to_dict()  # Converts board from list to dict rep.
         self.update_board(window)
         pygame.display.update()
