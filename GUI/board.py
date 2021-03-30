@@ -208,7 +208,10 @@ class Board:
                         final_output = array_copy + white_marbles_out
 
                         move_index = test_spots.index(spot)
-                        move = [marble + 'b', spot + 'b', movements[move_index]]
+                        move = {"start": marble + 'b',
+                                "end": spot + 'b',
+                                "move": movements[move_index],
+                                "elim": False, "pushes": 0}
                         moves.append(move)
                     else:
                         array_copy.sort()
@@ -217,7 +220,10 @@ class Board:
                         final_output = black_marbles_out + array_copy
 
                         move_index = test_spots.index(spot)
-                        move = [marble + 'w', spot + 'w', movements[move_index]]
+                        move = {"start": marble + 'w',
+                                "end": spot + 'w',
+                                "move": movements[move_index],
+                                "elim": False, "pushes": 0}
                         moves.append(move)
                     result.append(final_output)
         return result, moves
@@ -320,7 +326,10 @@ class Board:
                         white_marbles_out = [x + 'w' for x in white_marbles]
                         final_output = final_black_marbles + white_marbles_out
 
-                        move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Left]
+                        move = {"start": [x + 'b' for x in old_positions],
+                                "end": [x + 'b' for x in new_positions],
+                                "move": Movement.Left,
+                                "elim": False, "pushes": 0}
                     else:
                         final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                         final_white_marbles.sort()
@@ -328,7 +337,10 @@ class Board:
                         black_marbles_out = [x + 'b' for x in black_marbles]
                         final_output = black_marbles_out + final_white_marbles
 
-                        move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Left]
+                        move = {"start": [x + 'w' for x in old_positions],
+                                "end": [x + 'w' for x in new_positions],
+                                "move": Movement.Left,
+                                "elim": False, "pushes": 0}
                     moves.append(move)
                     result.append(final_output)
             if one_right not in current_marbles and one_right not in forbidden:
@@ -343,7 +355,10 @@ class Board:
                         white_marbles_out = [x + 'w' for x in white_marbles]
                         final_output = final_black_marbles + white_marbles_out
 
-                        move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions], Movement.Right]
+                        move = {"start": [x + 'b' for x in old_positions],
+                                "end": [x + 'b' for x in new_positions],
+                                "move": Movement.Right,
+                                "elim": False, "pushes": 0}
                     else:
                         final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                         final_white_marbles.sort()
@@ -351,7 +366,10 @@ class Board:
                         black_marbles_out = [x + 'b' for x in black_marbles]
                         final_output = black_marbles_out + final_white_marbles
 
-                        move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions], Movement.Right]
+                        move = {"start": [x + 'w' for x in old_positions],
+                                "end": [x + 'w' for x in new_positions],
+                                "move": Movement.Right,
+                                "elim": False, "pushes": 0}
                     moves.append(move)
                     result.append(final_output)
 
@@ -380,8 +398,10 @@ class Board:
                             white_marbles_out = [x + 'w' for x in white_marbles]
                             final_output = final_black_marbles + white_marbles_out
 
-                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                    movements[index + 2]]
+                            move = {"start": [x + 'b' for x in old_positions],
+                                    "end": [x + 'b' for x in new_positions],
+                                    "move": movements[index + 2],
+                                    "elim": False, "pushes": 0}
                         else:
                             final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                             final_white_marbles.sort()
@@ -389,8 +409,10 @@ class Board:
                             black_marbles_out = [x + 'b' for x in black_marbles]
                             final_output = black_marbles_out + final_white_marbles
 
-                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                    movements[index + 2]]
+                            move = {"start": [x + 'w' for x in old_positions],
+                                    "end": [x + 'w' for x in new_positions],
+                                    "move": movements[index + 2],
+                                    "elim": False, "pushes": 0}
                         moves.append(move)
                         result.append(final_output)
         return result, moves
@@ -423,7 +445,10 @@ class Board:
                         final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                         result.append(final_player_marbles + final_enemy_marbles)
 
-                        move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'b' for x in marble_tuple],
+                                "end": [x + 'b' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": True, "pushes": 1}
                         moves.append(move)
                     else:
                         final_enemy_marbles = self.remove_marble(black_marbles, marble_move_one)
@@ -435,7 +460,10 @@ class Board:
                         final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                         result.append(final_enemy_marbles + final_player_marbles)
 
-                        move = [[x + 'w' for x in marble_tuple], [x + 'w' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'w' for x in marble_tuple],
+                                "end": [x + 'w' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": True, "pushes": 1}
                         moves.append(move)
                 # Empty spot after enemy marble
                 else:
@@ -449,7 +477,10 @@ class Board:
                         final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                         result.append(final_player_marbles + final_enemy_marbles)
 
-                        move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'b' for x in marble_tuple],
+                                "end": [x + 'b' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": False, "pushes": 1}
                         moves.append(move)
                     else:
                         final_enemy_marbles = self.replace_marble(black_marbles, marble_move_one, marble_move_two)
@@ -461,7 +492,10 @@ class Board:
                         final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                         result.append(final_enemy_marbles + final_player_marbles)
 
-                        move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'w' for x in marble_tuple],
+                                "end": [x + 'w' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": False, "pushes": 1}
                         moves.append(move)
 
     def generate_double_moves_with_collision(self, black_marbles: list, white_marbles: list,
@@ -595,8 +629,10 @@ class Board:
                             white_marbles_out = [x + 'w' for x in white_marbles]
                             final_output = final_black_marbles + white_marbles_out
 
-                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                    Movement.Left]
+                            move = {"start": [x + 'b' for x in old_positions],
+                                    "end": [x + 'b' for x in new_positions],
+                                    "move": Movement.Left,
+                                    "elim": False, "pushes": 0}
                         else:
                             final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                             final_white_marbles.sort()
@@ -604,8 +640,10 @@ class Board:
                             black_marbles_out = [x + 'b' for x in black_marbles]
                             final_output = black_marbles_out + final_white_marbles
 
-                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                    Movement.Left]
+                            move = {"start": [x + 'w' for x in old_positions],
+                                    "end": [x + 'w' for x in new_positions],
+                                    "move": Movement.Left,
+                                    "elim": False, "pushes": 0}
                         moves.append(move)
                         result.append(final_output)
             if one_right not in current_marbles and one_right not in forbidden:
@@ -622,8 +660,10 @@ class Board:
                             white_marbles_out = [x + 'w' for x in white_marbles]
                             final_output = final_black_marbles + white_marbles_out
 
-                            move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                    Movement.Right]
+                            move = {"start": [x + 'b' for x in old_positions],
+                                    "end": [x + 'b' for x in new_positions],
+                                    "move": Movement.Right,
+                                    "elim": False, "pushes": 0}
                         else:
                             final_white_marbles = self.replace_marbles(white_marbles, old_positions, new_positions)
                             final_white_marbles.sort()
@@ -631,8 +671,10 @@ class Board:
                             black_marbles_out = [x + 'b' for x in black_marbles]
                             final_output = black_marbles_out + final_white_marbles
 
-                            move = [[x + 'w' for x in old_positions], [x + 'w' for x in new_positions],
-                                    Movement.Right]
+                            move = {"start": [x + 'w' for x in old_positions],
+                                    "end": [x + 'w' for x in new_positions],
+                                    "move": Movement.Right,
+                                    "elim": False, "pushes": 0}
                         moves.append(move)
                         result.append(final_output)
 
@@ -668,8 +710,10 @@ class Board:
                                 white_marbles_out = [x + 'w' for x in white_marbles]
                                 final_output = final_black_marbles + white_marbles_out
 
-                                move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                        movements[index + 2]]
+                                move = {"start": [x + 'b' for x in old_positions],
+                                        "end": [x + 'b' for x in new_positions],
+                                        "move": movements[index + 2],
+                                        "elim": False, "pushes": 0}
                             else:
                                 final_white_marbles = self.replace_marbles(white_marbles, old_positions,
                                                                            new_positions)
@@ -678,8 +722,10 @@ class Board:
                                 black_marbles_out = [x + 'b' for x in black_marbles]
                                 final_output = black_marbles_out + final_white_marbles
 
-                                move = [[x + 'b' for x in old_positions], [x + 'b' for x in new_positions],
-                                        movements[index + 2]]
+                                move = {"start": [x + 'w' for x in old_positions],
+                                        "end": [x + 'w' for x in new_positions],
+                                        "move": movements[index + 2],
+                                        "elim": False, "pushes": 0}
                             moves.append(move)
                             result.append(final_output)
         return result, moves
@@ -717,7 +763,10 @@ class Board:
                             final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                             result.append(final_player_marbles + final_enemy_marbles)
 
-                            move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                            move = {"start": [x + 'b' for x in marble_tuple],
+                                    "end": [x + 'b' for x in marble_spot_one_move],
+                                    "move": movement,
+                                    "elim": True, "pushes": 2}
                             moves.append(move)
                         else:
                             temp_enemy_marbles = self.remove_marble(black_marbles, marble_move_two)
@@ -731,7 +780,10 @@ class Board:
                             final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                             result.append(final_enemy_marbles + final_player_marbles)
 
-                            move = [[x + 'w' for x in marble_tuple], [x + 'w' for x in marble_spot_one_move], movement]
+                            move = {"start": [x + 'w' for x in marble_tuple],
+                                    "end": [x + 'w' for x in marble_spot_one_move],
+                                    "move": movement,
+                                    "elim": True, "pushes": 2}
                             moves.append(move)
                     # Third spot empty, pushing 2 marbles
                     else:
@@ -747,7 +799,10 @@ class Board:
                             final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                             result.append(final_player_marbles + final_enemy_marbles)
 
-                            move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                            move = {"start": [x + 'b' for x in marble_tuple],
+                                    "end": [x + 'b' for x in marble_spot_one_move],
+                                    "move": movement,
+                                    "elim": False, "pushes": 2}
                             moves.append(move)
                         else:
                             final_enemy_marbles = self.replace_marbles(black_marbles,
@@ -761,7 +816,10 @@ class Board:
                             final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                             result.append(final_enemy_marbles + final_player_marbles)
 
-                            move = [[x + 'w' for x in marble_tuple], [x + 'w' for x in marble_spot_one_move], movement]
+                            move = {"start": [x + 'w' for x in marble_tuple],
+                                    "end": [x + 'w' for x in marble_spot_one_move],
+                                    "move": movement,
+                                    "elim": False, "pushes": 2}
                             moves.append(move)
                 # One enemy marble at the edge of the board to be pushed off
                 elif marble_move_two in forbidden:
@@ -775,7 +833,10 @@ class Board:
                         final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                         result.append(final_player_marbles + final_enemy_marbles)
 
-                        move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'b' for x in marble_tuple],
+                                "end": [x + 'b' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": True, "pushes": 1}
                         moves.append(move)
                     else:
                         final_enemy_marbles = self.remove_marble(black_marbles, marble_move_one)
@@ -787,7 +848,10 @@ class Board:
                         final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                         result.append(final_enemy_marbles + final_player_marbles)
 
-                        move = [[x + 'w' for x in marble_tuple], [x + 'w' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'w' for x in marble_tuple],
+                                "end": [x + 'w' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": True, "pushes": 1}
                         moves.append(move)
                 # Friendly marble on the opposite side of the enemy marble blocking the push by 3 marbles.
                 elif marble_move_two not in enemy_marbles and marble_move_two not \
@@ -805,7 +869,10 @@ class Board:
                         final_enemy_marbles = [x + 'w' for x in final_enemy_marbles]
                         result.append(final_player_marbles + final_enemy_marbles)
 
-                        move = [[x + 'b' for x in marble_tuple], [x + 'b' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'b' for x in marble_tuple],
+                                "end": [x + 'b' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": False, "pushes": 1}
                         moves.append(move)
                     else:
                         final_enemy_marbles = self.replace_marble(black_marbles, marble_move_one, marble_move_two)
@@ -817,7 +884,10 @@ class Board:
                         final_enemy_marbles = [x + 'b' for x in final_enemy_marbles]
                         result.append(final_enemy_marbles + final_player_marbles)
 
-                        move = [[x + 'w' for x in marble_tuple], [x + 'w' for x in marble_spot_one_move], movement]
+                        move = {"start": [x + 'w' for x in marble_tuple],
+                                "end": [x + 'w' for x in marble_spot_one_move],
+                                "move": movement,
+                                "elim": False, "pushes": 1}
                         moves.append(move)
 
     def generate_triple_moves_with_collision(self, black_marbles: list, white_marbles: list,
@@ -922,14 +992,19 @@ class Board:
                                               enemy_marbles, current_marbles, result, Movement.DownLeft, moves)
         return result, moves
 
-    def generate_all_boards(self, file_name: str):
+    def generate_all_boards(self, *args):
         """
-        Accepts a file name and generates all possible boards resulting from the initial state
-        read from the file. The list of board states are output to file_name.board and the moves
-        that lead to those board states are output to file_name.move.
+        Accepts input in 2 forms:
+        - File name only: will determine turn and board state from the file.
+        - board, turn: will skip file reading as the board is already known.
+        The method will then generate all possible boards and return a list of moves, result boards
         """
-        turn, current_board = FileReader.read_data(FileReader.load_data(file_name))
-        black_marbles, white_marbles = self.read_marbles(current_board)
+        if len(args) == 1:
+            turn, current_board = FileReader.read_data(FileReader.load_data(args[0]))
+            black_marbles, white_marbles = self.read_marbles(current_board)
+        else:
+            black_marbles, white_marbles = self.read_marbles(args[0])
+            turn = args[1]
         double_marble_sets = self.generate_double_sets(black_marbles, white_marbles, turn)
         triple_marble_sets = self.generate_triple_sets(black_marbles, white_marbles, turn)
 
@@ -954,8 +1029,9 @@ class Board:
             output.append(result_board)
         for result_board in triple_boards_push:
             output.append(result_board)
-        file_name_out = file_name.split('.')[0] + ".board"
-        FileReader.write_data(file_name_out, output)
+        if len(args) == 1:
+            file_name_out = args[0].split('.')[0] + ".board"
+            FileReader.write_data(file_name_out, output)
 
         all_moves = []
         for move in all_single_moves:
@@ -968,8 +1044,11 @@ class Board:
             all_moves.append(move)
         for move in triple_boards_push_moves:
             all_moves.append(move)
-        move_file_out = file_name.split('.')[0] + ".move"
-        FileReader.write_moves(move_file_out, all_moves)
+        if len(args) == 1:
+            move_file_out = args[0].split('.')[0] + ".move"
+            FileReader.write_moves(move_file_out, all_moves)
+
+        return all_moves, output
 
     @staticmethod
     def read_marbles(board_state: list):
@@ -1132,4 +1211,4 @@ Note: The move file representation for each line is [[Old position], [New positi
 """
 if __name__ == '__main__':
     board = Board()
-    board.generate_all_boards("Test1.input")
+    board.generate_all_boards("Test4.input")
