@@ -224,8 +224,8 @@ def set_game_config(context: GUI):
     game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
 
     # Set the turn
-    if game_state['black']['player'] == 'human':
-        game_state['game']['turn'] = 'black'
+    if game_state['white']['player'] == 'human':
+        game_state['game']['turn'] = 'white'
         game_state['game']['state'] = 'started'
     # TODO: Add AI option
     gui_updater.update_gui(context)

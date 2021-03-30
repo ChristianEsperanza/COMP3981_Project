@@ -14,7 +14,7 @@ def start_game_button(context: GUI):
         print(f"Can't start if the game is {game_state.game_state['game']['state']} or if the "
               f"text inputs are invalid")
     else:
-        print("Starting game, black to move!")
+        print("Starting game, white to move!")
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
