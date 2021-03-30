@@ -106,7 +106,7 @@ def reset_game(context: GUI):
 
     # Reset GUI
     context.selected_pieces.clear()
-    context.board.set_default_tiles()
+    context.board.build_board(context.window, 'default')
     context.set_scoreboard()
 
     # Clear histories

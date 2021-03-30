@@ -39,8 +39,7 @@ def reset_game_button(context: GUI):
         print("Can't reset game")
     else:
         print("Resetting game")
-    context.selected_pieces.clear()
-    context.board.build_board(context.window)
+    # context.board.build_board(context.window)
 
 def undo_move_button(context: GUI):
     if game_state.undo_move(context) == False:

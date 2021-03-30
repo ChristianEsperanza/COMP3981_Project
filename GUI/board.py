@@ -1079,13 +1079,9 @@ class Board:
             if tile.piece == black_piece_id:
                 black_score += 1
 
-        # game_state.game_state['white']['score'] = 14 - white_score
-        # game_state.game_state['black']['score'] = 14 - black_score
+        game_state.game_state['white']['score'] = 14 - black_score
+        game_state.game_state['black']['score'] = 14 - white_score
 
-        # TODO: This is just placeholder so the score actually changes on movement
-        # Uncomment the above and delete the next two lines
-        game_state.game_state['white']['score'] = white_score
-        game_state.game_state['black']['score'] = black_score
 
 """        
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
