@@ -119,26 +119,18 @@ class GUI:
                 elements are not overwritten
             5. Add the box to self.console at the bottom of this function.
         """
-        # TODO: Requires fixing, crashes on selection
         starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
         starting_position_title.set_size((button_length, button_height))
 
+        default_layout_radio = thorpy.Checker.make("Default", type_="radio")
+        german_daisy_layout_radio = thorpy.Checker.make("German Daisy", type_="radio")
+        belgian_daisy_layout_radio = thorpy.Checker.make("Belgian Daisy", type_="radio")
 
-        starting_positions = [
-            "Standard",
-            "German Daisy",
-            "Belgian Daisy"
-        ]
-        # starting_positions = [
-        #     ("Standard", self.board.set_default_tiles()),
-        #     ("German Daisy", self.board.set_german_daisy_tiles()),
-        #     ("Belgian Daisy", self.board.set_belgian_daisy_tiles())
-        # ]
-        starting_position_dropdown = thorpy.DropDownListLauncher(const_text="Choose starting layout:",
-                                                                 var_text="",
-                                                                 titles=starting_positions)
-        starting_position_dropdown.scale_to_title()
-        starting_position_dropdown.set_size((button_length, button_height))
+        # Make property of GUI to access when starting a game
+        self.layout_radio_choices = [default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio]
+        layout_radio_pool = thorpy.RadioPool(self.layout_radio_choices,
+                                             first_value=self.layout_radio_choices[0],
+                                             always_value=True)
 
         ##########  CONTROLS BOX  ##########
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
@@ -160,7 +152,7 @@ class GUI:
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            starting_position_title, starting_position_dropdown,
+            starting_position_title, default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio,
             start_button, stop_button, pause_button, resume_button, reset_button, undo_button
         ])
         controls_box.set_size((225, 450))

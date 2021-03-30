@@ -11,7 +11,7 @@ game_state = {
         'turn': 'black' # black, white
     },
     'config': {
-        'starting_layout': '',
+        'starting_layout': '', # default, german daisy, belgian daisy
         'time_elapsed': '',
     },
     'black': {
@@ -205,7 +205,20 @@ def set_game_config(context: GUI):
 
     # Starting layout
     #TODO: Currently default layout  only, once dropdown is fixed adjust this
-    context.board.build_board(context.window, 'default')
+    for layout in context.layout_radio_choices:
+        if not layout.get_value():
+            continue
+        if layout.get_text() == "Default":
+            context.board.build_board(context.window, 'default')
+            game_state['config']['starting_layout'] = 'default'
+
+        elif layout.get_text() == "German Daisy":
+            context.board.build_board(context.window, 'german_daisy')
+            game_state['config']['starting_layout'] = 'german daisy'
+
+        elif layout.get_text() == "Belgian Daisy":
+            context.board.build_board(context.window, 'belgian_daisy')
+            game_state['config']['starting_layout'] = 'belgian daisy'
 
     # Settings for black
     if context.black_human_radio.get_value():
