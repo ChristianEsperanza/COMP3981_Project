@@ -47,6 +47,7 @@ def start_game(context: GUI):
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
         return False
     else:
+        context.update_printer("Starting game, black to move!")
         set_game_config(context)
         context.start_timer()
 
@@ -83,7 +84,7 @@ def resume_game(context: GUI):
 def reset_game(context: GUI):
     # Reset game state
     game_state['game']['state'] = 'stopped'
-    game_state['game']['turn'] = 'white'
+    game_state['game']['turn'] = 'black'
     game_state['config']['starting_layout'] = ''
     game_state['config']['time_elapsed'] = ''
     game_state['black']['player'] = ''
@@ -275,15 +276,16 @@ def set_game_config(context: GUI):
     game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
 
     # Set the turn state
-    if game_state['white']['player'] == 'human':
+    if game_state['black']['player'] == 'human':
         context.update_printer("White to move!")
-        game_state['game']['turn'] = 'white'
+        game_state['game']['turn'] = 'black22'
         game_state['game']['state'] = 'started'
 
-    elif game_state['white']['player'] == 'ai':
-        game_state['game']['turn'] = 'white'
+    elif game_state['black']['player'] == 'ai':
+        game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
 
         context.update_printer("AI is thinking...")
-        ai_main.begin_turn(context, white_piece_id)
+        ai_main.begin_turn(context, black_piece_id)
+
     gui_updater.update_gui(context)

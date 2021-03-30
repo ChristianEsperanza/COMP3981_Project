@@ -31,12 +31,12 @@ class GUI:
         self.window = None
         self.console = None
         self.selected_pieces = []
-        self.player_turn = Turn.WHITE
+        self.player_turn = Turn.BLACK
 
         self.run_timer = False
         self.total_agg_time_white = 0
         self.total_agg_time_black = 0
-        self.timer_focus = Turn.WHITE
+        self.timer_focus = Turn.BLACK
         self.is_started = False
 
     def run(self):
@@ -50,7 +50,6 @@ class GUI:
         self.draw_score_and_time()
         self.update_printer()
         self.set_scoreboard()
-
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
@@ -126,7 +125,7 @@ class GUI:
                         print(f"Tile Coords: ({tile.row}, {tile.column})")
                         self.clicked_tile(tile)
 
-        
+
 
 
     def build_window(self):
