@@ -687,7 +687,7 @@ class GUI:
         self.update_score(Turn.WHITE, "0")
         self.update_moves_taken(Turn.BLACK, "0")
         self.update_moves_taken(Turn.WHITE, "0")
-        self.update_turn_label(Turn.BLACK)
+        self.update_turn_label(Turn.WHITE)
 
 
     def update_total_time(self, piece_enum, time):
