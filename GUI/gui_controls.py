@@ -1,4 +1,6 @@
 # Callback functions
+import threading
+
 import GUI
 from GUI import movement, move_validation
 from Models import game_state
@@ -15,6 +17,8 @@ def start_game_button(context: GUI):
         context.update_printer(message=f"Game is {game_state.game_state['game']['state']} ")
     else:
         context.update_printer(message="Starting game, white to move!")
+        thread2 = threading.Thread(target=context.start_timer)
+        thread2.start()
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
@@ -27,6 +31,7 @@ def pause_game_button(context: GUI):
         context.update_printer("Can't pause game")
     else:
         context.update_printer("Pausing game")
+        game_state.game_state['game']['state'] = "paused"
 
 def resume_game_button(context: GUI):
     if game_state.resume_game(context) == False:
