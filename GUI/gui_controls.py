@@ -3,9 +3,9 @@ import GUI
 from Models import game_state
 
 """
-This is a collection of callback functions that are used in the GUI. The game_state 
-will do the majority of the leg work, so this file functions mostly as a bridge between 
-the GUI and game_state.
+This is a collection of callback functions that are used in the GUI. This file functions mostly as a
+callback bridge between the GUI buttons and the files that contain functions to carry out the 
+desired action.
 """
 
 def start_game_button(context: GUI):
@@ -46,3 +46,7 @@ def undo_move_button(context: GUI):
         print("Can't undo move")
     else:
         print("Undoing move")
+
+def up_left_button(context: GUI, vector_enum):
+    pass
+

@@ -86,7 +86,7 @@ def reset_game(context: GUI):
 
     # Reset game state
     game_state['game']['state'] = 'stopped'
-    game_state['game']['turn'] = 'black'
+    game_state['game']['turn'] = 'white'
     game_state['config']['starting_layout'] = ''
     game_state['config']['time_elapsed'] = ''
     game_state['black']['player'] = ''
@@ -129,7 +129,6 @@ def undo_move(context: GUI):
 
     game_state = copy.deepcopy(state)
     gui_updater.update_gui(context)
-    context.toggle_player_move()
 
 
 def update_turn(context:GUI):
@@ -151,6 +150,27 @@ def update_turn(context:GUI):
 
     # Go through each turn state (ie black/white and human/ai)  and check what the player config
     #   of the other player is. Update the current turn state to be the found config (ie human/ai).
+    if game_state['game']['turn'] == 'black':
+        update_moves_taken(Turn.BLACK)
+
+        if game_state['black']['player'] == 'ai':
+            game_state['game']['turn'] == 'white'
+            # TODO: Fill in with AI movement
+            # ai.begin_turn()
+
+        else:
+            game_state['game']['turn'] = 'white'
+
+    elif game_state['game']['turn'] == 'white':
+        update_moves_taken(Turn.WHITE)
+
+        if game_state['black']['player'] == 'ai':
+            game_state['game']['turn'] == 'white'
+            # TODO: Fill in with AI movement
+            # ai.begin_turn()
+
+        else:
+            game_state['game']['turn'] = 'white'
 
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
@@ -159,20 +179,18 @@ def update_turn(context:GUI):
 
     # Iterate through the state choices to find the current state, then:
     #   - Set the new game state/turn
-    #   - Call context.toggle_player_move()
     #   - Reset turn timer to 0
     #   - Call the gui.update_time/moves/etc.
 
     # Temporary, to be deleted later. This just changes the turn for now
-    if game_state['game']['turn'] == 'black':
-        update_moves_taken(Turn.BLACK)
-        game_state['game']['turn'] = 'white'
-    else:
-        update_moves_taken(Turn.WHITE)
-        game_state['game']['turn'] = 'black'
+    # if game_state['game']['turn'] == 'black':
+    #     update_moves_taken(Turn.BLACK)
+    #     game_state['game']['turn'] = 'white'
+    # else:
+    #     update_moves_taken(Turn.WHITE)
+    #     game_state['game']['turn'] = 'black'
 
     gui_updater.update_gui(context)
-    context.toggle_player_move()
 
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board

@@ -275,55 +275,6 @@ class GUI:
         print([tile.board_coordinate for tile in self.selected_pieces])
 
     def test_func_move(self, **kwargs):
-        # # print(f"{self.player_turn.name} to move!")
-        # print("Move: " + str(kwargs['vector']))
-        # vector_rep = kwargs['vector']
-        #
-        # try:
-        #
-        #     vector = None
-        #     selected_pieces_sorted = None
-        #
-        #     # Moving of pieces. Sorting used for correct movement of pieces.
-        #     if vector_rep == Vector.UP_LEFT:
-        #         vector = (1, 0)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
-        #     elif vector_rep == Vector.UP_RIGHT:
-        #         vector = (1, 1)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
-        #     elif vector_rep == Vector.LEFT:
-        #         vector = (0, -1)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
-        #     elif vector_rep == Vector.RIGHT:
-        #         vector = (0, 1)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'), reverse=True)
-        #     elif vector_rep == Vector.DOWN_LEFT:
-        #         vector = (-1, -1)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
-        #     elif vector_rep == Vector.DOWN_RIGHT:
-        #         vector = (-1, 0)
-        #         selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
-        #
-        #     if self.is_valid_selection() and self.is_valid_move(vector_rep):
-        #
-        #         # Swaps all tiles according to movement vector
-        #         for tile in selected_pieces_sorted:
-        #             print(f"Moving vector {vector}")
-        #             self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
-        #         self.board.update_board(self.window)
-        #
-        #         self.toggle_player_move()   # Other players turn.
-        #
-        #     else:
-        #         print("Invalid Move. Clearing selected pieces")
-        #
-        # except KeyError:
-        #     print("Middle Button pressed")
-        #
-        # finally:
-        #     self.selected_pieces.clear()
-        # print(f"{self.player_turn.name} to move!")
-
         # Check state first to see that game is in progress
         state = game_state.game_state['game']['state']
         if state == 'stopped':
@@ -378,8 +329,6 @@ class GUI:
                 self.board.update_board(self.window)
 
                 if self.toggle_players:
-                    self.toggle_player_move()  # Other players turn.
-                    # self.toggle_player_move()   # Other players turn.
                     self.end_turn()
 
                 return True
@@ -544,7 +493,6 @@ class GUI:
         return True
 
     def end_turn(self):
-        # self.toggle_player_move()
         game_state.update_turn(self)
         self.toggle_player_move()
         
