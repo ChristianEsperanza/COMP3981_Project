@@ -1,5 +1,4 @@
 import datetime
-import threading
 import time
 from threading import Timer, Thread
 
@@ -14,6 +13,7 @@ from Utility.enum import Vector
 from Utility.enum import Turn
 from operator import itemgetter
 from GUI.gui_controls import *
+from GUI.timer import Timer
 
 class GUI:
     """
@@ -36,8 +36,12 @@ class GUI:
         self.run_timer = False
         self.total_agg_time_white = 0
         self.total_agg_time_black = 0
-        self.timer_focus = Turn.WHITE
         self.is_started = False
+        self.white_timer = Timer(game_state.game_state['white']['time_limit'],
+                                 Turn.WHITE, self, 0)
+        self.black_timer = Timer(game_state.game_state['black']['time_limit'],
+                                 Turn.BLACK, self, 0)
+        self.run_once = False
 
     def run(self):
         """
@@ -54,7 +58,7 @@ class GUI:
 
         pygame.display.set_caption("Abalone")
 
-        thread1 = threading.Thread(target=self.start_game_loop)
+        thread1 = Thread(target=self.start_game_loop)
         thread1.start()
         thread1.run()
         # clock = pygame.time.Clock()
@@ -260,7 +264,7 @@ class GUI:
         left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.LEFT})
         left.set_size((50, 50))
 
-        center = thorpy.make_button("0", func=self.test_func_move)
+        center = thorpy.make_button("0")
         center.set_size((50, 50))
         center.set_topleft((2000, 1000))
 
@@ -590,11 +594,15 @@ class GUI:
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
             self.player_turn = Turn.BLACK
+            self.white_timer.pause_timer()
+            # self.black_timer.start_timer()
         else:
             self.player_turn = Turn.WHITE
+            self.black_timer.pause_timer()
+            # self.white_timer.start_timer()
         print(f"{self.player_turn.name} to move!")
         self.run_timer = False
-        self.start_timer()
+        # self.begin_timer()
 
     def draw_score_and_time(self):
         """
@@ -719,8 +727,30 @@ class GUI:
         turn_label = font_text_time_lable.render(piece_enum.name, True, black)
         self.window.blit(turn_label, turn_label_location)
 
+    def begin_timer(self):
+        if not self.run_once:
+            return
+        print("THREAD RIPPER")
+        self.run_once = False
+        total_agg_time = None
+        timer = None
+        while game_state.game_state['game']['state'] == ('started' or 'paused'):
+            print(f"Executing begin timer loop iteration for {self.player_turn.name}")
+            if self.player_turn == Turn.WHITE:
+                timer = self.white_timer
+            else:
+                timer = self.black_timer
+            # thread3 = threading.Thread(target=timer.start_timer)
+            # thread3.start()
+            timer.is_running = True
+            timer.start_timer()
+
+
     def start_timer(self):
         self.run_timer = True
         self.is_started = True
-        while game_state.game_state['game']['state'] == ('started' or 'paused'):
-            print(game_state.game_state['game']['state'])
+        self.run_once = True
+        thread2 = threading.Thread(target=self.begin_timer)
+        thread2.start()
+        # threading.Lock()
+        # thread2.run()

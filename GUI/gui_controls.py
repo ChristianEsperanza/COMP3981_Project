@@ -17,8 +17,8 @@ def start_game_button(context: GUI):
         context.update_printer(message=f"Game is {game_state.game_state['game']['state']} ")
     else:
         context.update_printer(message="Starting game, white to move!")
-        thread2 = threading.Thread(target=context.start_timer)
-        thread2.start()
+        game_state.game_state['game']['state'] = 'started'
+        context.start_timer()
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
