@@ -1,8 +1,3 @@
-import datetime
-import threading
-import time
-from threading import Timer, Thread
-
 import thorpy
 import pygame
 import random
@@ -14,6 +9,7 @@ from Utility.enum import Vector
 from Utility.enum import Turn
 from operator import itemgetter
 from GUI.gui_controls import *
+
 
 class GUI:
     """
@@ -98,8 +94,6 @@ class GUI:
                     count = 0
             pygame.display.update()
 
-
-
     def dumb_stuff(self):
         """
         Draws two flashing rectangles. Probably best we get rid of this.
@@ -124,9 +118,6 @@ class GUI:
                     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
                         print(f"Tile Coords: ({tile.row}, {tile.column})")
                         self.clicked_tile(tile)
-
-
-
 
     def build_window(self):
         """
@@ -155,7 +146,7 @@ class GUI:
                 elements are not overwritten
             5. Add the box to self.console at the bottom of this function.
         """
-        starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
+        starting_position_title = thorpy.make_text("Starting Position", 18, (0, 0, 0))
         starting_position_title.set_size((button_length, button_height))
 
         default_layout_radio = thorpy.Checker.make("Default", type_="radio")
@@ -168,7 +159,7 @@ class GUI:
                                              first_value=self.layout_radio_choices[0],
                                              always_value=True)
 
-        ##########  CONTROLS BOX  ##########
+        """ CONTROLS BOX """
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
         start_button.set_size((button_length, button_height))
 
@@ -193,8 +184,8 @@ class GUI:
         ])
         controls_box.set_size((225, 450))
 
-        ### PLAYER SETTINGS ###
-        black_settings_title = thorpy.make_text("Black", 22, (0,0,0))
+        """ PLAYER SETTINGS """
+        black_settings_title = thorpy.make_text("Black", 22, (0, 0, 0))
         black_settings_title.set_size((button_length, button_height))
 
         black_move_limit = thorpy.Inserter("Move Limit:", value="")
@@ -237,7 +228,7 @@ class GUI:
         ])
         settings_box.set_size((225, 450))
 
-        ######## MOVEMENT CONTROLS ########
+        """ MOVEMENT CONTROLS """
         # TODO: Move these functions into gui_controls
         # Row 1
         up_left = thorpy.make_button("UP-L", func=self.test_func_move, params={"vector": Vector.UP_LEFT})
@@ -305,7 +296,7 @@ class GUI:
         ))
         if message is not None:
             font_text = pygame.font.SysFont('Ariel', 22)
-            text_renderer= font_text.render(str(message), True, white)
+            text_renderer = font_text.render(str(message), True, white)
             self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
         pygame.display.update()
 
@@ -518,7 +509,8 @@ class GUI:
         print("Linear move test")
         if len(selected_pieces_sorted) == 1:
             return True
-        if self.change_coordinate_by_vector(vector, selected_pieces_sorted[1]) == selected_pieces_sorted[0].board_coordinate:
+        if self.change_coordinate_by_vector(vector, selected_pieces_sorted[1])\
+                == selected_pieces_sorted[0].board_coordinate:
             return True
         else:
             return False
@@ -596,8 +588,8 @@ class GUI:
         Builds the boxes for black and white score, time taken, and moves taken.
         Should only be called on startup and resetting the board
         """
-        ##### BLACK #####
-        black_score_title = thorpy.make_text("Black", 24, (0,0,0))
+        """ BLACK """
+        black_score_title = thorpy.make_text("Black", 24, (0, 0, 0))
         black_score_title.set_topleft((50, 640))
         black_score_title.blit()
         black_score_title.update()
@@ -615,9 +607,8 @@ class GUI:
         black_moves_taken = font_text_time_label.render("Moves Taken:", True, black)
         self.window.blit(black_moves_taken, (25, 765))
 
-
-        ##### WHITE #####
-        white_score_title = thorpy.make_text("White:", 24, (0,0,0))
+        """ WHITE """
+        white_score_title = thorpy.make_text("White:", 24, (0, 0, 0))
         white_score_title.set_topleft((550, 640))
         white_score_title.blit()
 
@@ -649,7 +640,6 @@ class GUI:
         self.update_score(Turn.WHITE, "0")
         self.update_moves_taken(Turn.BLACK, "0")
         self.update_moves_taken(Turn.WHITE, "0")
-
 
     def update_total_time(self, piece_enum, time):
         # Update the aggregate timers
@@ -690,14 +680,12 @@ class GUI:
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, white_score_location)
 
-
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
             pygame.draw.rect(self.window, red, (180, 735, 75, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, black_score_location)
         pygame.display.update()
-
 
     def update_moves_taken(self, piece_enum, moves_taken):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)

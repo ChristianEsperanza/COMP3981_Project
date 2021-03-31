@@ -1,5 +1,4 @@
 import copy
-import threading
 
 import GUI
 from AI import ai_main
@@ -10,10 +9,10 @@ from Utility.enum import *
 game_state = {
     'game': {
         'state': 'stopped',  # paused, stopped, started
-        'turn': 'black' # black, white
+        'turn': 'black'  # black, white
     },
     'config': {
-        'starting_layout': '', # default, german daisy, belgian daisy
+        'starting_layout': '',  # default, german daisy, belgian daisy
         'time_elapsed': '',
     },
     'black': {
@@ -43,6 +42,7 @@ move_history_white = [[], []]
 board_history = []
 state_history = []
 
+
 def start_game(context: GUI):
     # Can only start from a stopped position with valid text from inputs
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
@@ -59,6 +59,7 @@ def stop_game(context: GUI):
     else:
         game_state['game']['state'] = 'stopped'
 
+
 def pause_game(context: GUI):
     # Can only pause if game has started
     if game_state['game']['state'] != 'started':
@@ -72,6 +73,7 @@ def pause_game(context: GUI):
         else:
             game_state['white']['move_time'] = 0
 
+
 def resume_game(context: GUI):
     # Resuming the game will change the state to 'started'
 
@@ -80,7 +82,8 @@ def resume_game(context: GUI):
     else:
         game_state['game']['state'] = 'started'
 
-        #TODO: Start the timer again
+        # TODO: Start the timer again
+
 
 def reset_game(context: GUI):
     # Reset game state
@@ -114,6 +117,7 @@ def reset_game(context: GUI):
     board_history = []
     gui_updater.update_gui(context)
 
+
 def undo_move(context: GUI):
     # TODO: This does not work
     global game_state
@@ -130,7 +134,7 @@ def undo_move(context: GUI):
     gui_updater.update_gui(context)
 
 
-def update_turn(context:GUI):
+def update_turn(context: GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
@@ -142,7 +146,6 @@ def update_turn(context:GUI):
     # Calculate the current score after movement
     # TODO: Call this function in functions where the score changes (IE sumitos)
     context.board.update_scores()
-
 
     # TODO: append move history
 
@@ -198,6 +201,7 @@ def update_turn(context:GUI):
 
     # gui_updater.update_gui(context)
 
+
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board
     if piece_enum == Turn.WHITE:
@@ -205,7 +209,8 @@ def update_moves_taken(piece_enum):
     if piece_enum == Turn.BLACK:
         game_state['black']['moves_taken'] += 1
 
-def check_goal_state(context:GUI):
+
+def check_goal_state(context: GUI):
     # Check for goal states before finalizing a turn
     #    Win (6 points)
     if game_state['white']['score'] == 6:
@@ -241,11 +246,12 @@ def validate_text_input(context: GUI):
             return False
     return True
 
+
 def set_game_config(context: GUI):
     # Get the game configs from the GUI
 
     # Starting layout
-    #TODO: Currently default layout  only, once dropdown is fixed adjust this
+    # TODO: Currently default layout  only, once dropdown is fixed adjust this
     for layout in context.layout_radio_choices:
         if not layout.get_value():
             continue

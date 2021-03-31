@@ -50,14 +50,14 @@ class Tile:
             color = 2
         else:
             color = 1
-        numLetter = ord(letter) - 65
-        return Tile(numLetter, position, letter + marble[1], color)
+        num_letter = ord(letter) - 65
+        return Tile(num_letter, position, letter + marble[1], color)
 
     def set_rect(self, rect):
         """
         Setter for rect.
         When a tile is set by the board, it is given an image Rect object which
-        is used to detect mouseclicks.
+        is used to detect mouse clicks.
         :param rect:
         :return:
         """

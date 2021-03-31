@@ -150,22 +150,22 @@ class Board:
         turned into tiles and placed within the hashtable representing the board. The remainder of
         the board is filled with empty tiles and the game board is updated.
         """
-        boardOut = {'A': [], 'B': [], 'C': [], 'D': [], 'E': [], 'F': [], 'G': [], 'H': [], 'I': []}
+        board_out = {'A': [], 'B': [], 'C': [], 'D': [], 'E': [], 'F': [], 'G': [], 'H': [], 'I': []}
         rows = ['A15', 'B16', 'C17', 'D18', 'E19', 'F29', 'G39', 'H49', 'I59']
         for marble in marbles:
             tile = Tile.generate_tile(marble)
-            boardOut[marble[0]].append(tile)
+            board_out[marble[0]].append(tile)
         for row in rows:
-            currRow = boardOut[row[0]]
-            tilesOccupied = [x.get_coord() for x in currRow]
-            rowInt = ord(row[0]) - 65
+            curr_row = board_out[row[0]]
+            tiles_occupied = [x.get_coord() for x in curr_row]
+            row_int = ord(row[0]) - 65
             start = int(row[1]) - 1
             end = int(row[2])
             for x in range(start, end):
-                tileID = row[0] + str(x + 1)
-                if tileID not in tilesOccupied:
-                    currRow.append(Tile(rowInt, x, tileID, None))
-        self.board = boardOut
+                tile_id = row[0] + str(x + 1)
+                if tile_id not in tiles_occupied:
+                    curr_row.append(Tile(row_int, x, tile_id, None))
+        self.board = board_out
 
     def generate_single_moves(self, black_marbles: list, white_marbles: list, turn: chr):
         """
@@ -372,7 +372,6 @@ class Board:
                                 "elim": False, "pushes": 0}
                     moves.append(move)
                     result.append(final_output)
-
 
             one_upL = self.convert_to_string(one_letter + 1, one_num)
             one_upR = self.convert_to_string(one_letter + 1, one_num + 1)
@@ -1148,7 +1147,7 @@ class Board:
         self.board_dict = board_dict
 
     def update_scores(self):
-        #TODO: Call this in functions where the score changes (IE sumitos)
+        # TODO: Call this in functions where the score changes (IE sumitos)
         white_score = 0
         black_score = 0
 
@@ -1170,6 +1169,7 @@ class Board:
             elif self.board_dict[key].get_piece() == black_piece_id:
                 board_state.append(self.board_dict[key].board_coordinate + 'b')
         return board_state
+
 
 """        
         # Iterate through columns, drawing a circle and adding the center point as a tuple to each Tile.
