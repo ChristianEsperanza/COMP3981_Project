@@ -2,17 +2,17 @@ import copy
 
 import GUI
 from AI import ai_main
-from GUI import gui_updater, movement
+from GUI import gui_updater
 from Utility.constants import *
 from Utility.enum import *
 
 game_state = {
     'game': {
         'state': 'stopped',  # paused, stopped, started
-        'turn': 'black' # black, white
+        'turn': 'black'  # black, white
     },
     'config': {
-        'starting_layout': '', # default, german daisy, belgian daisy
+        'starting_layout': '',  # default, german daisy, belgian daisy
         'time_elapsed': '',
     },
     'black': {
@@ -42,11 +42,13 @@ move_history_white = [[], []]
 board_history = []
 state_history = []
 
+
 def start_game(context: GUI):
     # Can only start from a stopped position with valid text from inputs
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
         return False
     else:
+        context.update_printer("Starting game, black to move!")
         set_game_config(context)
         context.start_timer()
 
@@ -56,6 +58,7 @@ def stop_game(context: GUI):
         return False
     else:
         game_state['game']['state'] = 'stopped'
+
 
 def pause_game(context: GUI):
     # Can only pause if game has started
@@ -70,6 +73,7 @@ def pause_game(context: GUI):
         else:
             game_state['white']['move_time'] = 0
 
+
 def resume_game(context: GUI):
     # Resuming the game will change the state to 'started'
 
@@ -78,12 +82,13 @@ def resume_game(context: GUI):
     else:
         game_state['game']['state'] = 'started'
 
-        #TODO: Start the timer again
+        # TODO: Start the timer again
+
 
 def reset_game(context: GUI):
     # Reset game state
     game_state['game']['state'] = 'stopped'
-    game_state['game']['turn'] = 'white'
+    game_state['game']['turn'] = 'black'
     game_state['config']['starting_layout'] = ''
     game_state['config']['time_elapsed'] = ''
     game_state['black']['player'] = ''
@@ -112,6 +117,7 @@ def reset_game(context: GUI):
     board_history = []
     gui_updater.update_gui(context)
 
+
 def undo_move(context: GUI):
     # TODO: This does not work
     global game_state
@@ -128,7 +134,7 @@ def undo_move(context: GUI):
     gui_updater.update_gui(context)
 
 
-def update_turn(context:GUI):
+def update_turn(context: GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
@@ -141,7 +147,6 @@ def update_turn(context:GUI):
     # TODO: Call this function in functions where the score changes (IE sumitos)
     context.board.update_scores()
 
-
     # TODO: append move history
 
     # Go through each turn state (ie black/white and human/ai) to find the correct state.
@@ -150,27 +155,31 @@ def update_turn(context:GUI):
     # If black just went
     if game_state['game']['turn'] == 'black':
         game_state['game']['turn'] = 'white'
+        context.toggle_player_move()
         update_moves_taken(Turn.BLACK)
+        gui_updater.update_gui(context)
 
         if game_state['white']['player'] == 'ai':
-            # TODO: Fill in with AI movement
-            # ai.begin_turn()
-            pass
+            context.update_printer("AI is thinking...")
+            ai_main.begin_turn(context, white_piece_id)
+
         else:
-            gui_updater.update_gui(context)
+            context.update_printer("White to move!")
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
         game_state['game']['turn'] = 'black'
+        context.toggle_player_move()
         update_moves_taken(Turn.WHITE)
+        gui_updater.update_gui(context)
 
         if game_state['black']['player'] == 'ai':
-            # TODO: Fill in with AI movement
-            # ai.begin_turn()
-            ai_main.begin_turn(context)
+            context.update_printer("AI is thinking...")
+            gui_updater.update_gui(context)
+            ai_main.begin_turn(context, black_piece_id)
 
         else:
-            gui_updater.update_gui(context)
+            context.update_printer("Black to move!")
 
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
@@ -192,6 +201,7 @@ def update_turn(context:GUI):
 
     # gui_updater.update_gui(context)
 
+
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board
     if piece_enum == Turn.WHITE:
@@ -199,7 +209,8 @@ def update_moves_taken(piece_enum):
     if piece_enum == Turn.BLACK:
         game_state['black']['moves_taken'] += 1
 
-def check_goal_state(context:GUI):
+
+def check_goal_state(context: GUI):
     # Check for goal states before finalizing a turn
     #    Win (6 points)
     if game_state['white']['score'] == 6:
@@ -235,11 +246,12 @@ def validate_text_input(context: GUI):
             return False
     return True
 
+
 def set_game_config(context: GUI):
     # Get the game configs from the GUI
 
     # Starting layout
-    #TODO: Currently default layout  only, once dropdown is fixed adjust this
+    # TODO: Currently default layout  only, once dropdown is fixed adjust this
     for layout in context.layout_radio_choices:
         if not layout.get_value():
             continue
@@ -272,14 +284,18 @@ def set_game_config(context: GUI):
     game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
 
     # Set the turn state
-    if game_state['white']['player'] == 'human':
-        game_state['game']['turn'] = 'white'
+    if game_state['black']['player'] == 'human':
+        context.update_printer("Black to move!")
+        game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        gui_updater.update_gui(context)
 
-    elif game_state['white']['player'] == 'ai':
-        game_state['game']['turn'] = 'white'
+    elif game_state['black']['player'] == 'ai':
+        game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        gui_updater.update_gui(context)
 
-        # TODO: Add AI code
-        # ai.do_thing()
-    gui_updater.update_gui(context)
+        context.update_printer("AI is thinking...")
+        ai_main.begin_turn(context, black_piece_id)
+
+    # gui_updater.update_gui(context)

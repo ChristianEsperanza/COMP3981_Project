@@ -164,8 +164,8 @@ class Evaluator:
         else:
             risk = white_risk
 
-        boardObject = Board()
-        moves, resulting_boards = boardObject.generate_all_boards(board, player_turn)
+        board_object = Board()
+        moves, resulting_boards = board_object.generate_all_boards(board, player_turn)
         # Assume score 0 for now
         Evaluator.score_move(moves, 0)
         for i in range(0, len(moves)):
@@ -246,7 +246,8 @@ class Evaluator:
 
 
 if __name__ == '__main__':
-    string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b,I5b,A2w,A3w,B2w,B3w,B5w,C2w,C6w,D3w,G6w,G7w,H6w,H8w,I6w,I9w"
+    string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b,I5b," \
+                   "A2w,A3w,B2w,B3w,B5w,C2w,C6w,D3w,G6w,G7w,H6w,H8w,I6w,I9w"
     board_state = [x.strip() for x in string_state[0:].split(',')]
     turn = 'b'
     best_move = Evaluator.minimax(board_state, turn)

@@ -14,7 +14,7 @@ desired action.
 def start_game_button(context: GUI):
     # game_state.start_game() will only return false if invalid inputs or game state
     if game_state.start_game(context) == False:
-        context.update_printer(message=f"Game is {game_state.game_state['game']['state']} ")
+        context.update_printer("State or inputs invalid")
     else:
         context.update_printer(message="Starting game, white to move!")
         game_state.game_state['game']['state'] = 'started'

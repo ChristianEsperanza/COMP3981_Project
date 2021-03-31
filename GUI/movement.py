@@ -22,7 +22,7 @@ def move_1_piece(context: GUI, old_coordinate, new_coordinate):
 
 def move_2_pieces(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
     # The old coordinates should be sorted so that old_coordinate_2 is adjacent to new_coordinate1
-    # Ex - Black moving (b2,c3) to (D4, E5)
+    # Ex - Black moving (b2,c3) to (D4,C3)
 
     old_tile_1 = context.board.board_dict[old_coordinate_1]
     old_tile_2 = context.board.board_dict[old_coordinate_2]
@@ -68,6 +68,14 @@ def sumito_three_to_one(context):
 def sumito_three_to_two(context):
     pass
 
+def push_two_to_one(context):
+    pass
+
+def push_three_to_one(context):
+    pass
+
+def push_three_to_two(context):
+    pass
 
 
 
