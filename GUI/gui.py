@@ -1,3 +1,7 @@
+import datetime
+import time
+from threading import Timer, Thread
+
 import thorpy
 import pygame
 import random
@@ -9,6 +13,7 @@ from Utility.enum import Vector
 from Utility.enum import Turn
 from operator import itemgetter
 from GUI.gui_controls import *
+from GUI.timer import Timer
 
 
 class GUI:
@@ -32,8 +37,15 @@ class GUI:
         self.run_timer = False
         self.total_agg_time_white = 0
         self.total_agg_time_black = 0
+
         self.timer_focus = Turn.BLACK
+
         self.is_started = False
+        self.white_timer = Timer(game_state.game_state['white']['time_limit'],
+                                 Turn.WHITE, self, 0)
+        self.black_timer = Timer(game_state.game_state['black']['time_limit'],
+                                 Turn.BLACK, self, 0)
+        self.run_once = False
 
     def run(self):
         """
@@ -48,9 +60,36 @@ class GUI:
         self.set_scoreboard()
 
         pygame.display.set_caption("Abalone")
+
+        thread1 = Thread(target=self.start_game_loop)
+        thread1.start()
+        thread1.run()
+        # clock = pygame.time.Clock()
+        # count = 0
+        # total_turn_time = 0
+        # while True:
+        #     clock.tick(60)
+        #
+        #     for event in pygame.event.get():
+        #         # GUI buttons react to event
+        #         self.console.react(event)
+        #
+        #         if event.type == pygame.QUIT:
+        #             pygame.quit()
+        #
+        #         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        #             pos = pygame.mouse.get_pos()
+        #             print(pos)
+        #
+        #             self.handle_click(pos)
+        #             # for key, tile in self.board.board_dict.items():
+        #             #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+        #             #         print(f"Tile Coords: ({tile.row}, {tile.column})")
+        #             #         self.clicked_tile(tile)
+        #     pygame.display.update()
+
+    def start_game_loop(self):
         clock = pygame.time.Clock()
-        count = 0
-        total_turn_time = 0
         while True:
             clock.tick(60)
 
@@ -67,31 +106,10 @@ class GUI:
 
                     self.handle_click(pos)
 
-            if game_state.game_state['game']['state'] == 'started':
-                count += 1
-                if count == 60:
-                    if self.player_turn == self.timer_focus:
-                        total_turn_time += 1
-                    else:  # Turn swap
-                        if self.timer_focus == Turn.WHITE:
-                            self.update_turn_time(Turn.WHITE, total_turn_time)
-                            game_state.game_state['white']['move_time'] = total_turn_time
-                        else:
-                            game_state.game_state['black']['move_time'] = total_turn_time
-                        self.timer_focus = self.player_turn
-                        total_turn_time = 0
-
-                    if self.player_turn == Turn.WHITE:
-                        self.total_agg_time_white += 1
-                        self.update_turn_time(Turn.WHITE, total_turn_time)
-                        self.update_total_time(Turn.WHITE, self.total_agg_time_white)
-                        game_state.game_state['white']['total_time'] = self.total_agg_time_white
-                    else:
-                        self.total_agg_time_black += 1
-                        self.update_turn_time(Turn.BLACK, total_turn_time)
-                        self.update_total_time(Turn.BLACK, self.total_agg_time_black)
-                        game_state.game_state['black']['total_time'] = self.total_agg_time_black
-                    count = 0
+                    # for key, tile in self.board.board_dict.items():
+                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
+                    #         self.clicked_tile(tile)
             pygame.display.update()
 
     def dumb_stuff(self):
@@ -245,7 +263,7 @@ class GUI:
         left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.LEFT})
         left.set_size((50, 50))
 
-        center = thorpy.make_button("0", func=self.test_func_move)
+        center = thorpy.make_button("0")
         center.set_size((50, 50))
         center.set_topleft((2000, 1000))
 
@@ -577,11 +595,15 @@ class GUI:
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
             self.player_turn = Turn.BLACK
+            self.white_timer.pause_timer()
+            # self.black_timer.start_timer()
         else:
             self.player_turn = Turn.WHITE
+            self.black_timer.pause_timer()
+            # self.white_timer.start_timer()
         print(f"{self.player_turn.name} to move!")
         self.run_timer = False
-        self.start_timer()
+        # self.begin_timer()
 
     def draw_score_and_time(self):
         """
@@ -708,6 +730,29 @@ class GUI:
         self.window.blit(turn_label, turn_label_location)
         pygame.display.update()
 
+    def begin_timer(self):
+        if not self.run_once:
+            return
+        print("THREAD RIPPER")
+        self.run_once = False
+        total_agg_time = None
+        timer = None
+        while game_state.game_state['game']['state'] == ('started' or 'paused'):
+            print(f"Executing begin timer loop iteration for {self.player_turn.name}")
+            if self.player_turn == Turn.WHITE:
+                timer = self.white_timer
+            else:
+                timer = self.black_timer
+            # thread3 = threading.Thread(target=timer.start_timer)
+            # thread3.start()
+            timer.is_running = True
+            timer.start_timer()
+
+
     def start_timer(self):
         self.run_timer = True
         self.is_started = True
+        self.run_once = True
+        thread2 = threading.Thread(target=self.begin_timer)
+        thread2.start()
+
