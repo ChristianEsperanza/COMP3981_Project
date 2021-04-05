@@ -1,4 +1,6 @@
 # Callback functions
+import threading
+
 import GUI
 from GUI import movement, move_validation
 from Models import game_state
@@ -14,7 +16,9 @@ def start_game_button(context: GUI):
     if game_state.start_game(context) == False:
         context.update_printer("State or inputs invalid")
     else:
-        context.update_printer(message="Starting game, black to move!")
+        context.update_printer(message="Starting game, white to move!")
+        game_state.game_state['game']['state'] = 'started'
+        context.start_timer()
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
@@ -27,18 +31,29 @@ def pause_game_button(context: GUI):
         context.update_printer("Can't pause game")
     else:
         context.update_printer("Pausing game")
+        game_state.game_state['game']['state'] = "paused"
+        context.white_timer.pause_timer_temp()
+        context.black_timer.pause_timer_temp()
 
 def resume_game_button(context: GUI):
     if game_state.resume_game(context) == False:
         context.update_printer("Can't resume game")
     else:
         context.update_printer("Resuming game")
+    # if game_state.game_state['game']['turn'] == 'white':
+    #     context.white_timer.start_timer()
+    # else:
+    #     context.black_timer.start_timer()
+    context.resume_timer()
+    context.start_timer()
 
 def reset_game_button(context: GUI):
     if game_state.reset_game(context) == False:
         context.update_printer("Can't reset game")
     else:
         context.update_printer("Resetting game")
+        context.black_timer.reset_timer()
+        context.white_timer.reset_timer()
     # context.board.build_board(context.window)
 
 def undo_move_button(context: GUI):
