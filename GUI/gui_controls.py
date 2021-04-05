@@ -32,12 +32,20 @@ def pause_game_button(context: GUI):
     else:
         context.update_printer("Pausing game")
         game_state.game_state['game']['state'] = "paused"
+        context.white_timer.pause_timer_temp()
+        context.black_timer.pause_timer_temp()
 
 def resume_game_button(context: GUI):
     if game_state.resume_game(context) == False:
         context.update_printer("Can't resume game")
     else:
         context.update_printer("Resuming game")
+    # if game_state.game_state['game']['turn'] == 'white':
+    #     context.white_timer.start_timer()
+    # else:
+    #     context.black_timer.start_timer()
+    context.resume_timer()
+    context.start_timer()
 
 def reset_game_button(context: GUI):
     if game_state.reset_game(context) == False:

@@ -748,6 +748,12 @@ class GUI:
             timer.is_running = True
             timer.start_timer()
 
+    def resume_timer(self):
+        if game_state.game_state['game']['turn'] == 'black':
+            self.black_timer.resume_timer()
+        else:
+            self.white_timer.resume_timer()
+
 
     def start_timer(self):
         self.run_timer = True
