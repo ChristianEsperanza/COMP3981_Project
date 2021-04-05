@@ -44,6 +44,8 @@ def reset_game_button(context: GUI):
         context.update_printer("Can't reset game")
     else:
         context.update_printer("Resetting game")
+        context.black_timer.reset_timer()
+        context.white_timer.reset_timer()
     # context.board.build_board(context.window)
 
 def undo_move_button(context: GUI):

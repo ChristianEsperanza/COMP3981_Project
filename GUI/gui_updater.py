@@ -18,18 +18,18 @@ def update_gui(context: GUI):
 
 def update_gui_total_time(context: GUI, piece=None, move_time=None):
     if piece is None and move_time is None:
-        context.update_total_time(Turn.WHITE, game_state.game_state['white']['total_time'])
-        context.update_total_time(Turn.BLACK, game_state.game_state['black']['total_time'])
+        context.update_total_time(Turn.WHITE, int(game_state.game_state['white']['total_time']))
+        context.update_total_time(Turn.BLACK, int(game_state.game_state['black']['total_time']))
     else:
         if piece == Turn.WHITE:
-            context.update_total_time(Turn.WHITE, move_time)
+            context.update_total_time(Turn.WHITE, int(move_time))
         else:
-            context.update_total_time(Turn.BLACK, move_time)
+            context.update_total_time(Turn.BLACK, int(move_time))
 
 def update_gui_move_time(context: GUI,  piece=None, move_time=None):
     if piece is None and move_time is None:
-        context.update_turn_time(Turn.WHITE, game_state.game_state['white']['move_time'])
-        context.update_turn_time(Turn.BLACK, game_state.game_state['black']['move_time'])
+        context.update_turn_time(Turn.WHITE, int(game_state.game_state['white']['move_time']))
+        context.update_turn_time(Turn.BLACK, int(game_state.game_state['black']['move_time']))
     else:
         if piece == Turn.WHITE:
             context.update_turn_time(Turn.WHITE, move_time)
