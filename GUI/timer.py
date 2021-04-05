@@ -32,15 +32,15 @@ class Timer:
             print(f"Resuming timer with move time {self.current_move_time}")
         elif not self.is_soft_paused:
             self.current_move_time = 0
-            print("is_resumed False")
+            # print("is_resumed False")
 
         while self.is_running:
             time.sleep(0.01)
 
             # print(self.current_move_time)
             turn_elapsed_time = time.time() - time_start + self.current_move_time
-            print(f"Turn time {turn_elapsed_time}")
-            print(f"self.current_move_time {self.current_move_time}")
+            # print(f"Turn time {turn_elapsed_time}")
+            # print(f"self.current_move_time {self.current_move_time}")
             timestamp = time.time() - time_start + self._total_agg_time
             # move_time_stamp = turn_elapsed_time
             if self.player == Turn.WHITE:
@@ -53,7 +53,7 @@ class Timer:
         # Timer stopped. Cache timer details.
         if game_state.game_state['game']['state'] == 'paused':
             self.current_move_time = turn_elapsed_time
-            print(f"Caching current move time {turn_elapsed_time}")
+            # print(f"Caching current move time {turn_elapsed_time}")
         if self.player == Turn.WHITE:
             # if not self.is_soft_paused:
             self._total_agg_time = game_state.game_state['white']['total_time']
@@ -72,7 +72,7 @@ class Timer:
         self.is_running = False
         self.is_paused = True
         self.is_soft_paused = True
-        print("is_resumed True")
+        # print("is_resumed True")
 
     def resume_timer(self):
         self.is_soft_paused = False

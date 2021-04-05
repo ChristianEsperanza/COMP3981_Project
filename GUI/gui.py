@@ -1,4 +1,5 @@
 import datetime
+import textwrap
 import time
 from threading import Timer, Thread
 
@@ -42,9 +43,9 @@ class GUI:
 
         self.is_started = False
         self.white_timer = Timer(game_state.game_state['white']['time_limit'],
-                                 Turn.WHITE, self, 0)
+                                 Turn.WHITE, self)
         self.black_timer = Timer(game_state.game_state['black']['time_limit'],
-                                 Turn.BLACK, self, 0)
+                                 Turn.BLACK, self)
         self.run_once = False
 
     def run(self):
@@ -313,9 +314,35 @@ class GUI:
             printer_width, printer_height
         ))
         if message is not None:
+            # font_text = pygame.font.SysFont('Ariel', 22)
+            #
+            # wrapper = textwrap.TextWrapper(width=28)
+            # word_list = wrapper.wrap(text=str(message))
+            #
+            # msg = ""
+            # for line in word_list:
+            #     msg += line
+            #     msg += '\n'
+            #
+            # text_renderer = font_text.render(msg, True, white)
+            # self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
+            posX = (printer_start_x + 1 * 1 / 8)
+            posY = (printer_start_y + 1 * 1 / 32)
+            position = posX, posY
             font_text = pygame.font.SysFont('Ariel', 22)
-            text_renderer = font_text.render(str(message), True, white)
-            self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
+            wrapper = textwrap.TextWrapper(width=28)
+            word_list = wrapper.wrap(text=str(message))
+
+            # msg = ""
+            # for line in word_list:
+            #     msg += line
+            #     msg += '\n'
+            label = []
+            for line in word_list:
+                label.append(font_text.render(line, True, white))
+
+            for line in range(len(label)):
+                self.window.blit(label[line], (position[0], position[1] + (line * 5) + (15 * line)))
         pygame.display.update()
 
     def clicked_tile(self, tile):
@@ -596,14 +623,12 @@ class GUI:
         if self.player_turn == Turn.WHITE:
             self.player_turn = Turn.BLACK
             self.white_timer.pause_timer()
-            # self.black_timer.start_timer()
         else:
             self.player_turn = Turn.WHITE
             self.black_timer.pause_timer()
-            # self.white_timer.start_timer()
         print(f"{self.player_turn.name} to move!")
+        print(f"{game_state.board_history}")
         self.run_timer = False
-        # self.begin_timer()
 
     def draw_score_and_time(self):
         """

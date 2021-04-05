@@ -122,6 +122,7 @@ def undo_move(context: GUI):
     # TODO: This does not work
     global game_state
     if game_state['game']['state'] != 'started' or len(board_history) == 0 or len(state_history) == 0:
+        print("Can't undo")
         return False
 
     last_board = board_history.pop()
@@ -200,6 +201,11 @@ def update_turn(context: GUI):
     #     game_state['game']['turn'] = 'black'
 
     # gui_updater.update_gui(context)
+#     context.update_printer("""This function \nwraps the input paragraph such that each line
+# in the paragraph is at most width characters long. The wrap method
+# returns a list of output lines. The returned list
+# is empty if the wrapped
+# output has no content.""")
 
 
 def update_moves_taken(piece_enum):
