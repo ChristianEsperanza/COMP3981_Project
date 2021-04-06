@@ -66,5 +66,5 @@ def undo_move_button(context: GUI):
 
 def sheesh(context: GUI):
     pygame.mixer.music.load('../COMP3981_project/Utility/sheesh.mp3')
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(1)
