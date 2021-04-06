@@ -64,7 +64,12 @@ def undo_move_button(context: GUI):
     else:
         context.update_printer("Undoing move")
 
-def sheesh(context: GUI):
-    pygame.mixer.music.load('../COMP3981_project/Utility/sheesh.mp3')
+def sheesh(context: GUI, repeat=1):
+    # pygame.mixer.music.load('../COMP3981_project/Utility/sheesh.mp3')
     pygame.mixer.music.set_volume(0.5)
-    pygame.mixer.music.play(1)
+    # pygame.mixer.music.play(repeat)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('../COMP3981_project/Utility/sheesh.mp3'))
+
+def stop_music(self):
+    pygame.mixer.music.stop()
+    pygame.mixer.Channel.stop()

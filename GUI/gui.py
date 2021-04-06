@@ -34,13 +34,10 @@ class GUI:
         self.console = None
         self.selected_pieces = []
         self.player_turn = Turn.BLACK
-
         self.run_timer = False
         self.total_agg_time_white = 0
         self.total_agg_time_black = 0
-
         self.timer_focus = Turn.BLACK
-
         self.is_started = False
         self.white_timer =Timer (game_state.game_state['white']['time_limit'],
                                  Turn.WHITE, self)
@@ -59,12 +56,17 @@ class GUI:
         self.draw_score_and_time()
         self.update_printer()
         self.set_scoreboard()
-
         pygame.display.set_caption("Abalone")
 
+        self.play_music()
         thread1 = Thread(target=self.start_game_loop)
         thread1.start()
         thread1.run()
+
+    def play_music(self):
+        pygame.mixer.music.load('../COMP3981_project/Utility/monsters_inc.mp3')
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play()
 
     def start_game_loop(self):
         clock = pygame.time.Clock()
@@ -275,7 +277,10 @@ class GUI:
         sheesh = thorpy.make_button("Sheesh", func=lambda: gui_controls.sheesh(self))
         sheesh.set_size((100, 50))
 
-        sheesh_box = thorpy.Box.make(elements=[sheesh])
+        stop = thorpy.make_button("Stop playing", func=lambda: gui_controls.stop_music(self))
+        stop.set_size((100, 50))
+
+        sheesh_box = thorpy.Box.make(elements=[sheesh, stop])
 
 
         # Set the position of each box, then place
