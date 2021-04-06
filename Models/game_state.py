@@ -161,11 +161,11 @@ def update_turn(context: GUI):
         gui_updater.update_gui(context)
 
         if game_state['white']['player'] == 'ai':
-            context.update_printer("AI is thinking...")
+            context.update_printer("White to move! AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
 
-        else:
-            context.update_printer("White to move!")
+        # else:
+            # context.update_printer("White to move!")
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
@@ -175,12 +175,12 @@ def update_turn(context: GUI):
         gui_updater.update_gui(context)
 
         if game_state['black']['player'] == 'ai':
-            context.update_printer("AI is thinking...")
+            context.update_printer("Black to move! AI is thinking...")
             gui_updater.update_gui(context)
             ai_main.begin_turn(context, black_piece_id)
 
-        else:
-            context.update_printer("Black to move!")
+        # else:
+        #     context.update_printer("Black to move!")
 
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
@@ -305,3 +305,19 @@ def set_game_config(context: GUI):
         ai_main.begin_turn(context, black_piece_id)
 
     # gui_updater.update_gui(context)
+
+def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates:list):
+    """
+    Coordinates should come in a String list. Example:
+    old_coordinates = ['I5', 'H4']
+    new_coordinates = ['G3', 'H4']
+    """
+    if game_state['game']['turn'] == 'black':
+        move_history_black[0].append(old_coordinates)
+        move_history_black[1].append(new_coordinates)
+        context.update_move_printer(f"Black moved from {old_coordinates} to {new_coordinates}")
+
+    else:
+        move_history_white[0].append(old_coordinates)
+        move_history_white[1].append(new_coordinates)
+        context.update_move_printer(f"White moved from {old_coordinates} to {new_coordinates}")

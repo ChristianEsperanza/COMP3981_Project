@@ -46,12 +46,18 @@ def find_and_execute_move(best_move, context: GUI):
     # Start/end coordinates are string if 1 move, list otherwise
     if isinstance(start_coordinates, str):
         movement.move_1_piece(context, strip_coordinate(start_coordinates), strip_coordinate(end_coordinates))
+        game_state.add_to_move_history(context, [start_coordinates], [end_coordinates])
+
     elif len(start_coordinates) == 2:
         movement.move_2_pieces(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]))
+        game_state.add_to_move_history(context, start_coordinates, end_coordinates)
+
     elif len(start_coordinates) == 3:
         movement.move_3_pieces(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]), strip_coordinate(start_coordinates[2]),
                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), strip_coordinate(end_coordinates[2]))
+        game_state.add_to_move_history(context, start_coordinates, end_coordinates)
+
 
 def strip_coordinate(move_string):
     # Strip the colour from a given coordinate

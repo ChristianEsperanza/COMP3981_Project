@@ -16,7 +16,7 @@ def start_game_button(context: GUI):
     if game_state.start_game(context) == False:
         context.update_printer("State or inputs invalid")
     else:
-        context.update_printer(message="Starting game, white to move!")
+        context.update_printer(message="Starting game, black to move!")
         game_state.game_state['game']['state'] = 'started'
         context.start_timer()
 

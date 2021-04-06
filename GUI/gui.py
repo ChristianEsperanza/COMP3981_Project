@@ -311,21 +311,9 @@ class GUI:
         # Print a string
         pygame.draw.rect(self.window, black, (
             printer_start_x, printer_start_y,
-            printer_width, printer_height
+            printer_width, printer_height/2
         ))
         if message is not None:
-            # font_text = pygame.font.SysFont('Ariel', 22)
-            #
-            # wrapper = textwrap.TextWrapper(width=28)
-            # word_list = wrapper.wrap(text=str(message))
-            #
-            # msg = ""
-            # for line in word_list:
-            #     msg += line
-            #     msg += '\n'
-            #
-            # text_renderer = font_text.render(msg, True, white)
-            # self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
             posX = (printer_start_x + 1 * 1 / 8)
             posY = (printer_start_y + 1 * 1 / 32)
             position = posX, posY
@@ -333,10 +321,6 @@ class GUI:
             wrapper = textwrap.TextWrapper(width=28)
             word_list = wrapper.wrap(text=str(message))
 
-            # msg = ""
-            # for line in word_list:
-            #     msg += line
-            #     msg += '\n'
             label = []
             for line in word_list:
                 label.append(font_text.render(line, True, white))
@@ -344,6 +328,28 @@ class GUI:
             for line in range(len(label)):
                 self.window.blit(label[line], (position[0], position[1] + (line * 5) + (15 * line)))
         pygame.display.update()
+
+    def update_move_printer(self, message=None):
+        pygame.draw.rect(self.window, red, (
+            printer_start_x, printer_start_y + printer_height/2,
+            printer_width, printer_height
+        ))
+        if message is not None:
+            posX = (printer_start_x + 1 * 1 / 8)
+            posY = ((printer_start_y + printer_height/2) + 1 * 1 / 32)
+            position = posX, posY
+            font_text = pygame.font.SysFont('Ariel', 22)
+            wrapper = textwrap.TextWrapper(width=28)
+            word_list = wrapper.wrap(text=str(message))
+
+            label = []
+            for line in word_list:
+                label.append(font_text.render(line, True, white))
+
+            for line in range(len(label)):
+                self.window.blit(label[line], (position[0], position[1] + (line * 5) + (15 * line)))
+        pygame.display.update()
+
 
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
