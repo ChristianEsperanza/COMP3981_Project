@@ -1,6 +1,8 @@
 import copy
 from threading import Thread
 
+import pygame
+
 import GUI
 from AI import ai_main
 from GUI import gui_updater
@@ -65,7 +67,6 @@ def pause_game(context: GUI):
     # Can only pause if game has started
     if game_state['game']['state'] != 'started':
         return False
-
     else:
         # Set state and reset move timer
         game_state['game']['state'] = 'paused'
@@ -78,15 +79,15 @@ def pause_game(context: GUI):
 def resume_game(context: GUI):
     # Resuming the game will change the state to 'started'
 
-    if game_state['game']['state'] != 'paused':
+    if game_state['game']['state'] != 'paused' or game_state['game']['state'] == 'stopped':
         return False
     else:
         game_state['game']['state'] = 'started'
-        if game_state['turn'] == 'black' and game_state['black']['player'] == 'ai':
+        if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
             context.update_printer("Black to move! AI is thinking...")
             ai_main.begin_turn(context, black_piece_id)
 
-        elif game_state['turn'] == 'white' and game_state['white']['player'] == 'ai':
+        elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
             context.update_printer("White to move! AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
 
@@ -101,14 +102,14 @@ def reset_game(context: GUI):
     game_state['config']['time_elapsed'] = ''
     game_state['black']['player'] = ''
     game_state['black']['move_limit'] = 0
-    game_state['black']['time_limit'] = ''
+    game_state['black']['time_limit'] = 0
     game_state['black']['score'] = 0
     game_state['black']['moves_taken'] = 0
     game_state['black']['move_time'] = 0
     game_state['black']['total_time'] = 0
     game_state['white']['player'] = ''
     game_state['white']['move_limit'] = 0
-    game_state['white']['time_limit'] = ''
+    game_state['white']['time_limit'] = 0
     game_state['white']['score'] = 0
     game_state['white']['moves_taken'] = 0
     game_state['white']['move_time'] = 0
@@ -210,29 +211,39 @@ def check_goal_state(context: GUI):
     if game_state['white']['score'] == 6:
         game_state['game']['state'] = 'stopped'
         context.update_printer("White has won!")
+        play_music()
 
     elif game_state['black']['score'] == 6:
         game_state['game']['state'] = 'stopped'
         context.update_printer("Black has won!")
+        play_music()
 
     #    No moves left on current player
     elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
         game_state['game']['state'] = 'stopped'
         context.update_printer("Black has won")
+        play_music()
 
     elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
         game_state['game']['state'] = 'stopped'
         context.update_printer("White has won")
+        play_music()
 
     #    No time left on a player
-    elif game_state['white']['time_limit'] == game_state['white']['total_time']:
+    elif game_state['white']['time_limit'] <= game_state['white']['total_time']:
         game_state['game']['state'] = 'stopped'
         context.update_printer("Black has won")
+        play_music()
 
-    elif game_state['black']['time_limit'] == game_state['black']['total_time']:
+    elif game_state['black']['time_limit'] <= game_state['black']['total_time']:
         game_state['game']['state'] = 'stopped'
         context.update_printer("White has won")
+        play_music()
 
+def play_music():
+    pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
+    pygame.mixer.music.set_volume(0.01)
+    pygame.mixer.music.play()
 
 def validate_text_input(context: GUI):
     for text_input in context.settings_inputs:
@@ -267,7 +278,7 @@ def set_game_config(context: GUI):
     else:
         game_state['black']['player'] = 'ai'
     game_state['black']['move_limit'] = int(context.settings_inputs[0].get_value())
-    game_state['black']['time_limit'] = context.settings_inputs[1].get_value()
+    game_state['black']['time_limit'] = int(context.settings_inputs[1].get_value())
 
     # Settings for White
     if context.white_human_radio.get_value():
@@ -275,7 +286,7 @@ def set_game_config(context: GUI):
     else:
         game_state['white']['player'] = 'ai'
     game_state['white']['move_limit'] = int(context.settings_inputs[2].get_value())
-    game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
+    game_state['white']['time_limit'] = int(context.settings_inputs[3].get_value())
 
     # Set the turn state
     if game_state['black']['player'] == 'human':

@@ -6,9 +6,7 @@ import GUI
 from AI.Evaluator import Evaluator
 from GUI import gui_updater, movement
 from Models import game_state
-from Utility import enum
 from Utility.constants import *
-from Utility.enum import Movement, movement_to_vector_enum
 
 
 def begin_turn(context: GUI, piece_id):
@@ -53,8 +51,8 @@ def find_and_execute_move(best_move, context: GUI):
         if len(start_coordinates) == 2:
             # Sumito two to one
             if best_move['elim']:
-                movement.sumito_two_to_one(context, strip_coordinate(start_coordinates[0], strip_coordinate(start_coordinates[1]),
-                                                            strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1])))
+                movement.sumito_two_to_one(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
+                                                            strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]))
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
             # Push two to one

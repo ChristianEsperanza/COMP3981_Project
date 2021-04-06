@@ -1,6 +1,8 @@
 # Callback functions
 import threading
 
+import pygame
+
 import GUI
 from GUI import movement, move_validation
 from Models import game_state
@@ -62,24 +64,7 @@ def undo_move_button(context: GUI):
     else:
         context.update_printer("Undoing move")
 
-##### Movement buttons #####
-# Each button will first validate a move, then execute the move if valid.
-# If the move is invalid, the pieces will be cleared
-
-# TODO: This might be better off somewhere else
-def check_movable_state():
-    if game_state.game_state['game']['state'] == 'stopped':
-        print("Game is stopped")
-    elif game_state.game_state['game']['state'] == 'paused':
-        print("Game is paused")
-    else:
-        return 1
-
-def up_left_button(context: GUI):
-    vector = (1, 0)
-    if check_movable_state() == 1:
-        # If valid then move
-        if move_validation.is_valid(context, vector):
-            movement.move_up_left(context)
-        else:
-            print("Invalid from gui_controls")
+def sheesh(context: GUI):
+    pygame.mixer.music.load('../COMP3981_project/Utility/sheesh.mp3')
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play(1)

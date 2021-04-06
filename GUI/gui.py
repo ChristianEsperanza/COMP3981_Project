@@ -42,7 +42,7 @@ class GUI:
         self.timer_focus = Turn.BLACK
 
         self.is_started = False
-        self.white_timer = Timer(game_state.game_state['white']['time_limit'],
+        self.white_timer =Timer (game_state.game_state['white']['time_limit'],
                                  Turn.WHITE, self)
         self.black_timer = Timer(game_state.game_state['black']['time_limit'],
                                  Turn.BLACK, self)
@@ -271,6 +271,13 @@ class GUI:
         move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
         move_box.set_size((225, 450))
 
+        ### MISC ###
+        sheesh = thorpy.make_button("Sheesh", func=lambda: gui_controls.sheesh(self))
+        sheesh.set_size((100, 50))
+
+        sheesh_box = thorpy.Box.make(elements=[sheesh])
+
+
         # Set the position of each box, then place
         controls_box.set_topleft((console_start_x, console_start_y))
         controls_box.blit()
@@ -284,7 +291,11 @@ class GUI:
         move_box.blit()
         move_box.update()
 
-        self.console = thorpy.Menu([controls_box, settings_box, move_box])
+        sheesh_box.set_topleft((1200, 0))
+        sheesh_box.blit()
+        sheesh_box.update()
+
+        self.console = thorpy.Menu([controls_box, settings_box, move_box, sheesh_box])
         for element in self.console.get_population():
             element.surface = self.window
 
@@ -397,16 +408,16 @@ class GUI:
             if self.is_valid_selection() and self.is_valid_move(vector, selected_pieces_sorted):
                 target_coord = self.find_target_coord(vector, selected_pieces_sorted)
 
-                # # Evaluate push on opponent piece.
-                # if self.board.board_dict[target_coord].piece != (self.player_turn.value or None):
-                #     print(f"Evaluated Push Strength: {self.find_opposing_push_strength(target_coord, vector)}")
-
                 # Swaps all tiles according to movement vector
                 for tile in selected_pieces_sorted:
                     print(f"Moving vector {vector}")
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
 
                 # self.board.update_board(self.window)
+
+                self.update_move_printer(f"Moving from {[tile.board_coordinate for tile in self.selected_pieces]} to "
+                                         f"")
+
 
                 if self.toggle_players:
                     self.end_turn()
