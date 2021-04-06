@@ -1,8 +1,6 @@
 import copy
-import threading
 
 import GUI
-from AI import ai_main
 from GUI import gui_updater
 from Utility.constants import *
 from Utility.enum import *
@@ -10,16 +8,16 @@ from Utility.enum import *
 game_state = {
     'game': {
         'state': 'stopped',  # paused, stopped, started
-        'turn': 'black' # black, white
+        'turn': 'white' # black, white
     },
     'config': {
-        'starting_layout': '', # default, german daisy, belgian daisy
+        'starting_layout': '',
         'time_elapsed': '',
     },
     'black': {
         'player': '',  # human, ai
         'move_limit': 0,
-        'time_limit': 0,
+        'time_limit': '',
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -28,7 +26,7 @@ game_state = {
     'white': {
         'player': '',  # human, ai
         'move_limit': 0,
-        'time_limit': 0,
+        'time_limit': '',
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -48,9 +46,10 @@ def start_game(context: GUI):
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
         return False
     else:
-        context.update_printer("Starting game, black to move!")
+        # TODO: Fill in code for valid start position
+
         set_game_config(context)
-        context.start_timer()
+        # Start timer
 
 
 def stop_game(context: GUI):
@@ -83,6 +82,8 @@ def resume_game(context: GUI):
         #TODO: Start the timer again
 
 def reset_game(context: GUI):
+    # TODO: Is there a scenario where user should not be able to reset?
+
     # Reset game state
     game_state['game']['state'] = 'stopped'
     game_state['game']['turn'] = 'black'
@@ -105,7 +106,7 @@ def reset_game(context: GUI):
 
     # Reset GUI
     context.selected_pieces.clear()
-    context.board.build_board(context.window, 'default')
+    context.board.set_default_tiles()
     context.set_scoreboard()
 
     # Clear histories
@@ -128,6 +129,7 @@ def undo_move(context: GUI):
 
     game_state = copy.deepcopy(state)
     gui_updater.update_gui(context)
+    context.toggle_player_move()
 
 
 def update_turn(context:GUI):
@@ -139,44 +141,17 @@ def update_turn(context:GUI):
     state_history.append(game_state)
     context.board.update_board(context.window)
 
+
     # Calculate the current score after movement
-    # TODO: Call this function in functions where the score changes (IE sumitos)
+    # TODO: Call this in functions where the score changes (IE sumitos)
     context.board.update_scores()
 
 
     # TODO: append move history
 
-    # Go through each turn state (ie black/white and human/ai) to find the correct state.
-    # Once correct state is found, update the moves and time taken, update the state, and begin ai movement
+    # Go through each turn state (ie black/white and human/ai)  and check what the player config
+    #   of the other player is. Update the current turn state to be the found config (ie human/ai).
 
-    # If black just went
-    if game_state['game']['turn'] == 'black':
-        game_state['game']['turn'] = 'white'
-        context.toggle_player_move()
-        update_moves_taken(Turn.BLACK)
-        gui_updater.update_gui(context)
-
-        if game_state['white']['player'] == 'ai':
-            context.update_printer("AI is thinking...")
-            ai_main.begin_turn(context, white_piece_id)
-
-        else:
-            context.update_printer("White to move!")
-
-    # If white just went
-    elif game_state['game']['turn'] == 'white':
-        game_state['game']['turn'] = 'black'
-        context.toggle_player_move()
-        update_moves_taken(Turn.WHITE)
-        gui_updater.update_gui(context)
-
-        if game_state['black']['player'] == 'ai':
-            context.update_printer("AI is thinking...")
-            gui_updater.update_gui(context)
-            ai_main.begin_turn(context, black_piece_id)
-
-        else:
-            context.update_printer("Black to move!")
 
     # Update the GUI:
     #   - Call context.update_turn_label(enum, )
@@ -185,18 +160,20 @@ def update_turn(context:GUI):
 
     # Iterate through the state choices to find the current state, then:
     #   - Set the new game state/turn
+    #   - Call context.toggle_player_move()
     #   - Reset turn timer to 0
     #   - Call the gui.update_time/moves/etc.
 
     # Temporary, to be deleted later. This just changes the turn for now
-    # if game_state['game']['turn'] == 'black':
-    #     update_moves_taken(Turn.BLACK)
-    #     game_state['game']['turn'] = 'white'
-    # else:
-    #     update_moves_taken(Turn.WHITE)
-    #     game_state['game']['turn'] = 'black'
+    if game_state['game']['turn'] == 'black':
+        update_moves_taken(Turn.BLACK)
+        game_state['game']['turn'] = 'white'
+    else:
+        update_moves_taken(Turn.WHITE)
+        game_state['game']['turn'] = 'black'
 
-    # gui_updater.update_gui(context)
+    gui_updater.update_gui(context)
+    context.toggle_player_move()
 
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board
@@ -206,34 +183,16 @@ def update_moves_taken(piece_enum):
         game_state['black']['moves_taken'] += 1
 
 def check_goal_state(context:GUI):
-    # Check for goal states before finalizing a turn
-    #    Win (6 points)
-    if game_state['white']['score'] == 6:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won!")
+    # Check for a following goal state:
+    #   - Win (6 points)
+    #   - No time left on current player
+    #   - No moves left on current player
 
-    elif game_state['black']['score'] == 6:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won!")
+    # Change state to stopped state
 
-    #    No moves left on current player
-    elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won")
+    # Print that b or w won
 
-    elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won")
-
-    #    No time left on a player
-    elif game_state['white']['time_limit'] == game_state['white']['total_time']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won")
-
-    elif game_state['black']['time_limit'] == game_state['black']['total_time']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won")
-
+    pass
 
 def validate_text_input(context: GUI):
     for text_input in context.settings_inputs:
@@ -246,20 +205,7 @@ def set_game_config(context: GUI):
 
     # Starting layout
     #TODO: Currently default layout  only, once dropdown is fixed adjust this
-    for layout in context.layout_radio_choices:
-        if not layout.get_value():
-            continue
-        if layout.get_text() == "Default":
-            context.board.build_board(context.window, 'default')
-            game_state['config']['starting_layout'] = 'default'
-
-        elif layout.get_text() == "German Daisy":
-            context.board.build_board(context.window, 'german_daisy')
-            game_state['config']['starting_layout'] = 'german daisy'
-
-        elif layout.get_text() == "Belgian Daisy":
-            context.board.build_board(context.window, 'belgian_daisy')
-            game_state['config']['starting_layout'] = 'belgian daisy'
+    context.board.build_board(context.window, 'default')
 
     # Settings for black
     if context.black_human_radio.get_value():
@@ -277,19 +223,10 @@ def set_game_config(context: GUI):
     game_state['white']['move_limit'] = int(context.settings_inputs[2].get_value())
     game_state['white']['time_limit'] = context.settings_inputs[3].get_value()
 
-    # Set the turn state
-    if game_state['black']['player'] == 'human':
-        context.update_printer("Black to move!")
-        game_state['game']['turn'] = 'black'
+    # Set the turn
+    if game_state['white']['player'] == 'human':
+        game_state['game']['turn'] = 'white'
         game_state['game']['state'] = 'started'
-        gui_updater.update_gui(context)
+    # TODO: Add AI option
+    gui_updater.update_gui(context)
 
-    elif game_state['black']['player'] == 'ai':
-        game_state['game']['turn'] = 'black'
-        game_state['game']['state'] = 'started'
-        gui_updater.update_gui(context)
-
-        context.update_printer("AI is thinking...")
-        ai_main.begin_turn(context, black_piece_id)
-
-    # gui_updater.update_gui(context)

@@ -1,8 +1,3 @@
-import datetime
-import threading
-import time
-from threading import Timer, Thread
-
 import thorpy
 import pygame
 import random
@@ -25,19 +20,11 @@ class GUI:
         """
         Initialize GUI with empty window and console, which are to be built after the GUI is initialized
         """
-        self.alternate_turns = True
-        self.toggle_players = True
         self.board = Board()
         self.window = None
         self.console = None
         self.selected_pieces = []
-        self.player_turn = Turn.BLACK
-
-        self.run_timer = False
-        self.total_agg_time_white = 0
-        self.total_agg_time_black = 0
-        self.timer_focus = Turn.BLACK
-        self.is_started = False
+        self.player_turn = Turn.WHITE
 
     def run(self):
         """
@@ -48,16 +35,13 @@ class GUI:
         self.board.build_board(self.window, 'default')
         self.build_console()
         self.draw_score_and_time()
-        self.update_printer()
         self.set_scoreboard()
+        event = None
 
         pygame.display.set_caption("Abalone")
         clock = pygame.time.Clock()
-        count = 0
-        total_turn_time = 0
         while True:
             clock.tick(60)
-
             for event in pygame.event.get():
                 # GUI buttons react to event
                 self.console.react(event)
@@ -69,35 +53,13 @@ class GUI:
                     pos = pygame.mouse.get_pos()
                     print(pos)
 
+                    # TODO: Fill out handle click
                     self.handle_click(pos)
-
-            if game_state.game_state['game']['state'] == 'started':
-                count += 1
-                if count == 60:
-                    if self.player_turn == self.timer_focus:
-                        total_turn_time += 1
-                    else:  # Turn swap
-                        if self.timer_focus == Turn.WHITE:
-                            self.update_turn_time(Turn.WHITE, total_turn_time)
-                            game_state.game_state['white']['move_time'] = total_turn_time
-                        else:
-                            game_state.game_state['black']['move_time'] = total_turn_time
-                        self.timer_focus = self.player_turn
-                        total_turn_time = 0
-
-                    if self.player_turn == Turn.WHITE:
-                        self.total_agg_time_white += 1
-                        self.update_turn_time(Turn.WHITE, total_turn_time)
-                        self.update_total_time(Turn.WHITE, self.total_agg_time_white)
-                        game_state.game_state['white']['total_time'] = self.total_agg_time_white
-                    else:
-                        self.total_agg_time_black += 1
-                        self.update_turn_time(Turn.BLACK, total_turn_time)
-                        self.update_total_time(Turn.BLACK, self.total_agg_time_black)
-                        game_state.game_state['black']['total_time'] = self.total_agg_time_black
-                    count = 0
+                    # for key, tile in self.board.board_dict.items():
+                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
+                    #         self.clicked_tile(tile)
             pygame.display.update()
-
 
 
     def dumb_stuff(self):
@@ -116,16 +78,16 @@ class GUI:
         # Only deal with board clicks, ThorPy will react to GUI clicks in main loop
         if pos[0] < console_start_x:
             if state == 'stopped':
-                self.update_printer("Can't play, game is stopped")
+                print("Can't play, game is stopped")
             elif state == 'paused':
-                self.update_printer("Game is paused, unpause to continue")
+                print("Game is paused, unpause to continue")
             elif state == 'started':
                 for key, tile in self.board.board_dict.items():
                     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
                         print(f"Tile Coords: ({tile.row}, {tile.column})")
                         self.clicked_tile(tile)
 
-
+        
 
 
     def build_window(self):
@@ -155,18 +117,26 @@ class GUI:
                 elements are not overwritten
             5. Add the box to self.console at the bottom of this function.
         """
+        # TODO: Requires fixing, crashes on selection
         starting_position_title = thorpy.make_text("Starting Position", 18, (0,0,0))
         starting_position_title.set_size((button_length, button_height))
 
-        default_layout_radio = thorpy.Checker.make("Default", type_="radio")
-        german_daisy_layout_radio = thorpy.Checker.make("German Daisy", type_="radio")
-        belgian_daisy_layout_radio = thorpy.Checker.make("Belgian Daisy", type_="radio")
 
-        # Make property of GUI to access when starting a game
-        self.layout_radio_choices = [default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio]
-        layout_radio_pool = thorpy.RadioPool(self.layout_radio_choices,
-                                             first_value=self.layout_radio_choices[0],
-                                             always_value=True)
+        starting_positions = [
+            "Standard",
+            "German Daisy",
+            "Belgian Daisy"
+        ]
+        # starting_positions = [
+        #     ("Standard", self.board.set_default_tiles()),
+        #     ("German Daisy", self.board.set_german_daisy_tiles()),
+        #     ("Belgian Daisy", self.board.set_belgian_daisy_tiles())
+        # ]
+        starting_position_dropdown = thorpy.DropDownListLauncher(const_text="Choose starting layout:",
+                                                                 var_text="",
+                                                                 titles=starting_positions)
+        starting_position_dropdown.scale_to_title()
+        starting_position_dropdown.set_size((button_length, button_height))
 
         ##########  CONTROLS BOX  ##########
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
@@ -188,7 +158,7 @@ class GUI:
         undo_button.set_size((button_length, button_height))
 
         controls_box = thorpy.Box.make(elements=[
-            starting_position_title, default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio,
+            starting_position_title, starting_position_dropdown,
             start_button, stop_button, pause_button, resume_button, reset_button, undo_button
         ])
         controls_box.set_size((225, 450))
@@ -280,6 +250,7 @@ class GUI:
         move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
         move_box.set_size((225, 450))
 
+
         # Set the position of each box, then place
         controls_box.set_topleft((console_start_x, console_start_y))
         controls_box.blit()
@@ -297,18 +268,6 @@ class GUI:
         for element in self.console.get_population():
             element.surface = self.window
 
-    def update_printer(self, message=None):
-        # Print a string
-        pygame.draw.rect(self.window, black, (
-            printer_start_x, printer_start_y,
-            printer_width, printer_height
-        ))
-        if message is not None:
-            font_text = pygame.font.SysFont('Ariel', 22)
-            text_renderer= font_text.render(str(message), True, white)
-            self.window.blit(text_renderer, (printer_start_x + 5, printer_start_y + 5))
-        pygame.display.update()
-
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
 
@@ -322,13 +281,12 @@ class GUI:
         print([tile.board_coordinate for tile in self.selected_pieces])
 
     def test_func_move(self, **kwargs):
-        # Check state first to see that game is in progress
         state = game_state.game_state['game']['state']
         if state == 'stopped':
-            self.update_printer(message="Game is stopped")
+            print("Game is stopped")
             return
         elif state == 'paused':
-            self.update_printer(message="Game is paused")
+            print("Game is paused")
             return
 
         print("Move: " + str(kwargs['vector']))
@@ -357,63 +315,36 @@ class GUI:
                 vector = (-1, 0)
                 selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
 
-            if len(selected_pieces_sorted) == 0:
-                print("No pieces to move")
-                return
-
-            if self.is_valid_selection() and self.is_valid_move(vector, selected_pieces_sorted):
-                target_coord = self.find_target_coord(vector, selected_pieces_sorted)
-
-                # # Evaluate push on opponent piece.
-                # if self.board.board_dict[target_coord].piece != (self.player_turn.value or None):
-                #     print(f"Evaluated Push Strength: {self.find_opposing_push_strength(target_coord, vector)}")
-
+            if self.is_valid_selection() and self.is_valid_move(vector_rep):
                 # Swaps all tiles according to movement vector
                 for tile in selected_pieces_sorted:
                     print(f"Moving vector {vector}")
                     self.board.swap_tiles((tile.row, tile.column), (tile.row + vector[0], tile.column + vector[1]))
-
+                # TODO: The following two lines should be called in game_state
                 # self.board.update_board(self.window)
+                # self.toggle_player_move()   # Other players turn.
+                self.end_turn()
 
-                if self.toggle_players:
-                    self.end_turn()
-
-                return True
             else:
                 print("Invalid Move. Clearing selected pieces")
-                return False
 
-        # except KeyError:
-        #     print("Middle Button pressed")
+        except KeyError:
+            print("Middle Button pressed")
 
         finally:
             self.selected_pieces.clear()
 
     def is_valid_selection(self):
-        print("Evaluating for valid selection")
+        print("POG")
         if len(self.selected_pieces) > 3:
             return False
-        # prev_tile = None
-        selected_pieces_sorted_col = sorted(self.selected_pieces, key=itemgetter('column'))
-        for tile in selected_pieces_sorted_col:
+        prev_tile = None
+        selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
+        for tile in selected_pieces_sorted:
             print(tile)
-            # Determine consistent piece selection
             if tile.piece != self.player_turn.value:
                 print("Wrong color")
                 return False
-
-        if not self.is_continuous_row_selection() and not self.is_continuous_diagonal_selection():
-            print("Non continuous selection")
-            return False
-        print("Valid Selection")
-        return True
-
-    def is_continuous_row_selection(self):
-        prev_tile = None
-        selected_pieces_sorted_col = sorted(self.selected_pieces, key=itemgetter('column'))
-
-        # Determine continuous row selection
-        for tile in selected_pieces_sorted_col:
             if prev_tile is not None:
                 if prev_tile.row != tile.row or prev_tile.column != tile.column - 1:
                     print(f"{prev_tile.column}, {tile.column}")
@@ -425,162 +356,20 @@ class GUI:
                 prev_tile = tile
         return True
 
-    def is_continuous_diagonal_selection(self):
-        # print("Starting Diagonal selection consistency Test.")
-        prev_tile = None
-        selected_pieces_sorted_row = sorted(self.selected_pieces, key=itemgetter('row'))
-        horizontal_vector = None  # Keeps track on either up-right or up-left consistency
-
-        # Determine Continuous diagonal selection
-        for tile in selected_pieces_sorted_row:
-
-            # Determine continuous row selection
-            if prev_tile is not None:
-                if horizontal_vector is None:
-                    # Assign horizontal vector based on first and second evaluation.
-                    if prev_tile.column + 1 == tile.column:
-                        horizontal_vector = 1
-                        # print("Looking for up-right diagonal")
-                    else:
-                        horizontal_vector = 0
-                        # print("Looking for up-left diagonal")
-                if prev_tile.row + 1 == tile.row:  # Row consistency (increasing)
-                    # print(f"Evaluating tile: {prev_tile.column}, {tile.column}")
-                    if horizontal_vector is not None:
-                        if prev_tile.column + horizontal_vector != tile.column:
-                            # print(f"Inconsistent column selection: c1:{prev_tile.column} c2:{tile.column}")
-                            return False
-                    else:
-                        print("Horizontal_vector wasn't assigned. Something went wrong")
-                else:
-                    # print("Inconsistent row selection")
-                    return False
-                prev_tile = tile
-            else:
-                # After first evaluation, assign some variables
-                prev_tile = tile
-        return True
-
-    def is_valid_move(self, vector: tuple, selected_pieces_sorted: list):
-        print("Evaluating if move is valid")
-        try:
-            target_coord = self.find_target_coord(vector, selected_pieces_sorted)
-            print("Target Coord:", end="")
-            print(target_coord)
-        except KeyError:
-            print("Can't move out of bounds.")
-            return False
-
-        # Friendly collisions
-        print("------Starting Friendly Piece Collision-----")
-        if self.determine_piece_collision(vector, selected_pieces_sorted, self.player_turn):
-            print("Cannot push your own piece.")
-            return False
-
-        if self.player_turn == Turn.BLACK:
-            opponent_piece = Turn.WHITE
-        else:
-            opponent_piece = Turn.BLACK
-
-        # Opponent piece collisions
-        # do_stuff = True
-        print("------Starting Opponent Piece Collision-----")
-        if self.determine_piece_collision(vector, selected_pieces_sorted, opponent_piece):
-            print("Collision with opponent piece. Do stuff")
-            print("\nDetermining Push")
-            if self.is_linear_movement(vector, selected_pieces_sorted):
-                print(f"Target Coord: {target_coord}")
-                opponent_push_strength = self.find_opposing_push_strength(target_coord, vector)
-                print(f"Opp push strength: "
-                      f"{opponent_push_strength}")
-                if (len(self.selected_pieces) > opponent_push_strength) and (opponent_push_strength != 0):
-                    print("SUMITO!!!!!")
-                    self.sumito(vector, target_coord)
-                    return True
-                else:
-                    print("Failed Push!")
-                    return False
-            else:
-                print("Collision with non-linear movement. Invalid Move")
-                print("Result Vector:")
-                print(vector)
-                print("Coord")
-                for tile in selected_pieces_sorted:
-                    print(tile.board_coordinate)
+    def is_valid_move(self, vector_rep):
+        board_seq = ('I5', 'I6', 'I7', 'I8', 'I9', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'G3', 'G4', 'G5', 'G6', 'G7',
+                     'G8', 'G9', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'E1', 'E2', 'E3', 'E4', 'E5', 'E6',
+                     'E7', 'E8', 'E9', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'C1', 'C2', 'C3', 'C4', 'C5',
+                     'C6', 'C7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'A1', 'A2', 'A3', 'A4', 'A5')
+        for tile in self.selected_pieces:
+            if tile.board_coordinate not in board_seq:
+                print("Can't move out of bounds.")
                 return False
         return True
 
     def end_turn(self):
-        game_state.update_turn(self)
         # self.toggle_player_move()
-
-    def is_linear_movement(self, vector: tuple, selected_pieces_sorted: list):
-        print("Linear move test")
-        if len(selected_pieces_sorted) == 1:
-            return True
-        if self.change_coordinate_by_vector(vector, selected_pieces_sorted[1]) == selected_pieces_sorted[0].board_coordinate:
-            return True
-        else:
-            return False
-
-    def sumito(self, vector, target_coord):
-        current_tile = self.board.board_dict[target_coord]
-        temp_prev = None
-        # temp_curr = None
-        try:
-            while current_tile.piece is not None:
-                temp_curr = current_tile.piece
-                print(current_tile)
-                self.board.board_dict[current_tile.board_coordinate].piece = temp_prev
-                temp_prev = temp_curr
-                current_tile = self.board.board_dict[self.change_coordinate_by_vector(vector, current_tile)]
-
-            current_tile.piece = temp_prev
-            return
-        except KeyError:
-            return
-
-    def determine_piece_collision(self, vector: tuple, selected_pieces_sorted: list, collision_piece_id):
-        for tile in selected_pieces_sorted:
-            evaluated_next_coord = self.change_coordinate_by_vector(vector, tile)
-            evaluated_next_tile = self.board.board_dict[evaluated_next_coord]
-            print(f"Current:{tile.board_coordinate}-----Evaluated:{evaluated_next_coord}")
-            if evaluated_next_tile.piece == collision_piece_id.value \
-                    and evaluated_next_tile not in selected_pieces_sorted:
-                print(f"Collision with {collision_piece_id.name}")
-                return True
-        return False
-
-    @staticmethod
-    def change_coordinate_by_vector(vector: tuple, tile):
-        new_coord = f"{chr(ord(tile.board_coordinate[0]) + vector[0])}{int(tile.board_coordinate[1]) + vector[1]}"
-        return new_coord
-
-    def find_target_coord(self, vector, selected_pieces_sorted):
-        coord = self.change_coordinate_by_vector(vector, selected_pieces_sorted[0])
-        print("Target coord: ", end="")
-        print(coord)
-        return self.board.board_dict[coord].board_coordinate
-
-    def find_opposing_push_strength(self, contact_tile, vector):
-
-        push_strength = 0
-        try:
-            current_tile = self.board.board_dict[contact_tile]
-            while True:
-                print(f"Current Eval Coord: " + current_tile.board_coordinate + "----Piece: " + str(current_tile.piece))
-                if current_tile.piece is None:
-                    print("Out by None")
-                    return push_strength
-                else:
-                    next_coord = self.change_coordinate_by_vector(vector, current_tile)
-                    print(f"Next coord: {next_coord}")
-                    push_strength += 1
-                    current_tile = self.board.board_dict[next_coord]
-                    print("Incrementing push strength")
-                    print(f"Eval Coord: " + current_tile.board_coordinate + "----Piece: " + str(current_tile.piece))
-        except KeyError:
-            return push_strength
+        game_state.update_turn(self)
 
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
@@ -588,8 +377,6 @@ class GUI:
         else:
             self.player_turn = Turn.WHITE
         print(f"{self.player_turn.name} to move!")
-        self.run_timer = False
-        self.start_timer()
 
     def draw_score_and_time(self):
         """
@@ -649,6 +436,7 @@ class GUI:
         self.update_score(Turn.WHITE, "0")
         self.update_moves_taken(Turn.BLACK, "0")
         self.update_moves_taken(Turn.WHITE, "0")
+        self.update_turn_label(Turn.WHITE)
 
 
     def update_total_time(self, piece_enum, time):
@@ -657,69 +445,58 @@ class GUI:
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
         if piece_enum == Turn.WHITE:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (670, 675, 75, 20))
+            pygame.draw.rect(self.window, red, (670, 675, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_total_time_location)
 
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (180, 675, 75, 20))
+            pygame.draw.rect(self.window, red, (180, 675, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_total_time_location)
-        pygame.display.update()
 
     def update_turn_time(self, piece_enum, time):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
-            pygame.draw.rect(self.window, red, (670, 705, 75, 20))
+            pygame.draw.rect(self.window, red, (670, 705, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, white_turn_time_taken_location)
         elif piece_enum == Turn.BLACK:
-            pygame.draw.rect(self.window, red, (180, 705, 75, 20))
+            pygame.draw.rect(self.window, red, (180, 705, 25, 20))
             time_taken = font_text_time_label.render(str(time), True, black)
             self.window.blit(time_taken, black_turn_time_location)
-        pygame.display.update()
 
     def update_score(self, piece_enum, score):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (670, 735, 75, 20))
+            pygame.draw.rect(self.window, red, (670, 735, 25, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, white_score_location)
 
-
         elif piece_enum == Turn.BLACK:
             # Draw a box to cover the last value
-            pygame.draw.rect(self.window, red, (180, 735, 75, 20))
+            pygame.draw.rect(self.window, red, (180, 735, 25, 20))
             time_taken = font_text_time_label.render(str(score), True, black)
             self.window.blit(time_taken, black_score_location)
-        pygame.display.update()
-
 
     def update_moves_taken(self, piece_enum, moves_taken):
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
 
         if piece_enum == Turn.WHITE:
-            pygame.draw.rect(self.window, red, (670, 765, 75, 20))
+            pygame.draw.rect(self.window, red, (670, 765, 25, 20))
             time_taken = font_text_time_label.render(str(moves_taken), True, black)
             self.window.blit(time_taken, white_moves_taken_location)
 
         elif piece_enum == Turn.BLACK:
-            pygame.draw.rect(self.window, red, (180, 765, 75, 20))
+            pygame.draw.rect(self.window, red, (180, 765, 25, 20))
             time_taken = font_text_time_label.render(str(moves_taken), True, black)
             self.window.blit(time_taken, black_moves_taken_location)
-        pygame.display.update()
 
     def update_turn_label(self, piece_enum):
         pygame.draw.rect(self.window, red, (610, 55, 80, 25))
         font_text_time_lable = pygame.font.SysFont('Ariel', 30)
         turn_label = font_text_time_lable.render(piece_enum.name, True, black)
         self.window.blit(turn_label, turn_label_location)
-        pygame.display.update()
-
-    def start_timer(self):
-        self.run_timer = True
-        self.is_started = True
