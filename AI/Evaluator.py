@@ -2,6 +2,7 @@
 
 """
 from GUI.board import Board
+import numpy
 
 
 class Evaluator:
@@ -51,8 +52,8 @@ class Evaluator:
         black_2_marbles = len(board.generate_double_sets(black_marbles, white_marbles, 'b'))
         white_2_marbles = len(board.generate_double_sets(black_marbles, white_marbles, 'w'))
 
-        black_score = black_2_marbles * 5 + black_3_marbles * 10
-        white_score = white_2_marbles * 5 + white_3_marbles * 10
+        black_score = black_2_marbles * 3 + black_3_marbles * 5
+        white_score = white_2_marbles * 3 + white_3_marbles * 5
         return black_score, white_score
 
     @staticmethod
@@ -72,9 +73,11 @@ class Evaluator:
             move_score = 0
             # Enemy marble eliminated
             if move.get("elim") is True:
-                move_score += 75 * multiplier
-            # Number of enemy marbles pushed
-            move_score += move.get("pushes") * 15
+                move_score += 100 * multiplier
+            # Favors pushing enemy marble over repositioning move
+            move_score += move.get("pushes") * 25 * multiplier
+            # Favors moving multiple marbles over single
+            move_score += len(move.get("start")) * 50
             move["move_score"] = move_score
 
     @staticmethod
@@ -98,10 +101,10 @@ class Evaluator:
             downR = Board.convert_to_string(letter - 1, num)
             test_spots = [left, right, upL, upR, downL, downR]
             if black_marble in danger:
-                black_risk += 5
+                black_risk += 2
                 for spot in test_spots:
                     if spot in white_marbles:
-                        black_risk += 10
+                        black_risk += 3
 
         for white_marble in white_marbles:
             letter, num = Board.convert_to_nums(white_marble)
@@ -113,10 +116,10 @@ class Evaluator:
             downR = Board.convert_to_string(letter - 1, num)
             test_spots = [left, right, upL, upR, downL, downR]
             if white_marble in danger:
-                white_risk += 5
+                white_risk += 2
                 for spot in test_spots:
                     if spot in black_marbles:
-                        white_risk += 10
+                        white_risk += 3
         return black_risk, white_risk
 
     @staticmethod
@@ -144,9 +147,9 @@ class Evaluator:
         white_subtotal = white_pos_score + white_set_score - white_risk
 
         if player_turn == 'b':
-            move["final_score"] = black_subtotal + move_score - white_subtotal
+            move["final_score"] = black_subtotal + move_score
         else:
-            move["final_score"] = white_subtotal + move_score - black_subtotal
+            move["final_score"] = white_subtotal + move_score
 
     @staticmethod
     def generate_options(board: list, player_turn: chr):
@@ -201,28 +204,32 @@ class Evaluator:
             enemy_turn = 'b'
         player_moves, enemy_start_boards = Evaluator.generate_options(board, player_turn)
 
+        player_scores = [x.get("final_score") for x in player_moves]
         enemy_scores = []
-        alpha_index = 0
 
         for enemy_start_board in enemy_start_boards:
+            board_index = enemy_start_boards.index(enemy_start_board)
+            player_score = player_scores[board_index]
             enemy_moves, player_start_boards = Evaluator.generate_options(enemy_start_board, enemy_turn)
+
             # Gets highest white score for first board.
             if enemy_start_boards.index(enemy_start_board) == 0:
-                best_enemy_score = -100000
+                best_enemy_score = -10000000
                 for move in enemy_moves:
-                    score = move.get("final_score")
+                    score = move.get("final_score") - player_score
                     if score > best_enemy_score:
                         best_enemy_score = score
                 enemy_scores.append(best_enemy_score)
             else:
-                enemy_score = -100000
+                current_min = min(enemy_scores)
+                best_enemy_score = -10000000
                 break_flag = False
 
                 # Checks moves where active player performs push, more likely to yield high score -> move ordering.
                 push_moves = filter(Evaluator.filter_push, enemy_moves)
                 for move in push_moves:
-                    score = move.get("final_score")
-                    if score > enemy_scores[alpha_index]:
+                    score = move.get("final_score") - player_score
+                    if score > current_min:
                         enemy_scores.append(score)
                         break_flag = True
                         break
@@ -230,23 +237,40 @@ class Evaluator:
                     continue
 
                 for move in enemy_moves:
-                    score = move.get("final_score")
-                    if score > enemy_scores[alpha_index]:
+                    if move.get("pushes") > 0:
+                        continue
+                    score = move.get("final_score") - player_score
+                    if score > current_min:
                         enemy_scores.append(score)
                         break_flag = True
                         break
-                    if score > enemy_score:
-                        enemy_score = score
+                    if score > best_enemy_score:
+                        best_enemy_score = score
                 if not break_flag:
-                    enemy_scores.append(enemy_score)
+                    enemy_scores.append(best_enemy_score)
+            # print(enemy_start_board)
+            # [print(x) for x in enemy_moves]
+            # print("======================")
+
         # Gets the lowest score aka worst board state for the opponent which will be the best move for us.
         min_val = min(enemy_scores)
-        min_index = enemy_scores.index(min_val)
-        return player_moves[min_index]
+        check_scores = numpy.array(enemy_scores)
+        min_index = numpy.where(check_scores == min_val)[0]
+
+        best_index = 0
+        best_score = -100000
+
+        for i in min_index:
+            if player_moves[i].get("final_score") > best_score:
+                best_score = player_moves[i].get("final_score")
+                best_index = i
+
+        return player_moves[best_index]
 
 
 if __name__ == '__main__':
-    string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b,I5b,A2w,A3w,B2w,B3w,B5w,C2w,C6w,D3w,G6w,G7w,H6w,H8w,I6w,I9w"
+    # string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b,I5b,A2w,A3w,B2w,B3w,B5w,D3w,G6w,G7w,H8w,I6w,I9w"
+    string_state = "A1b,A2b,A3b,A4b,A5b,B1b,B2b,B3b,B4b,B5b,B6b,C3b,C4b,C5b,G5w,G6w,G7w,H4w,H5w,H6w,H7w,H8w,H9w,I5w,I6w,I7w,I8w,I9w"
     board_state = [x.strip() for x in string_state[0:].split(',')]
     turn = 'b'
     best_move = Evaluator.minimax(board_state, turn)

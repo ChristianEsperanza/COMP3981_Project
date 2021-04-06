@@ -44,8 +44,8 @@ def find_and_execute_move(best_move, context: GUI):
 
     # If not the above, then it is a simple movement
     # Start/end coordinates are string if 1 move, list otherwise
-    if isinstance(start_coordinates, str):
-        movement.move_1_piece(context, strip_coordinate(start_coordinates), strip_coordinate(end_coordinates))
+    if len(start_coordinates) == 1:
+        movement.move_1_piece(context, strip_coordinate(start_coordinates[0]), strip_coordinate(end_coordinates[0]))
     elif len(start_coordinates) == 2:
         movement.move_2_pieces(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]))
