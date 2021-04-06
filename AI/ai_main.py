@@ -58,8 +58,8 @@ def find_and_execute_move(best_move, context: GUI):
             # Push two to one
             else:
                 # IE D5D6 - D6D7w
-                vector = best_move['move'].val
-                target_coordinate = context.find_target_coord(vector, start_coordinates[1]).getcoord
+                vector = best_move['move'].value
+                target_coordinate = get_next_coordinate(end_coordinates[1], vector)
 
                 movement.push_two_to_one(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
                                         strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), target_coordinate)
