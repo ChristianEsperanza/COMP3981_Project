@@ -25,8 +25,9 @@ def begin_turn(context: GUI, piece_id):
 def find_and_execute_move(best_move, context: GUI):
     """
     param: best_move: list[str]
+    If the best move is to move a single piece, then it will come in
     best_move will come in list with each string being a joined value of the coordinate
-    and the colour
+    and the colour.
     Ex - ['C3b','C4w']
     """
     start_coordinates = best_move['start']

@@ -354,13 +354,20 @@ class GUI:
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
 
+        # Add/remove selected piece to selected pieces
         print(f"Clicked {tile.board_coordinate}, occupied by {tile.piece}")
         if tile not in self.selected_pieces:
             self.selected_pieces.append(tile)
             print(f"Added {tile.board_coordinate}")
+            self.update_printer(f"Added {tile.board_coordinate}, selected coordinates: "
+                                f"{[tile.board_coordinate for tile in self.selected_pieces]}")
+
         else:
             self.selected_pieces.remove(tile)
             print(f"Removed {tile.board_coordinate}")
+            self.update_printer(f"Removed {tile.board_coordinate}, selected coordinates: "
+                                f"{[tile.board_coordinate for tile in self.selected_pieces]}")
+
         print([tile.board_coordinate for tile in self.selected_pieces])
 
     def test_func_move(self, **kwargs):
@@ -423,10 +430,8 @@ class GUI:
                 return True
             else:
                 print("Invalid Move. Clearing selected pieces")
+                self.update_printer("Invalid Move. Clearing selected pieces")
                 return False
-
-        # except KeyError:
-        #     print("Middle Button pressed")
 
         finally:
             self.selected_pieces.clear()

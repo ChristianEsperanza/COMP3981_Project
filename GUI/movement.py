@@ -21,14 +21,19 @@ edge_coordinates = [
 
 
 def move_1_piece(context: GUI, old_coordinate, new_coordinate):
-    # Coordinate will come in String of its location (Ex: 'I6')
+    """
+    Move a single piece, no pushes
+    Coordinate will come in String of its location (Ex: 'I6')
+    """
 
     old_tile = context.board.board_dict[old_coordinate]
     new_tile = context.board.board_dict[new_coordinate]
 
-    temp = new_tile.piece
     new_tile.piece = old_tile.piece
-    old_tile.piece = temp
+    old_tile.piece = None
+    # temp = new_tile.piece
+    # new_tile.piece = old_tile.piece
+    # old_tile.piece = None
 
     context.update_move_printer(old_coordinate + " " + new_coordinate)
 
