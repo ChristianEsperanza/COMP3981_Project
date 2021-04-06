@@ -167,8 +167,8 @@ class Evaluator:
         else:
             risk = white_risk
 
-        boardObject = Board()
-        moves, resulting_boards = boardObject.generate_all_boards(board, player_turn)
+        board_object = Board()
+        moves, resulting_boards = board_object.generate_all_boards(board, player_turn)
         # Assume score 0 for now
         Evaluator.score_move(moves, 0)
         for i in range(0, len(moves)):

@@ -1,49 +1,85 @@
 # Callback functions
+import threading
+
 import GUI
+from GUI import movement, move_validation
 from Models import game_state
 
 """
-This is a collection of callback functions that are used in the GUI. The game_state 
-will do the majority of the leg work, so this file functions mostly as a bridge between 
-the GUI and game_state.
+This is a collection of callback functions that are used in the GUI. This file functions mostly as a
+callback bridge between the GUI buttons and the files that contain functions to carry out the 
+desired action.
 """
 
 def start_game_button(context: GUI):
     # game_state.start_game() will only return false if invalid inputs or game state
     if game_state.start_game(context) == False:
-        print(f"Can't start if the game is {game_state.game_state['game']['state']} or if the "
-              f"text inputs are invalid")
+        context.update_printer("State or inputs invalid")
     else:
-        print("Starting game, white to move!")
+        context.update_printer(message="Starting game, black to move!")
+        game_state.game_state['game']['state'] = 'started'
+        context.start_timer()
 
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
-        print("Game is already stopped")
+        context.update_printer("Game is already stopped")
     else:
-        print("Stopping game")
+        context.update_printer("Stopping game")
 
 def pause_game_button(context: GUI):
     if game_state.pause_game(context) == False:
-        print("Can't pause game")
+        context.update_printer("Can't pause game")
     else:
-        print("Pausing game")
+        context.update_printer("Pausing game")
+        game_state.game_state['game']['state'] = "paused"
+        context.white_timer.pause_timer_temp()
+        context.black_timer.pause_timer_temp()
 
 def resume_game_button(context: GUI):
     if game_state.resume_game(context) == False:
-        print("Can't resume game")
+        context.update_printer("Can't resume game")
     else:
-        print("Resuming game")
+        context.update_printer("Resuming game")
+    # if game_state.game_state['game']['turn'] == 'white':
+    #     context.white_timer.start_timer()
+    # else:
+    #     context.black_timer.start_timer()
+    context.resume_timer()
+    context.start_timer()
 
 def reset_game_button(context: GUI):
     if game_state.reset_game(context) == False:
-        print("Can't reset game")
+        context.update_printer("Can't reset game")
     else:
-        print("Resetting game")
-    context.selected_pieces.clear()
-    context.board.build_board(context.window)
+        context.update_printer("Resetting game")
+        context.black_timer.reset_timer()
+        context.white_timer.reset_timer()
+    # context.board.build_board(context.window)
 
 def undo_move_button(context: GUI):
     if game_state.undo_move(context) == False:
-        print("Can't undo move")
+        context.update_printer("Can't undo move")
     else:
-        print("Undoing move")
+        context.update_printer("Undoing move")
+
+##### Movement buttons #####
+# Each button will first validate a move, then execute the move if valid.
+# If the move is invalid, the pieces will be cleared
+
+# TODO: This might be better off somewhere else
+def check_movable_state():
+    if game_state.game_state['game']['state'] == 'stopped':
+        print("Game is stopped")
+    elif game_state.game_state['game']['state'] == 'paused':
+        print("Game is paused")
+    else:
+        return 1
+
+def up_left_button(context: GUI):
+    vector = (1, 0)
+    if check_movable_state() == 1:
+        # If valid then move
+        if move_validation.is_valid(context, vector):
+            movement.move_up_left(context)
+        else:
+            print("Invalid from gui_controls")
