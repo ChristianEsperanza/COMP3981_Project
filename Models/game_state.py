@@ -1,4 +1,5 @@
 import copy
+from threading import Thread
 
 import GUI
 from AI import ai_main

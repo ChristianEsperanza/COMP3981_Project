@@ -65,29 +65,6 @@ class GUI:
         thread1 = Thread(target=self.start_game_loop)
         thread1.start()
         thread1.run()
-        # clock = pygame.time.Clock()
-        # count = 0
-        # total_turn_time = 0
-        # while True:
-        #     clock.tick(60)
-        #
-        #     for event in pygame.event.get():
-        #         # GUI buttons react to event
-        #         self.console.react(event)
-        #
-        #         if event.type == pygame.QUIT:
-        #             pygame.quit()
-        #
-        #         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        #             pos = pygame.mouse.get_pos()
-        #             print(pos)
-        #
-        #             self.handle_click(pos)
-        #             # for key, tile in self.board.board_dict.items():
-        #             #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
-        #             #         print(f"Tile Coords: ({tile.row}, {tile.column})")
-        #             #         self.clicked_tile(tile)
-        #     pygame.display.update()
 
     def start_game_loop(self):
         clock = pygame.time.Clock()
@@ -104,13 +81,8 @@ class GUI:
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     print(pos)
-
                     self.handle_click(pos)
 
-                    # for key, tile in self.board.board_dict.items():
-                    #     if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
-                    #         print(f"Tile Coords: ({tile.row}, {tile.column})")
-                    #         self.clicked_tile(tile)
             pygame.display.update()
 
     def dumb_stuff(self):

@@ -1,5 +1,6 @@
 import _thread
 import threading
+from threading import Thread
 
 import GUI
 from AI.Evaluator import Evaluator
@@ -7,20 +8,11 @@ from GUI import gui_updater, movement
 from Models import game_state
 from Utility.constants import *
 
-
 def begin_turn(context: GUI, piece_id):
     execute_thread(context, piece_id)
 
-    # board_state = context.board.to_string_state()
-    # turn = ('b', 'w')[piece_id == white_piece_id]
-    # best_move = Evaluator.minimax(board_state, turn)
-    # find_and_execute_move(best_move, context)
-
-    # End turn
-    # game_state.update_turn(context)
-
 def execute_thread(context:GUI, piece_id):
-    _thread.start_new_thread(calculate, (context, piece_id, ))
+    _thread.start_new_thread(calculate, (context, piece_id))
 
 def calculate(context:GUI, piece_id):
     board_state = context.board.to_string_state()
