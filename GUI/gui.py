@@ -133,10 +133,19 @@ class GUI:
             elif state == 'paused':
                 self.update_printer("Game is paused, unpause to continue")
             elif state == 'started':
-                for key, tile in self.board.board_dict.items():
-                    if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
-                        print(f"Tile Coords: ({tile.row}, {tile.column})")
-                        self.clicked_tile(tile)
+
+                # Check if it is the AI's turn
+                if game_state.game_state['black']['player'] == 'ai' and self.player_turn == Turn.BLACK:
+                    self.update_printer("Cannot select pieces while the AI is making its move")
+                elif game_state.game_state['white']['player'] == 'ai' and self.player_turn == Turn.WHITE:
+                    self.update_printer("Cannot select pieces while the AI is making its move")
+
+                # Good to go
+                else:
+                    for key, tile in self.board.board_dict.items():
+                        if tile.get_rect() is not None and tile.get_rect().collidepoint(pos):
+                            print(f"Tile Coords: ({tile.row}, {tile.column})")
+                            self.clicked_tile(tile)
 
     def build_window(self):
         """
