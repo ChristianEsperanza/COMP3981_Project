@@ -85,7 +85,6 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
 
 def sumito_two_to_one(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
     # Coordinate will come in String of its location (Ex: 'I6')
-
     # Ex: E7, F8 to G8, H9
 
     # First coordinate will be empty because it's pushing
