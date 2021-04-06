@@ -208,8 +208,8 @@ class Board:
                         final_output = array_copy + white_marbles_out
 
                         move_index = test_spots.index(spot)
-                        move = {"start": marble + 'b',
-                                "end": spot + 'b',
+                        move = {"start": [marble + 'b'],
+                                "end": [spot + 'b'],
                                 "move": movements[move_index],
                                 "elim": False, "pushes": 0}
                         moves.append(move)
@@ -220,8 +220,8 @@ class Board:
                         final_output = black_marbles_out + array_copy
 
                         move_index = test_spots.index(spot)
-                        move = {"start": marble + 'w',
-                                "end": spot + 'w',
+                        move = {"start": [marble + 'w'],
+                                "end": [spot + 'w'],
                                 "move": movements[move_index],
                                 "elim": False, "pushes": 0}
                         moves.append(move)
