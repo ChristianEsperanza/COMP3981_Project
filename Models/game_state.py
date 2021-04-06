@@ -128,7 +128,7 @@ def reset_game(context: GUI):
 
 def undo_move(context: GUI):
     global game_state
-    if game_state['game']['state'] != 'started' or len(board_history) < 1 or len(state_history) == 0:
+    if game_state['game']['state'] != 'started' or len(board_history) < 2 or len(state_history) == 0:
         print("Can't undo")
         return False
     board_history.pop()
@@ -142,6 +142,12 @@ def undo_move(context: GUI):
     context.toggle_player_move()
     gui_updater.update_gui(context)
     context.board.update_board(context.window)
+
+    if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
+        ai_main.begin_turn(context, black_piece_id)
+    elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
+        ai_main.begin_turn(context, white_piece_id)
+
 
 def update_turn(context: GUI):
     # Check for wins/no time left
