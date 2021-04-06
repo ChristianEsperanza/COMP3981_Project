@@ -10,7 +10,7 @@ import random
 from GUI import gui_controls
 from GUI.board import Board
 from Utility.constants import *
-from Utility.enum import Vector
+from Utility.enum import Vector, vector_to_movement_enum
 from Utility.enum import Turn
 from operator import itemgetter
 from GUI.gui_controls import *
@@ -231,10 +231,10 @@ class GUI:
         """ MOVEMENT CONTROLS """
         # TODO: Move these functions into gui_controls
         # Row 1
-        up_left = thorpy.make_button("UP-L", func=self.test_func_move, params={"vector": Vector.UP_LEFT})
+        up_left = thorpy.make_button("UP-L", func=self.test_func_move, params={"vector": Vector.UpLeft})
         up_left.set_size((50, 50))
 
-        up_right = thorpy.make_button("UP-R", func=self.test_func_move, params={"vector": Vector.UP_RIGHT})
+        up_right = thorpy.make_button("UP-R", func=self.test_func_move, params={"vector": Vector.UpRight})
         up_right.set_size((50, 50))
 
         up_box = thorpy.Box([up_left, up_right])
@@ -242,14 +242,14 @@ class GUI:
         up_box.fit_children()
 
         # Row 2
-        left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.LEFT})
+        left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.Left})
         left.set_size((50, 50))
 
         center = thorpy.make_button("0")
         center.set_size((50, 50))
         center.set_topleft((2000, 1000))
 
-        right = thorpy.make_button(">", func=self.test_func_move, params={"vector": Vector.RIGHT})
+        right = thorpy.make_button(">", func=self.test_func_move, params={"vector": Vector.Right})
         right.set_size((50, 50))
 
         horiz_box = thorpy.Box([left, center, right])
@@ -257,10 +257,10 @@ class GUI:
         horiz_box.fit_children()
 
         # Row 3
-        down_left = thorpy.make_button("DN-L", func=self.test_func_move, params={"vector": Vector.DOWN_LEFT})
+        down_left = thorpy.make_button("DN-L", func=self.test_func_move, params={"vector": Vector.DownLeft})
         down_left.set_size((50, 50))
 
-        down_right = thorpy.make_button("DN-R", func=self.test_func_move, params={"vector": Vector.DOWN_RIGHT})
+        down_right = thorpy.make_button("DN-R", func=self.test_func_move, params={"vector": Vector.DownRight})
         down_right.set_size((50, 50))
         down_right.stick_to(up_left, target_side="right", self_side="left")
 
@@ -351,6 +351,26 @@ class GUI:
 
         print([tile.board_coordinate for tile in self.selected_pieces])
 
+    def sort_selected_pieces(self, vector: Vector, selected_pieces):
+        if vector == Vector.UpLeft:
+            vector_rep = (1, 0)
+            return sorted(selected_pieces, key=itemgetter('row', 'column'), reverse=True)
+        elif vector == Vector.UpRight:
+            vector_rep = (1, 1)
+            return sorted(selected_pieces, key=itemgetter('row', 'column'), reverse=True)
+        elif vector == Vector.Left:
+            vector_rep = (0, -1)
+            return sorted(selected_pieces, key=itemgetter('column'))
+        elif vector == Vector.Right:
+            vector_rep = (0, 1)
+            return sorted(selected_pieces, key=itemgetter('column'), reverse=True)
+        elif vector == Vector.DownLeft:
+            vector_rep = (-1, -1)
+            return sorted(selected_pieces, key=itemgetter('row', 'column'))
+        elif vector == Vector.DownRight:
+            vector_rep = (-1, 0)
+            return sorted(selected_pieces, key=itemgetter('row', 'column'))
+
     def test_func_move(self, **kwargs):
         # Check state first to see that game is in progress
         state = game_state.game_state['game']['state']
@@ -367,25 +387,8 @@ class GUI:
             vector = None
             selected_pieces_sorted = None
 
-            # Moving of pieces. Sorting used for correct movement of pieces.
-            if vector_rep == Vector.UP_LEFT:
-                vector = (1, 0)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
-            elif vector_rep == Vector.UP_RIGHT:
-                vector = (1, 1)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'), reverse=True)
-            elif vector_rep == Vector.LEFT:
-                vector = (0, -1)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'))
-            elif vector_rep == Vector.RIGHT:
-                vector = (0, 1)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('column'), reverse=True)
-            elif vector_rep == Vector.DOWN_LEFT:
-                vector = (-1, -1)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
-            elif vector_rep == Vector.DOWN_RIGHT:
-                vector = (-1, 0)
-                selected_pieces_sorted = sorted(self.selected_pieces, key=itemgetter('row', 'column'))
+            vector = vector_to_movement_enum(vector_rep).value
+            selected_pieces_sorted = self.sort_selected_pieces(vector_rep, self.selected_pieces)
 
             if len(selected_pieces_sorted) == 0:
                 print("No pieces to move")

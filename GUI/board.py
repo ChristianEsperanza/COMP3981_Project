@@ -7,16 +7,7 @@ from GUI.tile import Tile
 from Models import game_state
 from Utility.constants import *
 from GUI.file_reader import FileReader
-
-
-class Movement(Enum):
-    Left = (0, -1)
-    Right = (0, +1)
-    UpLeft = (+1, 0)
-    UpRight = (+1, +1)
-    DownLeft = (-1, -1)
-    DownRight = (-1, 0)
-
+from Utility.enum import *
 
 class Board:
     """

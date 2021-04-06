@@ -82,6 +82,13 @@ def resume_game(context: GUI):
         return False
     else:
         game_state['game']['state'] = 'started'
+        if game_state['turn'] == 'black' and game_state['black']['player'] == 'ai':
+            context.update_printer("Black to move! AI is thinking...")
+            ai_main.begin_turn(context, black_piece_id)
+
+        elif game_state['turn'] == 'white' and game_state['white']['player'] == 'ai':
+            context.update_printer("White to move! AI is thinking...")
+            ai_main.begin_turn(context, white_piece_id)
 
         # TODO: Start the timer again
 
