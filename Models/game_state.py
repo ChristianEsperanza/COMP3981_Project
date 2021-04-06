@@ -230,15 +230,15 @@ def check_goal_state(context: GUI):
         play_music()
 
     #    No time left on a player
-    elif game_state['white']['time_limit'] <= game_state['white']['total_time']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won")
-        play_music()
-
-    elif game_state['black']['time_limit'] <= game_state['black']['total_time']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won")
-        play_music()
+    # elif game_state['white']['time_limit'] <= game_state['white']['total_time']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("Black has won")
+    #     play_music()
+    # 
+    # elif game_state['black']['time_limit'] <= game_state['black']['total_time']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("White has won")
+    #     play_music()
 
 def play_music():
     pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')

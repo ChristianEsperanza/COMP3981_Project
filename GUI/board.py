@@ -75,7 +75,7 @@ class Board:
         ]
         self.convert_to_dict()
 
-    def set_german_daisy_tiles(self):
+    def set_belgian_daisy_tiles(self):
         """
         Set the board for a German Daisy start.
         """
@@ -104,7 +104,7 @@ class Board:
         ]
         self.convert_to_dict()
 
-    def set_belgian_daisy_tiles(self):
+    def set_german_daisy_tiles(self):
         """
         Set the board for a Belgian Daisy start.
         """
