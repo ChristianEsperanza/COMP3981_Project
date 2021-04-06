@@ -127,29 +127,32 @@ def reset_game(context: GUI):
 
 
 def undo_move(context: GUI):
-    # TODO: This does not work
     global game_state
-    if game_state['game']['state'] != 'started' or len(board_history) == 0 or len(state_history) == 0:
+    if game_state['game']['state'] != 'started' or len(board_history) < 1 or len(state_history) == 0:
         print("Can't undo")
         return False
-
+    board_history.pop()
     last_board = board_history.pop()
-    state = state_history.pop()
 
-    context.board.set_board(last_board.board, last_board.board_dict)
-    context.board.update_board(context.window)
+    last_state = state_history.pop()
+    last_state['game']['state'] == 'paused'
+    game_state = copy.deepcopy(last_state)
+    context.board = copy.deepcopy(last_board)
 
-    game_state = copy.deepcopy(state)
+    context.toggle_player_move()
     gui_updater.update_gui(context)
-
+    context.board.update_board(context.window)
 
 def update_turn(context: GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
     # Add to board and state history then update
-    board_history.append(context.board)
-    state_history.append(game_state)
+    temp_board = copy.deepcopy(context.board)
+    temp_state = copy.deepcopy(game_state)
+
+    board_history.append(temp_board)
+    state_history.append(temp_state)
     context.board.update_board(context.window)
 
     # Calculate the current score after movement
@@ -186,35 +189,6 @@ def update_turn(context: GUI):
             context.update_printer("Black to move! AI is thinking...")
             gui_updater.update_gui(context)
             ai_main.begin_turn(context, black_piece_id)
-
-        # else:
-        #     context.update_printer("Black to move!")
-
-    # Update the GUI:
-    #   - Call context.update_turn_label(enum, )
-    #   - Call context.update_score(enum, score from game_state)
-    #   - Call context.update_moves_taken(enum)
-
-    # Iterate through the state choices to find the current state, then:
-    #   - Set the new game state/turn
-    #   - Reset turn timer to 0
-    #   - Call the gui.update_time/moves/etc.
-
-    # Temporary, to be deleted later. This just changes the turn for now
-    # if game_state['game']['turn'] == 'black':
-    #     update_moves_taken(Turn.BLACK)
-    #     game_state['game']['turn'] = 'white'
-    # else:
-    #     update_moves_taken(Turn.WHITE)
-    #     game_state['game']['turn'] = 'black'
-
-    # gui_updater.update_gui(context)
-#     context.update_printer("""This function \nwraps the input paragraph such that each line
-# in the paragraph is at most width characters long. The wrap method
-# returns a list of output lines. The returned list
-# is empty if the wrapped
-# output has no content.""")
-
 
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board

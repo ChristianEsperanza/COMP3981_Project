@@ -543,7 +543,6 @@ class GUI:
 
     def end_turn(self):
         game_state.update_turn(self)
-        # self.toggle_player_move()
 
     def is_linear_movement(self, vector: tuple, selected_pieces_sorted: list):
         print("Linear move test")

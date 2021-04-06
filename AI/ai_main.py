@@ -49,13 +49,13 @@ def find_and_execute_move(best_move, context: GUI):
 
     # Pushing and sumito
     if pushes > 0:
-
         # Two marbles pushing
         if len(start_coordinates) == 2:
             # Sumito two to one
             if best_move['elim']:
                 movement.sumito_two_to_one(context, strip_coordinate(start_coordinates[0], strip_coordinate(start_coordinates[1]),
                                                             strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1])))
+                game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
             # Push two to one
             else:
@@ -65,6 +65,7 @@ def find_and_execute_move(best_move, context: GUI):
 
                 movement.push_two_to_one(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
                                         strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), target_coordinate)
+                game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
         # 3-1 Push    (C3C4C5 -> C4C5C6)
         # 3-2 Sumito  (F6F5F4 -> F5F4F3) - Push F2
@@ -80,6 +81,7 @@ def find_and_execute_move(best_move, context: GUI):
                 # Should be fine as is
                 if pushes == 1:
                     movement.sumito_three_to_one(context, strip_coordinate(start_coordinates[0]), strip_coordinate(end_coordinates[2]))
+                    game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
                 # Sumito 3-2
                 else:
@@ -89,6 +91,7 @@ def find_and_execute_move(best_move, context: GUI):
                     movement.sumito_three_to_two(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]), strip_coordinate(start_coordinates[2]),
                                                  strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), strip_coordinate(end_coordinates[2]),
                                                  pushed_coordinate)
+                    game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
             else:
 
@@ -100,6 +103,7 @@ def find_and_execute_move(best_move, context: GUI):
                     movement.push_three_to_one(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]), strip_coordinate(start_coordinates[2]),
                                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]),
                                                strip_coordinate(end_coordinates[2]), pushed_coordinate)
+                    game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
                 # Push 3-2
                 else:
@@ -112,9 +116,7 @@ def find_and_execute_move(best_move, context: GUI):
                                                strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),strip_coordinate(start_coordinates[2]),
                                                strip_coordinate(end_coordinates[0]), strip_coordinate(end_coordinates[1]), strip_coordinate(end_coordinates[2]),
                                                pushed_coordinate_1, pushed_coordinate_2)
-
-                    # movement.push_three_to_two(context, strip_coordinate(start_coordinates[0]), strip_coordinate(start_coordinates[1]),
-                    #                            strip_coordinate(start_coordinates[2]), strip_coordinate(end_coordinates))
+                    game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
     # If not pushing, move to designated coordinates
     else:
