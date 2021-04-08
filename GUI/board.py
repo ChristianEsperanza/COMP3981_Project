@@ -437,6 +437,8 @@ class Board:
 
                         move = {"start": [x + 'b' for x in marble_tuple],
                                 "end": [x + 'b' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one],
+                                "e_end": [marble_move_two],
                                 "move": movement,
                                 "elim": True, "pushes": 1}
                         moves.append(move)
@@ -452,6 +454,8 @@ class Board:
 
                         move = {"start": [x + 'w' for x in marble_tuple],
                                 "end": [x + 'w' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one],
+                                "e_end": [marble_move_two],
                                 "move": movement,
                                 "elim": True, "pushes": 1}
                         moves.append(move)
@@ -469,6 +473,8 @@ class Board:
 
                         move = {"start": [x + 'b' for x in marble_tuple],
                                 "end": [x + 'b' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'w'],
+                                "e_end": [marble_move_two + 'w'],
                                 "move": movement,
                                 "elim": False, "pushes": 1}
                         moves.append(move)
@@ -484,6 +490,8 @@ class Board:
 
                         move = {"start": [x + 'w' for x in marble_tuple],
                                 "end": [x + 'w' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'b'],
+                                "e_end": [marble_move_two + 'b'],
                                 "move": movement,
                                 "elim": False, "pushes": 1}
                         moves.append(move)
@@ -755,6 +763,8 @@ class Board:
 
                             move = {"start": [x + 'b' for x in marble_tuple],
                                     "end": [x + 'b' for x in marble_spot_one_move],
+                                    "e_start": [marble_move_one + 'w', marble_move_two + 'w'],
+                                    "e_end": [marble_move_two + 'w', marble_move_three + 'w'],
                                     "move": movement,
                                     "elim": True, "pushes": 2}
                             moves.append(move)
@@ -772,6 +782,8 @@ class Board:
 
                             move = {"start": [x + 'w' for x in marble_tuple],
                                     "end": [x + 'w' for x in marble_spot_one_move],
+                                    "e_start": [marble_move_one + 'b', marble_move_two + 'b'],
+                                    "e_end": [marble_move_two + 'b', marble_move_three + 'b'],
                                     "move": movement,
                                     "elim": True, "pushes": 2}
                             moves.append(move)
@@ -791,6 +803,8 @@ class Board:
 
                             move = {"start": [x + 'b' for x in marble_tuple],
                                     "end": [x + 'b' for x in marble_spot_one_move],
+                                    "e_start": [marble_move_one + 'w', marble_move_two + 'w'],
+                                    "e_end": [marble_move_two + 'w', marble_move_three + 'w'],
                                     "move": movement,
                                     "elim": False, "pushes": 2}
                             moves.append(move)
@@ -808,6 +822,8 @@ class Board:
 
                             move = {"start": [x + 'w' for x in marble_tuple],
                                     "end": [x + 'w' for x in marble_spot_one_move],
+                                    "e_start": [marble_move_one + 'b', marble_move_two + 'b'],
+                                    "e_end": [marble_move_two + 'b', marble_move_three + 'b'],
                                     "move": movement,
                                     "elim": False, "pushes": 2}
                             moves.append(move)
@@ -825,6 +841,8 @@ class Board:
 
                         move = {"start": [x + 'b' for x in marble_tuple],
                                 "end": [x + 'b' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'w'],
+                                "e_end": [marble_move_two + 'w'],
                                 "move": movement,
                                 "elim": True, "pushes": 1}
                         moves.append(move)
@@ -840,6 +858,8 @@ class Board:
 
                         move = {"start": [x + 'w' for x in marble_tuple],
                                 "end": [x + 'w' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'b'],
+                                "e_end": [marble_move_two + 'b'],
                                 "move": movement,
                                 "elim": True, "pushes": 1}
                         moves.append(move)
@@ -861,6 +881,8 @@ class Board:
 
                         move = {"start": [x + 'b' for x in marble_tuple],
                                 "end": [x + 'b' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'w'],
+                                "e_end": [marble_move_two + 'w'],
                                 "move": movement,
                                 "elim": False, "pushes": 1}
                         moves.append(move)
@@ -876,6 +898,8 @@ class Board:
 
                         move = {"start": [x + 'w' for x in marble_tuple],
                                 "end": [x + 'w' for x in marble_spot_one_move],
+                                "e_start": [marble_move_one + 'b'],
+                                "e_end": [marble_move_two + 'b'],
                                 "move": movement,
                                 "elim": False, "pushes": 1}
                         moves.append(move)
@@ -1072,6 +1096,21 @@ class Board:
         to a string. 65, 1 --> "A1"
         """
         return chr(letter) + str(num)
+
+    def compute_one_move(self, marble, move: Movement):
+        """
+        Moves a marble in the direction specified by the move.
+        :param marble: Tile
+        :param move: Enum
+        :return: marble after shift.
+        """
+        letter, num = self.convert_to_nums(marble)
+        l_change, n_change = move.value
+        letter += l_change
+        num += n_change
+        result = self.convert_to_string(letter, num)
+        return result
+
 
     def update_board(self, window):
         """
