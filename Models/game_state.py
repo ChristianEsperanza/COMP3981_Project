@@ -242,7 +242,7 @@ def check_goal_state(context: GUI):
 
 def play_music():
     pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
-    pygame.mixer.music.set_volume(0.01)
+    pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play()
 
 def validate_text_input(context: GUI):
@@ -256,7 +256,6 @@ def set_game_config(context: GUI):
     # Get the game configs from the GUI
 
     # Starting layout
-    # TODO: Currently default layout  only, once dropdown is fixed adjust this
     for layout in context.layout_radio_choices:
         if not layout.get_value():
             continue

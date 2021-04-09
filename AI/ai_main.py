@@ -36,13 +36,6 @@ def find_and_execute_move(best_move, context: GUI):
     start_coordinates = best_move['start']
     end_coordinates = best_move['end']
     pushes = best_move['pushes']
-    #
-    # sorted_start_coordinates = [context.board.board_dict[strip_coordinate(coord)] for coord in start_coordinates]
-    # sorted_end_coordinates = [context.board.board_dict[strip_coordinate(coord)] for coord in end_coordinates]
-    # if not isinstance(start_coordinates, str):
-    #     sorted_start_coordinates = context.sort_selected_pieces(movement_to_vector_enum(best_move['move']), start_coordinates)
-    #     sorted_end_coordinates = context.sort_selected_pieces(movement_to_vector_enum(best_move['move']), end_coordinates)
-
     # Start/end coordinates are a string if 1 move, list otherwise
 
     # Pushing and sumito
