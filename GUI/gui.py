@@ -58,7 +58,7 @@ class GUI:
         self.set_scoreboard()
         pygame.display.set_caption("Abalone")
 
-        self.play_music()
+        # self.play_music()
         thread1 = Thread(target=self.start_game_loop)
         thread1.start()
         thread1.run()

@@ -256,7 +256,6 @@ def set_game_config(context: GUI):
     # Get the game configs from the GUI
 
     # Starting layout
-    # TODO: Currently default layout  only, once dropdown is fixed adjust this
     for layout in context.layout_radio_choices:
         if not layout.get_value():
             continue

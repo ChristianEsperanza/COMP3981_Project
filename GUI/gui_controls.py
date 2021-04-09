@@ -71,5 +71,7 @@ def sheesh(context: GUI, repeat=1):
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('../COMP3981_project/Utility/sheesh.mp3'))
 
 def stop_music(self):
-    pygame.mixer.music.stop()
-    pygame.mixer.Channel.stop()
+    #TODO: Fill in, low priority tho
+    pass
+    # pygame.mixer.music.stop()
+    # pygame.mixer.Channel.stop()
