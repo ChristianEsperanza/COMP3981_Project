@@ -55,6 +55,7 @@ class GUI:
         self.build_console()
         self.draw_score_and_time()
         self.update_printer()
+        self.update_move_printer()
         self.set_scoreboard()
         pygame.display.set_caption("Abalone")
 
