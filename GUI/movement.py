@@ -83,24 +83,18 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
     new_tile_2.piece = temp_2
     new_tile_3.piece = temp_3
 
-def sumito_two_to_one(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
+# def sumito_two_to_one(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
+def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
     # Coordinate will come in String of its location (Ex: 'I6')
-    # Ex: E7, F8 to G8, H9
+    # Ex: E7F8 to G8H9
 
-    # First coordinate will be empty because it's pushing
-    old_tile_1 = context.board.board_dict[old_coordinate_1]
-    old_tile_2 = context.board.board_dict[old_coordinate_2]
-    new_tile_1 = context.board.board_dict[new_coordinate_1]
-    new_tile_2 = context.board.board_dict[new_coordinate_2]
+    current_piece = context.board.board_dict[old_coordinates[0]].piece
+    for coord in new_coordinates:
+        context.board.board_dict[coord].piece = current_piece
 
-    # Get pieces
-    old_piece_1 = old_tile_1.piece
-    old_piece_2 = old_tile_2.piece
-
-    # Less pieces than we started off with, so one tile will not have a piece
-    new_tile_1.piece = old_piece_1
-    new_tile_2.piece = old_piece_2
-    old_tile_1.piece = None
+    empty_coordinates = [coord for coord in old_coordinates if coord not in new_coordinates]
+    for coord in empty_coordinates:
+        context.board.board_dict[coord].piece = None
 
 def sumito_three_to_one(context, old_coordinate_1, new_coordinate):
     """

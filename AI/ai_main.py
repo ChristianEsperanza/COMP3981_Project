@@ -47,9 +47,9 @@ def find_and_execute_move(best_move, context: GUI):
 
             # TODO: Test this
             # Sumito two to one
+            # Ex (F7G8) -> (G8H9) pushed H9 off
             if best_move['elim']:
-                movement.sumito_two_to_one(context, start_coordinates[0], start_coordinates[1],
-                                           end_coordinates[0], end_coordinates[1])
+                movement.sumito_two_to_one(context, start_coordinates, end_coordinates)
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
             # TODO: Test this
