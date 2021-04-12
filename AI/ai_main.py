@@ -16,8 +16,10 @@ out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
 def begin_turn(context: GUI, piece_id):
     execute_thread(context, piece_id)
 
+
 def execute_thread(context: GUI, piece_id):
     _thread.start_new_thread(calculate, (context, piece_id))
+
 
 def calculate(context: GUI, piece_id):
     board_state = context.board.to_string_state()
