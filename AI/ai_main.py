@@ -40,27 +40,26 @@ def find_and_execute_move(best_move, context: GUI):
 
     # Pushing and sumito
     if pushes > 0:
-        enemy_end = best_move['e_end']
+        enemy_end_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['e_end']]
 
         # Two marbles pushing
         if len(start_coordinates) == 2:
 
-            # TODO: Test this
             # Sumito two to one
-            # Ex (F7G8) -> (G8H9) pushed H9 off
             if best_move['elim']:
                 movement.sumito_two_to_one(context, start_coordinates, end_coordinates)
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
-            # TODO: Test this
+            # TODO: Test this (Functioning going right)
             # Push two to one
             else:
                 # IE D5D6 - D6D7w
-                vector = best_move['move'].value
-                target_coordinate = get_next_coordinate(end_coordinates[1], vector)
-
-                movement.push_two_to_one(context, start_coordinates[0], start_coordinates[1],
-                                         end_coordinates[0], end_coordinates[1], target_coordinate)
+                # vector = best_move['move'].value
+                # target_coordinate = get_next_coordinate(end_coordinates[1], vector)
+                #
+                # movement.push_two_to_one(context, start_coordinates[0], start_coordinates[1],
+                #                          end_coordinates[0], end_coordinates[1], target_coordinate)
+                movement.push_two_to_one(context, start_coordinates, end_coordinates, enemy_end_coordinates)
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
         # 3-1 Push    (C3C4C5 -> C4C5C6)
@@ -73,12 +72,14 @@ def find_and_execute_move(best_move, context: GUI):
             if best_move['elim']:
                 vector = best_move['move'].value
 
+                # TODO:redo
                 # TODO: Test this
                 # Sumito 3-1
                 if pushes == 1:
                     movement.sumito_three_to_one(context, start_coordinates[0], end_coordinates[2])
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
+                # TODO:redo
                 # TODO: Test this
                 # Sumito 3-2
                 else:
@@ -93,6 +94,7 @@ def find_and_execute_move(best_move, context: GUI):
             else:
                 vector_tuple = best_move['move'].value
 
+                # TODO:redo
                 # TODO: Test this
                 # Push 3-1
                 if pushes == 1:
@@ -102,10 +104,10 @@ def find_and_execute_move(best_move, context: GUI):
                                                end_coordinates[2], pushed_coordinate)
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
+                # TODO:redo
                 # TODO: Test this
                 # Push 3-2
                 else:
-                    # TODO: Pushing left/right doesn't work correctly every time
                     # Ex - (G6G7G8 -> G5G6G7) Pushed (G5G4 -> G4G3)
                     pushed_coordinate_1 = get_next_coordinate(end_coordinates[2], vector_tuple)
                     pushed_coordinate_2 = get_next_coordinate(pushed_coordinate_1, vector_tuple)

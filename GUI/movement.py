@@ -83,7 +83,6 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
     new_tile_2.piece = temp_2
     new_tile_3.piece = temp_3
 
-# def sumito_two_to_one(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
 def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
     # Coordinate will come in String of its location (Ex: 'I6')
     # Ex: E7F8 to G8H9
@@ -139,27 +138,42 @@ def sumito_three_to_two(context: GUI, old_coordinate_1, old_coordinate_2, old_co
     new_tile_3.piece = old_piece_3
     pushed_to_tile_1.piece = opposing_piece
 
-def push_two_to_one(context,old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2, target_coordinate):
+# def push_two_to_one(context,old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2, target_coordinate):
+def push_two_to_one(context, old_coordinates, new_coordinates, enemy_end_coordinates):
     """
     """
+
     # IE D5D6 - D6D7w
     # Move new_coordinate_2 to target
     # Empty out old_coordinate1
 
     # Empty the furthest back starting coordinate
-    old_tile = context.board.board_dict[old_coordinate_1]
-    temp = old_tile.piece
-    old_tile.piece = None
+    # old_tile = context.board.board_dict[old_coordinate_1]
+    # temp = old_tile.piece
+    # old_tile.piece = None
+    #
+    # # Move the single piece to the target coordinate
+    # new_coordinate_2_tile = context.board.board_dict[new_coordinate_2]
+    # new_coordinate_2_piece = new_coordinate_2_tile.piece
+    #
+    # target_coordinate_tile = context.board.board_dict[target_coordinate]
+    # target_coordinate_tile.piece = new_coordinate_2_piece
+    #
+    # # Place the piece
+    # new_coordinate_2_tile.piece = temp
 
-    # Move the single piece to the target coordinate
-    new_coordinate_2_tile = context.board.board_dict[new_coordinate_2]
-    new_coordinate_2_piece = new_coordinate_2_tile.piece
+    current_piece = context.board.board_dict[old_coordinates[0]].piece
+    enemy_piece = context.board.board_dict[enemy_end_coordinates[0]].piece
+    empty_coordinates = [coord for coord in old_coordinates if coord not in new_coordinates]
 
-    target_coordinate_tile = context.board.board_dict[target_coordinate]
-    target_coordinate_tile.piece = new_coordinate_2_piece
+    for coord in enemy_end_coordinates:
+        context.board.board_dict[coord].piece = enemy_piece
 
-    # Place the piece
-    new_coordinate_2_tile.piece = temp
+    for coord in new_coordinates:
+        context.board.board_dict[coord].piece = current_piece
+
+    for coord in empty_coordinates:
+        context.board.board_dict[coord].piece = None
 
 
 def push_three_to_one(context, old_coordinate_1, old_coordinate_2, old_coordinate_3, new_coordinate_1,
@@ -189,18 +203,6 @@ def push_three_to_one(context, old_coordinate_1, old_coordinate_2, old_coordinat
     new_tile_3.piece = piece_3
     pushed_to_tile.piece = opposing_piece
 
-    # Move piece getting pushed to target_coordinate
-    # moved_piece_tile = context.board.board_dict[new_coordinate_3]
-    # pushed_to_tile = context.board.board_dict[pushed_coordinate]
-    # pushed_to_tile.piece = moved_piece_tile.piece
-    #
-    # # Empty first starting coordinate
-    # old_tile_1 = context.board.board_dict[old_coordinate_1]
-    # temp = old_tile_1.piece
-    # old_tile_1.piece = None
-    #
-    # # Move piece into the pushed piece's original tile
-    # moved_piece_tile.piece = temp
 
 def push_three_to_two(context, start_coordinate_1,  start_coordinate_2,  start_coordinate_3,
                       end_coordinate_1, end_coordinate_2, end_coordinate_3,
