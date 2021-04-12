@@ -17,6 +17,7 @@ out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
                                 'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
                                 '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
                                 'J8', 'J9', 'J10']
+# TODO: Condense these, there's lots of repeated calls.
 
 def move_1_piece(context: GUI, old_coordinate, new_coordinate):
     """
@@ -31,6 +32,7 @@ def move_1_piece(context: GUI, old_coordinate, new_coordinate):
     old_tile.piece = None
 
     context.update_move_printer(old_coordinate + " " + new_coordinate)
+
 
 def move_2_pieces(context: GUI, old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2):
     # Coordinate will come in String of its location (Ex: 'I6')
@@ -54,6 +56,7 @@ def move_2_pieces(context: GUI, old_coordinate_1, old_coordinate_2, new_coordina
     # Place pieces into new coordinates
     new_tile_1.piece = temp1
     new_tile_2.piece = temp2
+
 
 def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordinate_3,
                   new_coordinate_1, new_coordinate_2, new_coordinate_3):
@@ -81,6 +84,7 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
     new_tile_2.piece = temp_2
     new_tile_3.piece = temp_3
 
+
 def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
     # Coordinate will come in String of its location (Ex: 'I6')
     # Ex: E7F8 to G8H9
@@ -92,6 +96,7 @@ def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
     empty_coordinates = [coord for coord in old_coordinates if coord not in new_coordinates]
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
+
 
 def sumito_three_to_one(context, old_coordinates, new_coordinates):
     """
@@ -106,7 +111,6 @@ def sumito_three_to_one(context, old_coordinates, new_coordinates):
 
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
-
 
 
 def sumito_three_to_two(context: GUI, old_coordinates, new_coordinates, enemy_start_coordinates, enemy_end_coordinates):
@@ -127,7 +131,7 @@ def sumito_three_to_two(context: GUI, old_coordinates, new_coordinates, enemy_st
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
 
-# def push_two_to_one(context,old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2, target_coordinate):
+
 def push_two_to_one(context, old_coordinates, new_coordinates, enemy_end_coordinates):
     # IE D5D6 - D6D7w
 
