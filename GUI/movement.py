@@ -97,6 +97,7 @@ def sumito_three_to_one(context, old_coordinates, new_coordinates):
     """
     Only need to move the piece from the first starting coordinate to the last end coordinate
     """
+    # 3-1 Sumito  (F4E3D2 -> E3D2C1) - Push C1 off
     current_piece = context.board.board_dict[old_coordinates[0]].piece
     empty_coordinates = [coord for coord in old_coordinates if coord not in new_coordinates]
 
@@ -105,13 +106,7 @@ def sumito_three_to_one(context, old_coordinates, new_coordinates):
 
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
-    # 3-1 Sumito  (F4E3D2 -> E3D2C1) - Push C1 off
-    # old_tile = context.board.board_dict[old_coordinate_1]
-    # old_piece = old_tile.piece
-    # new_tile = context.board.board_dict[new_coordinate]
-    #
-    # old_tile.piece = None
-    # new_tile.piece = old_piece
+
 
 
 def sumito_three_to_two(context: GUI, old_coordinates, new_coordinates, enemy_start_coordinates, enemy_end_coordinates):
@@ -131,30 +126,6 @@ def sumito_three_to_two(context: GUI, old_coordinates, new_coordinates, enemy_st
 
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
-    # Will always end up 3 pieces of one side, 1 piece other side
-    # Get the tiles
-    # old_tile_1 = context.board.board_dict[old_coordinate_1]
-    # old_tile_2 = context.board.board_dict[old_coordinate_2]
-    # old_tile_3 = context.board.board_dict[old_coordinate_3]
-    # new_tile_1 = context.board.board_dict[new_coordinate_1]
-    # new_tile_2 = context.board.board_dict[new_coordinate_2]
-    # new_tile_3 = context.board.board_dict[new_coordinate_3]
-    # pushed_to_tile_1 = context.board.board_dict[eliminated_coordinate]
-    #
-    # # Get pieces
-    # opposing_piece = pushed_to_tile_1.piece
-    # old_piece_1 = old_tile_1.piece
-    # old_piece_2 = old_tile_2.piece
-    # old_piece_3 = old_tile_3.piece
-    #
-    # # Clear old tiles and place new pieces
-    # old_tile_1.piece = None
-    # old_tile_2.piece = None
-    # old_tile_3.piece = None
-    # new_tile_1.piece = old_piece_1
-    # new_tile_2.piece = old_piece_2
-    # new_tile_3.piece = old_piece_3
-    # pushed_to_tile_1.piece = opposing_piece
 
 # def push_two_to_one(context,old_coordinate_1, old_coordinate_2, new_coordinate_1, new_coordinate_2, target_coordinate):
 def push_two_to_one(context, old_coordinates, new_coordinates, enemy_end_coordinates):
