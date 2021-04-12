@@ -8,6 +8,10 @@ from GUI import gui_updater, movement
 from Models import game_state
 from Utility.constants import *
 
+out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
+                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
+                                '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
+                                'J8', 'J9', 'J10']
 
 def begin_turn(context: GUI, piece_id):
     execute_thread(context, piece_id)
@@ -40,7 +44,9 @@ def find_and_execute_move(best_move, context: GUI):
 
     # Pushing and sumito
     if pushes > 0:
-        enemy_end_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['e_end']]
+        enemy_end_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['e_end']
+                                 if strip_coordinate(coordinate) not in out_of_bounds]
+        enemy_start_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['e_start']]
 
         # Two marbles pushing
         if len(start_coordinates) == 2:
@@ -72,49 +78,39 @@ def find_and_execute_move(best_move, context: GUI):
             if best_move['elim']:
                 vector = best_move['move'].value
 
-                # TODO:redo
-                # TODO: Test this
+                # TODO: Test (DL Works)
                 # Sumito 3-1
                 if pushes == 1:
-                    movement.sumito_three_to_one(context, start_coordinates[0], end_coordinates[2])
+                    # movement.sumito_three_to_one(context, start_coordinates[0], end_coordinates[2])
+                    movement.sumito_three_to_one(context, start_coordinates, end_coordinates)
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
-                # TODO:redo
-                # TODO: Test this
+                # TODO: Test this (DL Works)
                 # Sumito 3-2
                 else:
 
                     # (D3D4D5) -> (D2D3D4) Pushed off d1
-                    pushed_coordinate = get_next_coordinate(strip_coordinate(end_coordinates[2]), vector)
-                    movement.sumito_three_to_two(context, start_coordinates[0], start_coordinates[1],
-                                                 start_coordinates[2], end_coordinates[0], end_coordinates[1],
-                                                 end_coordinates[2], pushed_coordinate)
+
+                    movement.sumito_three_to_two(context, start_coordinates, end_coordinates, enemy_start_coordinates,
+                                                 enemy_end_coordinates)
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
             else:
                 vector_tuple = best_move['move'].value
 
-                # TODO:redo
-                # TODO: Test this
+                # TODO: Test this (Right works)
                 # Push 3-1
                 if pushes == 1:
-                    pushed_coordinate = get_next_coordinate(end_coordinates[2], vector_tuple)
-                    movement.push_three_to_one(context, start_coordinates[0], start_coordinates[1],
-                                               start_coordinates[2], end_coordinates[0], end_coordinates[1],
-                                               end_coordinates[2], pushed_coordinate)
+                    movement.push_three_to_one(context, start_coordinates, end_coordinates, enemy_end_coordinates,
+                                               enemy_start_coordinates)
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
-                # TODO:redo
-                # TODO: Test this
+                # TODO: Test this (Right works)
                 # Push 3-2
                 else:
                     # Ex - (G6G7G8 -> G5G6G7) Pushed (G5G4 -> G4G3)
-                    pushed_coordinate_1 = get_next_coordinate(end_coordinates[2], vector_tuple)
-                    pushed_coordinate_2 = get_next_coordinate(pushed_coordinate_1, vector_tuple)
-
-                    movement.push_three_to_two(context, start_coordinates[0], start_coordinates[1],
-                                               start_coordinates[2], end_coordinates[0], end_coordinates[1],
-                                               end_coordinates[2], pushed_coordinate_1, pushed_coordinate_2)
+                    movement.push_three_to_two(context, start_coordinates, end_coordinates, enemy_start_coordinates,
+                                               enemy_end_coordinates)
                     game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
     # If not pushing, move to designated coordinates
