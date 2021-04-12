@@ -22,11 +22,13 @@ def start_game_button(context: GUI):
         game_state.game_state['game']['state'] = 'started'
         context.start_timer()
 
+
 def stop_game_button(context: GUI):
     if game_state.stop_game(context) == False:
         context.update_printer("Game is already stopped")
     else:
         context.update_printer("Stopping game")
+
 
 def pause_game_button(context: GUI):
     if game_state.pause_game(context) == False:
@@ -36,6 +38,7 @@ def pause_game_button(context: GUI):
         game_state.game_state['game']['state'] = "paused"
         context.white_timer.pause_timer_temp()
         context.black_timer.pause_timer_temp()
+
 
 def resume_game_button(context: GUI):
     if game_state.resume_game(context) == False:
@@ -49,6 +52,7 @@ def resume_game_button(context: GUI):
     context.resume_timer()
     context.start_timer()
 
+
 def reset_game_button(context: GUI):
     if game_state.reset_game(context) == False:
         context.update_printer("Can't reset game")
@@ -58,17 +62,24 @@ def reset_game_button(context: GUI):
         context.white_timer.reset_timer()
     # context.board.build_board(context.window)
 
+
 def undo_move_button(context: GUI):
     if game_state.undo_move(context) == False:
         context.update_printer("Can't undo move")
     else:
         context.update_printer("Undoing move")
 
+
+def set_board_button(context: GUI):
+    game_state.set_board_config(context)
+
+
 def sheesh(context: GUI, repeat=1):
     # pygame.mixer.music.load('../COMP3981_project/Utility/sheesh.mp3')
     pygame.mixer.music.set_volume(0.5)
     # pygame.mixer.music.play(repeat)
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('../COMP3981_project/Utility/sheesh.mp3'))
+
 
 def stop_music(self):
     #TODO: Fill in, low priority tho

@@ -162,7 +162,13 @@ class GUI:
                                              first_value=self.layout_radio_choices[0],
                                              always_value=True)
 
+        set_position_button = thorpy.make_button("Set Board", func=lambda: gui_controls.set_board_button(self))
+        set_position_button.set_size((button_length, button_height))
+
+        sep_line = thorpy.Line.make(size=225, type_="horizontal")
+
         """ CONTROLS BOX """
+
         start_button = thorpy.make_button("Start", func=lambda: gui_controls.start_game_button(self))
         start_button.set_size((button_length, button_height))
 
@@ -183,7 +189,7 @@ class GUI:
 
         controls_box = thorpy.Box.make(elements=[
             starting_position_title, default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio,
-            start_button, stop_button, pause_button, resume_button, reset_button, undo_button
+            set_position_button, sep_line, start_button, stop_button, pause_button, resume_button, reset_button, undo_button
         ])
         controls_box.set_size((225, 450))
 

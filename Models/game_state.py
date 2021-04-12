@@ -57,6 +57,9 @@ def start_game(context: GUI):
 
 
 def stop_game(context: GUI):
+    # Stop the game
+
+    # TODO: should stop timer
     if game_state['game']['state'] == 'stopped':
         return False
     else:
@@ -245,6 +248,7 @@ def play_music():
     pygame.mixer.music.set_volume(1.0)
     pygame.mixer.music.play()
 
+
 def validate_text_input(context: GUI):
     for text_input in context.settings_inputs:
         if not text_input.get_value().isdigit():
@@ -252,10 +256,9 @@ def validate_text_input(context: GUI):
     return True
 
 
-def set_game_config(context: GUI):
-    # Get the game configs from the GUI
+def set_board_config(context:GUI):
+    # Set the board config based on the radio button that has been selected
 
-    # Starting layout
     for layout in context.layout_radio_choices:
         if not layout.get_value():
             continue
@@ -270,6 +273,12 @@ def set_game_config(context: GUI):
         elif layout.get_text() == "Belgian Daisy":
             context.board.build_board(context.window, 'belgian_daisy')
             game_state['config']['starting_layout'] = 'belgian daisy'
+
+def set_game_config(context: GUI):
+    # Get the game configs from the GUI
+
+    # Starting layout
+    set_board_config(context)
 
     # Settings for black
     if context.black_human_radio.get_value():
