@@ -75,9 +75,9 @@ class Evaluator:
             if move.get("elim") is True:
                 move_score += 100 * multiplier
             # Favors pushing enemy marble over repositioning move
-            move_score += move.get("pushes") * 25 * multiplier
+            move_score += move.get("pushes") * 30 * multiplier
             # Favors moving multiple marbles over single
-            move_score += len(move.get("start")) * 50
+            move_score += len(move.get("start")) * 20
             move["move_score"] = move_score
 
     @staticmethod
@@ -104,7 +104,7 @@ class Evaluator:
                 black_risk += 2
                 for spot in test_spots:
                     if spot in white_marbles:
-                        black_risk += 3
+                        black_risk += 5
 
         for white_marble in white_marbles:
             letter, num = Board.convert_to_nums(white_marble)
@@ -119,7 +119,7 @@ class Evaluator:
                 white_risk += 2
                 for spot in test_spots:
                     if spot in black_marbles:
-                        white_risk += 3
+                        white_risk += 5
         return black_risk, white_risk
 
     @staticmethod
