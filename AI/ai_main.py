@@ -25,9 +25,11 @@ def calculate(context: GUI, piece_id):
     board_state = context.board.to_string_state()
     turn = ('b', 'w')[piece_id == white_piece_id]
     best_move = Evaluator.minimax(board_state, turn)
-    find_and_execute_move(best_move, context)
 
-    game_state.update_turn(context)
+    # Before executing, check that the game has not changed state
+    if game_state.game_state['game']['state'] == 'started':
+        find_and_execute_move(best_move, context)
+        game_state.update_turn(context)
 
 
 def find_and_execute_move(best_move, context: GUI):

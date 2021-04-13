@@ -52,6 +52,7 @@ def start_game(context: GUI):
     if game_state['game']['state'] != 'stopped' or not validate_text_input(context):
         return False
     else:
+        reset_game(context)
         context.update_printer("Starting game, black to move!")
         set_game_config(context)
         # context.start_timer()
@@ -77,9 +78,14 @@ def pause_game(context: GUI):
 
         # Reset the move time for AI, search will need to be done again
         if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
+            game_state['black']['total_time'] -= game_state['black']['move_time']
             game_state['black']['move_time'] = 0
+
         elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
+            game_state['white']['total_time'] -= game_state['white']['move_time']
             game_state['white']['move_time'] = 0
+
+        gui_updater.update_gui(context)
 
 
 def resume_game(context: GUI):
