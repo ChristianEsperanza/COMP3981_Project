@@ -23,6 +23,7 @@ game_state = {
         'player': '',  # human, ai
         'move_limit': 0,
         'time_limit': 0,
+        'total_time_limit': 0,
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -32,6 +33,7 @@ game_state = {
         'player': '',  # human, ai
         'move_limit': 0,
         'time_limit': 0,
+        'total_time_limit': 0,
         'score': 0,
         'moves_taken': 0,
         'move_time': 0,
@@ -251,6 +253,19 @@ def check_goal_state(context: GUI):
         context.update_printer("White has won by time")
         # play_music()
 
+    # Gone over the total time limiit
+    elif game_state['black']['total_time'] >= game_state['black']['total_time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("White has won by time")
+        # play_music()
+
+    elif game_state['white']['total_time'] >= game_state['white']['total_time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("Black has won by time")
+        # play_music()
+
+
+
 
 def play_music():
     pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
@@ -297,6 +312,8 @@ def set_game_config(context: GUI):
         game_state['black']['player'] = 'ai'
     game_state['black']['move_limit'] = int(context.settings_inputs[0].get_value())
     game_state['black']['time_limit'] = int(context.settings_inputs[1].get_value())
+    # game_state['black']['total_time_limit'] = int(context.settings_inputs[4].get_value())
+    game_state['black']['total_time_limit'] = 999999999999999999999999999
 
     # Settings for White
     if context.white_human_radio.get_value():
@@ -305,6 +322,8 @@ def set_game_config(context: GUI):
         game_state['white']['player'] = 'ai'
     game_state['white']['move_limit'] = int(context.settings_inputs[2].get_value())
     game_state['white']['time_limit'] = int(context.settings_inputs[3].get_value())
+    # game_state['white']['total_time_limit'] = int(context.settings_inputs[5].get_value())
+    game_state['white']['total_time_limit'] = 999999999999999999999999999
 
     # Set the turn state
     if game_state['black']['player'] == 'human':

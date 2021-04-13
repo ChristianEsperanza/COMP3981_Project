@@ -190,8 +190,11 @@ class GUI:
         black_move_limit = thorpy.Inserter("Move Limit:", value="")
         black_move_limit.set_size((button_length/2, button_height/2))
 
-        black_time_limit = thorpy.Inserter(name="Time Limit", value="")
-        black_time_limit.set_size((button_length/2, button_height/2))
+        black_move_time_limit = thorpy.Inserter(name="Move Time Limit", value="")
+        black_move_time_limit.set_size((button_length/2, button_height/2))
+
+        black_total_time_limit = thorpy.Inserter(name="Total Time Limit", value="")
+        black_total_time_limit.set_size((button_length/2, button_height/2))
 
         # Black human or AI radio group
         self.black_human_radio = thorpy.Checker.make("Human", type_="radio")
@@ -215,15 +218,19 @@ class GUI:
         white_move_limit = thorpy.Inserter(name="Move Limit", value="")
         white_move_limit.set_size((button_length/2, button_height/2))
 
-        white_time_limit = thorpy.Inserter("Time Limit", value="")
-        white_time_limit.set_size((button_length/2, button_height/2))
+        white_move_time_limit = thorpy.Inserter("Move Time Limit", value="")
+        white_move_time_limit.set_size((button_length/2, button_height/2))
+
+        white_total_time_limit = thorpy.Inserter(name="Total Time Limit", value="")
+        white_total_time_limit.set_size((button_length/2, button_height/2))
 
         # Put this in a list for sanitization later, must stay in this order
-        self.settings_inputs = [black_move_limit, black_time_limit, white_move_limit, white_time_limit]
+        self.settings_inputs = [black_move_limit, black_move_time_limit, white_move_limit, white_move_time_limit,
+                                black_total_time_limit, white_total_time_limit]
 
         settings_box = thorpy.Box.make(elements=[
-            black_settings_title, self.black_human_radio, black_ai_radio, black_move_limit, black_time_limit,
-            white_settings_title, self.white_human_radio, white_ai_radio, white_move_limit, white_time_limit,
+            black_settings_title, self.black_human_radio, black_ai_radio, black_move_limit, black_move_time_limit, black_total_time_limit,
+            white_settings_title, self.white_human_radio, white_ai_radio, white_move_limit, white_move_time_limit, white_total_time_limit
         ])
         settings_box.set_size((225, 450))
 
