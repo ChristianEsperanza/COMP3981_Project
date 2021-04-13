@@ -69,7 +69,8 @@ def find_and_execute_move(best_move, context: GUI):
                 #
                 # movement.push_two_to_one(context, start_coordinates[0], start_coordinates[1],
                 #                          end_coordinates[0], end_coordinates[1], target_coordinate)
-                movement.push_two_to_one(context, start_coordinates, end_coordinates, enemy_end_coordinates)
+                movement.push_two_to_one(context, start_coordinates, end_coordinates,
+                                         enemy_start_coordinates, enemy_end_coordinates)
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
         # 3-1 Push    (C3C4C5 -> C4C5C6)
