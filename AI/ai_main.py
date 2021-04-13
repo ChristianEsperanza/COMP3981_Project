@@ -14,6 +14,7 @@ out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
                                 '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
                                 'J8', 'J9', 'J10']
 
+
 def begin_turn(context: GUI, piece_id):
     execute_thread(context, piece_id)
 

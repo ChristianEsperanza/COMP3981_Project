@@ -140,25 +140,44 @@ def reset_game(context: GUI):
 
 def undo_move(context: GUI):
     global game_state
-    if game_state['game']['state'] != 'started' or len(board_history) < 2 or len(state_history) == 0:
-        print("Can't undo")
+
+    # Can't undo move if game not paused - didn't want to do move timer calculations when we can just reset
+    if game_state['game']['state'] == 'paused':
+        # Have to pop the board twice because we save the current one right on turn change
+        board_history.pop()
+        last_board = board_history.pop()
+        last_state = state_history.pop()
+
+        # White move time = 3.6
+
+        # Set to paused so player can gather their thoughts and feelings
+        last_state['game']['state'] = 'paused'
+
+        # Subtract the last move time from the total, and then reset the move time
+        if last_state['game']['turn'] == 'black':
+            last_state['black']['total_time'] -= last_state['black']['move_time']
+            # last_state['white']['total_time'] -= game_state['white']['move_time']
+        else:
+            last_state['white']['total_time'] -= last_state['white']['move_time']
+            # last_state['black']['total_time'] -= game_state['black']['move_time']
+        last_state['black']['move_time'] = 0.0
+        last_state['white']['move_time'] = 0.0
+
+        # Finalize by assigning the previous state, board, and updating gui
+        game_state = copy.deepcopy(last_state)
+        context.board = copy.deepcopy(last_board)
+
+        context.toggle_player_move()
+        gui_updater.update_gui(context)
+        context.board.update_board(context.window)
+
+    else:
         return False
-    board_history.pop()
-    last_board = board_history.pop()
 
-    last_state = state_history.pop()
-    last_state['game']['state'] == 'paused'
-    game_state = copy.deepcopy(last_state)
-    context.board = copy.deepcopy(last_board)
-
-    context.toggle_player_move()
-    gui_updater.update_gui(context)
-    context.board.update_board(context.window)
-
-    if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
-        ai_main.begin_turn(context, black_piece_id)
-    elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
-        ai_main.begin_turn(context, white_piece_id)
+    # if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
+    #     ai_main.begin_turn(context, black_piece_id)
+    # elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
+    #     ai_main.begin_turn(context, white_piece_id)
 
 
 def update_turn(context: GUI):

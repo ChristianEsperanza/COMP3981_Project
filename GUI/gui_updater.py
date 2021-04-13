@@ -24,10 +24,8 @@ def update_gui_total_time(context: GUI, piece=None):
         turn = game_state.game_state['game']['turn']
         piece = (Turn.WHITE, Turn.BLACK)[turn == 'black']
 
-    if piece == Turn.WHITE:
-        context.update_total_time(piece, game_state.game_state['white']['total_time'])
-    elif piece == Turn.BLACK:
-        context.update_total_time(piece, game_state.game_state['black']['total_time'])
+    context.update_total_time(Turn.WHITE, game_state.game_state['white']['total_time'])
+    context.update_total_time(Turn.BLACK, game_state.game_state['black']['total_time'])
 
 
 def update_gui_turn_time(context: GUI, piece=None):
@@ -35,10 +33,8 @@ def update_gui_turn_time(context: GUI, piece=None):
         turn = game_state.game_state['game']['turn']
         piece = (Turn.WHITE, Turn.BLACK)[turn == 'black']
 
-    if piece == Turn.WHITE:
-        context.update_turn_time(piece, game_state.game_state['white']['move_time'])
-    elif piece == Turn.BLACK:
-        context.update_turn_time(piece, game_state.game_state['black']['move_time'])
+    context.update_turn_time(Turn.WHITE, game_state.game_state['white']['move_time'])
+    context.update_turn_time(Turn.BLACK, game_state.game_state['black']['move_time'])
 
 
 def update_gui_moves_taken(context: GUI):
