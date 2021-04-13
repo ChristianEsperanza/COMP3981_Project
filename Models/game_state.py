@@ -171,6 +171,7 @@ def undo_move(context: GUI):
 
 
 def update_turn(context: GUI):
+    print(game_state)
     # Check for wins/no time left
     check_goal_state(context)
 
@@ -238,27 +239,31 @@ def check_goal_state(context: GUI):
         context.update_printer("White has won by move limit")
         play_music()
 
-    #    No time left on a player
-    elif game_state['white']['total_time'] >= game_state['white']['time_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won by time")
-        # play_music()
-
-    elif game_state['black']['total_time'] >= game_state['black']['time_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won by time")
-        # play_music()
-
-    # Gone over the total time limiit
-    elif game_state['black']['total_time'] >= game_state['black']['total_time_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won by time")
-        # play_music()
-
-    elif game_state['white']['total_time'] >= game_state['white']['total_time_limit']:
-        game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won by time")
-        # play_music()
+    # #    No time left on a player
+    # elif game_state['white']['total_time'] >= game_state['white']['time_limit']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("Black has won by time")
+    #     print("MonkaS")
+    #     # play_music()
+    #
+    # elif game_state['black']['total_time'] >= game_state['black']['time_limit']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("White has won by time")
+    #     print("MonkaS")
+    #     # play_music()
+    #
+    # # Gone over the total time limiit
+    # elif game_state['black']['total_time'] >= game_state['black']['total_time_limit']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("White has won by time")
+    #     print("MonkaS")
+    #     # play_music()
+    #
+    # elif game_state['white']['total_time'] >= game_state['white']['total_time_limit']:
+    #     game_state['game']['state'] = 'stopped'
+    #     context.update_printer("Black has won by time")
+    #     print("MonkaS")
+    #     # play_music()
 
 
 def play_music():
