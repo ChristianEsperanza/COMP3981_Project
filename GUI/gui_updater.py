@@ -9,7 +9,9 @@ NOTE: All of the attributes in game_state should be updated by the time these fu
 are called. 
 """
 
+
 def update_gui(context: GUI):
+    # Aggregate function which will update various GUI elements
     update_gui_total_time(context)
     update_gui_turn_time(context)
     update_gui_moves_taken(context)
