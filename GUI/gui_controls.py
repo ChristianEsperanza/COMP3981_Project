@@ -4,7 +4,6 @@ import threading
 import pygame
 
 import GUI
-from GUI import movement, move_validation
 from Models import game_state
 
 """
@@ -13,6 +12,7 @@ callback bridge between the GUI buttons and the files that contain functions to 
 desired action.
 """
 
+
 def start_game_button(context: GUI):
     # game_state.start_game() will only return false if invalid inputs or game state
     if game_state.start_game(context) == False:
@@ -20,7 +20,7 @@ def start_game_button(context: GUI):
     else:
         context.update_printer(message="Starting game, black to move!")
         game_state.game_state['game']['state'] = 'started'
-        context.start_timer()
+        # context.start_timer()
 
 
 def stop_game_button(context: GUI):
@@ -35,9 +35,8 @@ def pause_game_button(context: GUI):
         context.update_printer("Can't pause game")
     else:
         context.update_printer("Pausing game")
-        game_state.game_state['game']['state'] = "paused"
-        context.white_timer.pause_timer_temp()
-        context.black_timer.pause_timer_temp()
+        # context.white_timer.pause_timer_temp()
+        # context.black_timer.pause_timer_temp()
 
 
 def resume_game_button(context: GUI):
@@ -45,12 +44,8 @@ def resume_game_button(context: GUI):
         context.update_printer("Can't resume game")
     else:
         context.update_printer("Resuming game")
-    # if game_state.game_state['game']['turn'] == 'white':
-    #     context.white_timer.start_timer()
-    # else:
-    #     context.black_timer.start_timer()
-    context.resume_timer()
-    context.start_timer()
+    # context.resume_timer()
+    # context.start_timer()
 
 
 def reset_game_button(context: GUI):

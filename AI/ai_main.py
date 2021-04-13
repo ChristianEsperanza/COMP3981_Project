@@ -4,7 +4,7 @@ from threading import Thread
 
 import GUI
 from AI.Evaluator import Evaluator
-from GUI import gui_updater, movement
+from GUI import movement
 from Models import game_state
 from Utility.constants import *
 
