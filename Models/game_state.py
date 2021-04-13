@@ -17,7 +17,7 @@ game_state = {
     },
     'config': {
         'starting_layout': '',  # default, german daisy, belgian daisy
-        'time_elapsed': '',
+        'time_elapsed': 0,
     },
     'black': {
         'player': '',  # human, ai
@@ -110,7 +110,7 @@ def reset_game(context: GUI):
     game_state['game']['state'] = 'stopped'
     game_state['game']['turn'] = 'black'
     game_state['config']['starting_layout'] = ''
-    game_state['config']['time_elapsed'] = ''
+    game_state['config']['time_elapsed'] = 0
     game_state['black']['player'] = ''
     game_state['black']['move_limit'] = 0
     game_state['black']['time_limit'] = 0
@@ -165,13 +165,6 @@ def update_turn(context: GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
-    # Add to board and state history then update
-    # temp_board = copy.deepcopy(context.board)
-    # temp_state = copy.deepcopy(game_state)
-    #
-    # board_history.append(temp_board)
-    # state_history.append(temp_state)
-
     save_history(context)
     context.board.update_board(context.window)
 
@@ -217,7 +210,7 @@ def update_moves_taken(piece_enum):
 
 def check_goal_state(context: GUI):
     # Check for goal states before finalizing a turn
-    #    Win (6 points)
+    #    Point win (6 points)
     if game_state['white']['score'] == 6:
         game_state['game']['state'] = 'stopped'
         context.update_printer("White has won!")
@@ -228,7 +221,7 @@ def check_goal_state(context: GUI):
         context.update_printer("Black has won!")
         play_music()
 
-    #    No moves left on current player
+    # No moves left on current player
     elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
         game_state['game']['state'] = 'stopped'
         context.update_printer("Black has won")

@@ -35,16 +35,6 @@ class GUI:
         self.console = None
         self.selected_pieces = []
         self.player_turn = Turn.BLACK
-        # self.run_timer = False
-        # self.total_agg_time_white = 0
-        # self.total_agg_time_black = 0
-        # self.timer_focus = Turn.BLACK
-        # self.is_started = False
-        # self.white_timer =Timer (game_state.game_state['white']['time_limit'],
-        #                          Turn.WHITE, self)
-        # self.black_timer = Timer(game_state.game_state['black']['time_limit'],
-        #                          Turn.BLACK, self)
-        # self.run_once = False
 
     def run(self):
         """

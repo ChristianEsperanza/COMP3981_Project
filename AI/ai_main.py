@@ -1,4 +1,5 @@
 import _thread
+import random
 import threading
 from threading import Thread
 
@@ -28,8 +29,17 @@ def calculate(context: GUI, piece_id):
 
     # Before executing, check that the game has not changed state
     if game_state.game_state['game']['state'] == 'started':
-        find_and_execute_move(best_move, context)
-        game_state.update_turn(context)
+
+        # First move is random
+        if game_state.game_state['game']['turn'] == 'black' and game_state.game_state['black']['moves_taken'] == 0:
+            string_board = context.board.to_string_state()
+            moves, resulting_boards = context.board.generate_all_boards(string_board, 'b')
+            find_and_execute_move(moves[random.randint(0, len(moves) - 1)], context)
+            game_state.update_turn(context)
+
+        else:
+            find_and_execute_move(best_move, context)
+            game_state.update_turn(context)
 
 
 def find_and_execute_move(best_move, context: GUI):
