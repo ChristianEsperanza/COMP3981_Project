@@ -1238,7 +1238,6 @@ class Board:
         self.board_dict = board_dict
 
     def update_scores(self):
-        # TODO: Call this in functions where the score changes (IE sumitos)
         white_score = 0
         black_score = 0
 

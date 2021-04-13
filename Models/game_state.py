@@ -126,9 +126,9 @@ def reset_game(context: GUI):
     game_state['white']['move_time'] = 0
     game_state['white']['total_time'] = 0
 
-    # Reset GUI
+    # Reset GUI and board
     context.selected_pieces.clear()
-    context.board.build_board(context.window, 'default')
+    set_board_config(context)
     context.set_scoreboard()
 
     # Clear histories
@@ -204,6 +204,7 @@ def update_turn(context: GUI):
             gui_updater.update_gui(context)
             ai_main.begin_turn(context, black_piece_id)
 
+
 def update_moves_taken(piece_enum):
     # Method which will be called after a move is finalized in game_board
     if piece_enum == Turn.WHITE:
@@ -247,6 +248,7 @@ def check_goal_state(context: GUI):
     #     context.update_printer("White has won")
     #     play_music()
 
+
 def play_music():
     pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
     pygame.mixer.music.set_volume(1.0)
@@ -260,7 +262,7 @@ def validate_text_input(context: GUI):
     return True
 
 
-def set_board_config(context:GUI):
+def set_board_config(context: GUI):
     # Set the board config based on the radio button that has been selected
 
     for layout in context.layout_radio_choices:

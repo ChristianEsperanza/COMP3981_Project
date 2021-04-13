@@ -140,8 +140,5 @@ def find_and_execute_move(best_move, context: GUI):
             game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
 
-def get_next_coordinate(last_coordinate: str, vector: tuple):
-    return f"{chr(ord(last_coordinate[0]) + vector[0])}{int(last_coordinate[1]) + vector[1]}"
-
 def strip_coordinate(move_string):
     return move_string[:-1]
