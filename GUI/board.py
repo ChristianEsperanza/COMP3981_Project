@@ -37,6 +37,7 @@ empty_board = [
             Tile(0, 3, "A4", None), Tile(0, 4, "A5", None),
         ]
 
+
 class Board:
     """
     Class which represents the board in the game window.
@@ -1163,7 +1164,6 @@ class Board:
         result = self.convert_to_string(letter, num)
         return result
 
-
     def update_board(self, window):
         """
         Updates the current board, going through the tiles and redrawing the
@@ -1259,6 +1259,7 @@ class Board:
             elif self.board_dict[key].get_piece() == black_piece_id:
                 board_state.append(self.board_dict[key].board_coordinate + 'b')
         return board_state
+
 
 """
 In order to test input files, add the input file to the GUI folder. You can now enter the name

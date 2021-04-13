@@ -1,14 +1,13 @@
 import GUI
 from operator import itemgetter
-from GUI import gui_updater
-from Utility.constants import *
-from Utility.enum import *
+
 
 def is_valid(context: GUI, vector):
     if is_valid_selection(context) and is_valid_move(context, vector):
         print("Valid")
     else:
         print("Invalid")
+
 
 def is_valid_selection(context: GUI):
     # Determine if the selected pieces are valid
@@ -30,6 +29,7 @@ def is_valid_selection(context: GUI):
     print("Valid Selection")
     return True
 
+
 def is_continuous_row_selection(context: GUI):
     prev_tile = None
     selected_pieces_sorted_col = sorted(context.selected_pieces, key=itemgetter('column'))
@@ -46,6 +46,7 @@ def is_continuous_row_selection(context: GUI):
         else:
             prev_tile = tile
     return True
+
 
 def is_continuous_diagonal_selection(context: GUI):
     # print("Starting Diagonal selection consistency Test.")
@@ -78,6 +79,7 @@ def is_continuous_diagonal_selection(context: GUI):
             # After first evaluation, assign some variables
             prev_tile = tile
     return True
+
 
 def is_valid_move(context: GUI, vector: tuple):
     pass

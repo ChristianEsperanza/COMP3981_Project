@@ -1,7 +1,5 @@
 import _thread
 import random
-import threading
-from threading import Thread
 
 import GUI
 from AI.Evaluator import Evaluator
@@ -10,9 +8,9 @@ from Models import game_state
 from Utility.constants import *
 
 out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
-                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
-                                '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
-                                'J8', 'J9', 'J10']
+                 'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
+                 '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
+                 'J8', 'J9', 'J10']
 
 
 def begin_turn(context: GUI, piece_id):
@@ -55,7 +53,6 @@ def find_and_execute_move(best_move, context: GUI):
     start_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['start']]
     end_coordinates = [strip_coordinate(coordinate) for coordinate in best_move['end']]
     pushes = best_move['pushes']
-
 
     # Pushing and sumito
     if pushes > 0:

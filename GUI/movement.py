@@ -1,11 +1,4 @@
-import copy
-
 import GUI
-from operator import itemgetter
-from GUI import gui_updater
-from Models import game_state
-from Utility.constants import *
-from Utility.enum import *
 
 """
 A file to hold functions for game movement for AI
@@ -14,9 +7,11 @@ NOTE: These moves do not include validation, which should be done prior to calli
 """
 
 out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
-                                'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
-                                '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
-                                'J8', 'J9', 'J10']
+                 'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
+                 '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
+                 'J8', 'J9', 'J10']
+
+
 # TODO: Condense these, there's lots of repeated calls.
 
 def move_1_piece(context: GUI, old_coordinate, new_coordinate):
@@ -85,7 +80,7 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
     new_tile_3.piece = temp_3
 
 
-def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
+def sumito_two_to_one(context: GUI, old_coordinates, new_coordinates):
     current_piece = context.board.board_dict[old_coordinates[0]].piece
     for coord in new_coordinates:
         context.board.board_dict[coord].piece = current_piece
@@ -176,4 +171,3 @@ def push_three_to_two(context, old_coordinates, new_coordinates, enemy_start_coo
 
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
-

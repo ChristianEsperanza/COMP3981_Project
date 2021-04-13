@@ -1,12 +1,8 @@
 import _thread
-
 import pygame
-
 from GUI import gui_updater
 import GUI
 from Models import game_state
-
-from Utility.enum import Turn
 
 
 def run_timer(context: GUI):

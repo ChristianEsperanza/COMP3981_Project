@@ -1,12 +1,8 @@
 import copy
-from threading import Thread
-
 import pygame
-
 import GUI
 from AI import ai_main
 from GUI import gui_updater
-from Models import state_timer
 from Utility.constants import *
 from Utility.enum import *
 
@@ -265,8 +261,6 @@ def check_goal_state(context: GUI):
         # play_music()
 
 
-
-
 def play_music():
     pygame.mixer.music.load('../COMP3981_project/Utility/yea.mp3')
     pygame.mixer.music.set_volume(1.0)
@@ -355,7 +349,7 @@ def save_history(context: GUI):
     state_history.append(temp_state)
 
 
-def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates:list):
+def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates: list):
     """
     Coordinates should come in a String list. Example:
     old_coordinates = ['I5', 'H4']

@@ -14,6 +14,7 @@ class Turn(enum.Enum):
     WHITE = 1
     BLACK = 2
 
+
 class Movement(enum.Enum):
     Left = (0, -1)
     Right = (0, +1)
@@ -21,6 +22,7 @@ class Movement(enum.Enum):
     UpRight = (+1, +1)
     DownLeft = (-1, -1)
     DownRight = (-1, 0)
+
 
 def vector_to_movement_enum(vector: Vector):
     if vector == Vector.UpLeft:
@@ -35,6 +37,7 @@ def vector_to_movement_enum(vector: Vector):
         return Movement.DownLeft
     elif vector == Vector.DownRight:
         return Movement.DownRight
+
 
 def movement_to_vector_enum(vector: Movement):
     if vector == Movement.Left:

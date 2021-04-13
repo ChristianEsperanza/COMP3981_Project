@@ -1,6 +1,3 @@
-# Callback functions
-import threading
-
 import pygame
 
 import GUI
@@ -15,7 +12,7 @@ desired action.
 
 def start_game_button(context: GUI):
     # game_state.start_game() will only return false if invalid inputs or game state
-    if game_state.start_game(context) == False:
+    if not game_state.start_game(context):
         context.update_printer("State or inputs invalid")
     else:
         context.update_printer(message="Starting game, black to move!")
@@ -23,35 +20,35 @@ def start_game_button(context: GUI):
 
 
 def stop_game_button(context: GUI):
-    if game_state.stop_game(context) == False:
+    if not game_state.stop_game(context):
         context.update_printer("Game is already stopped")
     else:
         context.update_printer("Stopping game")
 
 
 def pause_game_button(context: GUI):
-    if game_state.pause_game(context) == False:
+    if not game_state.pause_game(context):
         context.update_printer("Can't pause game")
     else:
         context.update_printer("Pausing game")
 
 
 def resume_game_button(context: GUI):
-    if game_state.resume_game(context) == False:
+    if not game_state.resume_game(context):
         context.update_printer("Can't resume game")
     else:
         context.update_printer("Resuming game")
 
 
 def reset_game_button(context: GUI):
-    if game_state.reset_game(context) == False:
+    if not game_state.reset_game(context):
         context.update_printer("Can't reset game")
     else:
         context.update_printer("Resetting game")
 
 
 def undo_move_button(context: GUI):
-    if game_state.undo_move(context) == False:
+    if not game_state.undo_move(context):
         context.update_printer("Can't undo move")
     else:
         context.update_printer("Undoing move and pausing game")
@@ -68,8 +65,8 @@ def sheesh(context: GUI, repeat=1):
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('../COMP3981_project/Utility/sheesh.mp3'))
 
 
-def stop_music(self):
-    #TODO: Fill in, low priority tho
+def stop_music():
+    # TODO: Fill in, low priority tho
     pass
     # pygame.mixer.music.stop()
     # pygame.mixer.Channel.stop()

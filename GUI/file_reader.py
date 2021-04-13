@@ -33,7 +33,7 @@ class FileReader:
         Writes the data passed in to the specified file path from a source array. Used for board states.
         """
         file_path = Path(path)
-        with open(path, mode="w", encoding="utf-8") as file:
+        with open(file_path, mode="w", encoding="utf-8") as file:
             [file.write(str(line).replace('[', '').replace(']', '').replace('\'', '').replace(' ', '') + '\n')
              for line in data]
 
@@ -43,5 +43,5 @@ class FileReader:
         Writes the data passed in to the specified file path from a source array. Used for moves.
         """
         file_path = Path(path)
-        with open(path, mode="w", encoding="utf-8") as file:
+        with open(file_path, mode="w", encoding="utf-8") as file:
             [file.write(str(line) + '\n') for line in data]

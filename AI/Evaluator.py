@@ -269,8 +269,10 @@ class Evaluator:
 
 
 if __name__ == '__main__':
-    # string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b,I5b,A2w,A3w,B2w,B3w,B5w,D3w,G6w,G7w,H8w,I6w,I9w"
-    string_state = "A1b,A2b,A3b,A4b,A5b,B1b,B2b,B3b,B4b,B5b,B6b,C3b,C4b,C5b,G5w,G6w,G7w,H4w,H5w,H6w,H7w,H8w,H9w,I5w,I6w,I7w,I8w,I9w"
+    # string_state = "B4b,C3b,C4b,D2b,D7b,E8b,F4b,F9b,G4b,G5b,G8b,H4b,H5b," \
+    #                "I5b,A2w,A3w,B2w,B3w,B5w,D3w,G6w,G7w,H8w,I6w,I9w"
+    string_state = "A1b,A2b,A3b,A4b,A5b,B1b,B2b,B3b,B4b,B5b,B6b,C3b,C4b,C5b," \
+                   "G5w,G6w,G7w,H4w,H5w,H6w,H7w,H8w,H9w,I5w,I6w,I7w,I8w,I9w"
     board_state = [x.strip() for x in string_state[0:].split(',')]
     turn = 'b'
     best_move = Evaluator.minimax(board_state, turn)

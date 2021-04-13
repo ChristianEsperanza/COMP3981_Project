@@ -54,11 +54,3 @@ max_row = 9
 white_piece_id = 1
 black_piece_id = 2
 score_box_size = 150
-
-
-
-
-
-
-
-

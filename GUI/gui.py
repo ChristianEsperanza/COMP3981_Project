@@ -1,10 +1,7 @@
-import datetime
 import textwrap
-import time
-from threading import Timer, Thread
+from threading import Thread
 
 import thorpy
-import pygame
 import random
 
 from GUI import gui_controls
@@ -55,7 +52,8 @@ class GUI:
         thread1.start()
         thread1.run()
 
-    def play_music(self):
+    @staticmethod
+    def play_music():
         pygame.mixer.music.load('../COMP3981_project/Utility/monsters_inc.mp3')
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play()
@@ -179,7 +177,8 @@ class GUI:
 
         controls_box = thorpy.Box.make(elements=[
             starting_position_title, default_layout_radio, german_daisy_layout_radio, belgian_daisy_layout_radio,
-            set_position_button, sep_line, start_button, stop_button, pause_button, resume_button, reset_button, undo_button
+            set_position_button, sep_line, start_button, stop_button, pause_button, resume_button, reset_button,
+            undo_button
         ])
         controls_box.set_size((225, 450))
 
@@ -229,8 +228,9 @@ class GUI:
                                 black_total_time_limit, white_total_time_limit]
 
         settings_box = thorpy.Box.make(elements=[
-            black_settings_title, self.black_human_radio, black_ai_radio, black_move_limit, black_move_time_limit, black_total_time_limit,
-            white_settings_title, self.white_human_radio, white_ai_radio, white_move_limit, white_move_time_limit, white_total_time_limit
+            black_settings_title, self.black_human_radio, black_ai_radio, black_move_limit, black_move_time_limit,
+            black_total_time_limit, white_settings_title, self.white_human_radio, white_ai_radio, white_move_limit,
+            white_move_time_limit, white_total_time_limit
         ])
         settings_box.set_size((225, 450))
 
@@ -276,7 +276,7 @@ class GUI:
         move_box = thorpy.Box.make(elements=[up_box, horiz_box, down_box])
         move_box.set_size((225, 450))
 
-        ### MISC ###
+        # MISC #
         sheesh = thorpy.make_button("Sheesh", func=lambda: gui_controls.sheesh(self))
         sheesh.set_size((100, 50))
 
@@ -284,7 +284,6 @@ class GUI:
         stop.set_size((100, 50))
 
         sheesh_box = thorpy.Box.make(elements=[sheesh, stop])
-
 
         # Set the position of each box, then place
         controls_box.set_topleft((console_start_x, console_start_y))
@@ -314,9 +313,9 @@ class GUI:
             printer_width, printer_height/2
         ))
         if message is not None:
-            posX = (printer_start_x + 1 * 1 / 8)
-            posY = (printer_start_y + 1 * 1 / 32)
-            position = posX, posY
+            pos_x = (printer_start_x + 1 * 1 / 8)
+            pos_y = (printer_start_y + 1 * 1 / 32)
+            position = pos_x, pos_y
             font_text = pygame.font.SysFont('Ariel', 22)
             wrapper = textwrap.TextWrapper(width=28)
             word_list = wrapper.wrap(text=str(message))
@@ -335,9 +334,9 @@ class GUI:
             printer_width, printer_height
         ))
         if message is not None:
-            posX = (printer_start_x + 1 * 1 / 8)
-            posY = ((printer_start_y + printer_height/2) + 1 * 1 / 32)
-            position = posX, posY
+            pos_x = (printer_start_x + 1 * 1 / 8)
+            pos_y = ((printer_start_y + printer_height/2) + 1 * 1 / 32)
+            position = pos_x, pos_y
             font_text = pygame.font.SysFont('Ariel', 22)
             wrapper = textwrap.TextWrapper(width=28)
             word_list = wrapper.wrap(text=str(message))
@@ -349,7 +348,6 @@ class GUI:
             for line in range(len(label)):
                 self.window.blit(label[line], (position[0], position[1] + (line * 5) + (15 * line)))
         pygame.display.update()
-
 
     def clicked_tile(self, tile):
         # Deals with an event where a tile was clicked
@@ -370,7 +368,8 @@ class GUI:
 
         print([tile.board_coordinate for tile in self.selected_pieces])
 
-    def sort_selected_pieces(self, vector: Vector, selected_pieces):
+    @staticmethod
+    def sort_selected_pieces(vector: Vector, selected_pieces):
         if vector == Vector.UpLeft:
             vector_rep = (1, 0)
             return sorted(selected_pieces, key=itemgetter('row', 'column'), reverse=True)
@@ -425,7 +424,6 @@ class GUI:
 
                 self.update_move_printer(f"Moving from {[tile.board_coordinate for tile in self.selected_pieces]} to "
                                          f"")
-
 
                 if self.toggle_players:
                     self.end_turn()
@@ -771,4 +769,3 @@ class GUI:
     def clear_selected_pieces(self):
         self.selected_pieces.clear()
         self.update_printer("Cleared piece selection")
-

@@ -1,6 +1,5 @@
 import GUI
 from Models import game_state
-from Utility.constants import *
 from Utility.enum import *
 
 """
@@ -44,4 +43,3 @@ def update_gui_turn_label(context: GUI):
 def update_gui_score(context: GUI):
     context.update_score(Turn.WHITE, game_state.game_state['white']['score'])
     context.update_score(Turn.BLACK, game_state.game_state['black']['score'])
-
