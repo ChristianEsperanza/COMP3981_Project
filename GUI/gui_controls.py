@@ -20,7 +20,6 @@ def start_game_button(context: GUI):
     else:
         context.update_printer(message="Starting game, black to move!")
         game_state.game_state['game']['state'] = 'started'
-        # context.start_timer()
 
 
 def stop_game_button(context: GUI):
@@ -35,8 +34,6 @@ def pause_game_button(context: GUI):
         context.update_printer("Can't pause game")
     else:
         context.update_printer("Pausing game")
-        # context.white_timer.pause_timer_temp()
-        # context.black_timer.pause_timer_temp()
 
 
 def resume_game_button(context: GUI):
@@ -44,8 +41,6 @@ def resume_game_button(context: GUI):
         context.update_printer("Can't resume game")
     else:
         context.update_printer("Resuming game")
-    # context.resume_timer()
-    # context.start_timer()
 
 
 def reset_game_button(context: GUI):
@@ -59,7 +54,7 @@ def undo_move_button(context: GUI):
     if game_state.undo_move(context) == False:
         context.update_printer("Can't undo move")
     else:
-        context.update_printer("Undoing move")
+        context.update_printer("Undoing move and pausing game")
 
 
 def set_board_button(context: GUI):

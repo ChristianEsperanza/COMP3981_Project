@@ -1,4 +1,5 @@
 import _thread
+import random
 import threading
 from threading import Thread
 
@@ -12,6 +13,7 @@ out_of_bounds = ['A0', 'A6', 'B0', 'B7', 'C0', 'C8', 'D0', 'D9',
                                 'E0', 'E10', 'F1', 'F10', 'G2', 'G10', 'H3', 'H10', 'I4', 'I10',
                                 '@0', '@1', '@2', '@3', '@4', '@5', '@6', 'J4', 'J5', 'J6', 'J7',
                                 'J8', 'J9', 'J10']
+
 
 def begin_turn(context: GUI, piece_id):
     execute_thread(context, piece_id)
@@ -28,8 +30,17 @@ def calculate(context: GUI, piece_id):
 
     # Before executing, check that the game has not changed state
     if game_state.game_state['game']['state'] == 'started':
-        find_and_execute_move(best_move, context)
-        game_state.update_turn(context)
+
+        # First move is random
+        if game_state.game_state['game']['turn'] == 'black' and game_state.game_state['black']['moves_taken'] == 0:
+            string_board = context.board.to_string_state()
+            moves, resulting_boards = context.board.generate_all_boards(string_board, 'b')
+            find_and_execute_move(moves[random.randint(0, len(moves) - 1)], context)
+            game_state.update_turn(context)
+
+        else:
+            find_and_execute_move(best_move, context)
+            game_state.update_turn(context)
 
 
 def find_and_execute_move(best_move, context: GUI):
@@ -69,7 +80,8 @@ def find_and_execute_move(best_move, context: GUI):
                 #
                 # movement.push_two_to_one(context, start_coordinates[0], start_coordinates[1],
                 #                          end_coordinates[0], end_coordinates[1], target_coordinate)
-                movement.push_two_to_one(context, start_coordinates, end_coordinates, enemy_end_coordinates)
+                movement.push_two_to_one(context, start_coordinates, end_coordinates,
+                                         enemy_start_coordinates, enemy_end_coordinates)
                 game_state.add_to_move_history(context, start_coordinates, end_coordinates)
 
         # 3-1 Push    (C3C4C5 -> C4C5C6)

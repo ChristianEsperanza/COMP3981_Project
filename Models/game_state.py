@@ -17,7 +17,7 @@ game_state = {
     },
     'config': {
         'starting_layout': '',  # default, german daisy, belgian daisy
-        'time_elapsed': '',
+        'time_elapsed': 0,
     },
     'black': {
         'player': '',  # human, ai
@@ -61,7 +61,6 @@ def start_game(context: GUI):
 def stop_game(context: GUI):
     # Stop the game
 
-    # TODO: should stop timer
     if game_state['game']['state'] == 'stopped':
         return False
     else:
@@ -110,7 +109,7 @@ def reset_game(context: GUI):
     game_state['game']['state'] = 'stopped'
     game_state['game']['turn'] = 'black'
     game_state['config']['starting_layout'] = ''
-    game_state['config']['time_elapsed'] = ''
+    game_state['config']['time_elapsed'] = 0
     game_state['black']['player'] = ''
     game_state['black']['move_limit'] = 0
     game_state['black']['time_limit'] = 0
@@ -140,37 +139,44 @@ def reset_game(context: GUI):
 
 def undo_move(context: GUI):
     global game_state
-    if game_state['game']['state'] != 'started' or len(board_history) < 2 or len(state_history) == 0:
-        print("Can't undo")
+
+    # Can't undo move if game not paused - didn't want to do move timer calculations when we can just reset
+    if game_state['game']['state'] == 'paused':
+        # Have to pop the board twice because we save the current one right on turn change
+        board_history.pop()
+        last_board = board_history.pop()
+        last_state = state_history.pop()
+
+        # Set to paused so player can gather their thoughts and feelings
+        last_state['game']['state'] = 'paused'
+
+        # Subtract the last move time from the total, and then reset the move time
+        if last_state['game']['turn'] == 'black':
+            last_state['black']['total_time'] -= last_state['black']['move_time']
+            # last_state['white']['total_time'] -= game_state['white']['move_time']
+        else:
+            last_state['white']['total_time'] -= last_state['white']['move_time']
+            # last_state['black']['total_time'] -= game_state['black']['move_time']
+        last_state['black']['move_time'] = 0.0
+        last_state['white']['move_time'] = 0.0
+
+        # Finalize by assigning the previous state, board, and updating gui
+        game_state = copy.deepcopy(last_state)
+        context.board = copy.deepcopy(last_board)
+
+        context.toggle_player_move()
+        gui_updater.update_gui(context)
+        context.board.update_board(context.window)
+
+    else:
         return False
-    board_history.pop()
-    last_board = board_history.pop()
-
-    last_state = state_history.pop()
-    last_state['game']['state'] == 'paused'
-    game_state = copy.deepcopy(last_state)
-    context.board = copy.deepcopy(last_board)
-
-    context.toggle_player_move()
-    gui_updater.update_gui(context)
-    context.board.update_board(context.window)
-
-    if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
-        ai_main.begin_turn(context, black_piece_id)
-    elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
-        ai_main.begin_turn(context, white_piece_id)
 
 
 def update_turn(context: GUI):
     # Check for wins/no time left
     check_goal_state(context)
 
-    # Add to board and state history then update
-    temp_board = copy.deepcopy(context.board)
-    temp_state = copy.deepcopy(game_state)
-
-    board_history.append(temp_board)
-    state_history.append(temp_state)
+    save_history(context)
     context.board.update_board(context.window)
 
     # Calculate the current score after movement, reset the move timers
@@ -188,9 +194,6 @@ def update_turn(context: GUI):
         if game_state['white']['player'] == 'ai':
             context.update_printer("White to move! AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
-
-        # else:
-            # context.update_printer("White to move!")
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
@@ -215,38 +218,38 @@ def update_moves_taken(piece_enum):
 
 def check_goal_state(context: GUI):
     # Check for goal states before finalizing a turn
-    #    Win (6 points)
+    #    Point win (6 points)
     if game_state['white']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won!")
+        context.update_printer("White has won by score")
         play_music()
 
     elif game_state['black']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won!")
+        context.update_printer("Black has won by score")
         play_music()
 
-    #    No moves left on current player
+    # No moves left on current player
     elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won")
+        context.update_printer("Black has won by move limit")
         play_music()
 
     elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won")
+        context.update_printer("White has won by move limit")
         play_music()
 
     #    No time left on a player
-    # elif game_state['white']['time_limit'] <= game_state['white']['total_time']:
-    #     game_state['game']['state'] = 'stopped'
-    #     context.update_printer("Black has won")
-    #     play_music()
-    # 
-    # elif game_state['black']['time_limit'] <= game_state['black']['total_time']:
-    #     game_state['game']['state'] = 'stopped'
-    #     context.update_printer("White has won")
-    #     play_music()
+    elif game_state['white']['total_time'] >= game_state['white']['time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("Black has won by time")
+        # play_music()
+
+    elif game_state['black']['total_time'] >= game_state['black']['time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("White has won by time")
+        # play_music()
 
 
 def play_music():
@@ -308,6 +311,7 @@ def set_game_config(context: GUI):
         context.update_printer("Black to move!")
         game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        save_history(context)
         gui_updater.update_gui(context)
 
     elif game_state['black']['player'] == 'ai':
@@ -316,7 +320,20 @@ def set_game_config(context: GUI):
         gui_updater.update_gui(context)
 
         context.update_printer("AI is thinking...")
+        save_history(context)
         ai_main.begin_turn(context, black_piece_id)
+
+    else:
+        save_history(context)
+
+
+def save_history(context: GUI):
+    # Save the current board and game_state
+    temp_board = copy.deepcopy(context.board)
+    temp_state = copy.deepcopy(game_state)
+
+    board_history.append(temp_board)
+    state_history.append(temp_state)
 
 
 def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates:list):

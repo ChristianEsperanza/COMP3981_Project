@@ -15,7 +15,6 @@ from Utility.enum import Vector, vector_to_movement_enum
 from Utility.enum import Turn
 from operator import itemgetter
 from GUI.gui_controls import *
-from GUI.timer import Timer
 
 
 class GUI:
@@ -35,16 +34,6 @@ class GUI:
         self.console = None
         self.selected_pieces = []
         self.player_turn = Turn.BLACK
-        # self.run_timer = False
-        # self.total_agg_time_white = 0
-        # self.total_agg_time_black = 0
-        # self.timer_focus = Turn.BLACK
-        # self.is_started = False
-        # self.white_timer =Timer (game_state.game_state['white']['time_limit'],
-        #                          Turn.WHITE, self)
-        # self.black_timer = Timer(game_state.game_state['black']['time_limit'],
-        #                          Turn.BLACK, self)
-        # self.run_once = False
 
     def run(self):
         """
@@ -74,7 +63,6 @@ class GUI:
     def start_game_loop(self):
         clock = pygame.time.Clock()
         while True:
-            # clock.tick(60)
 
             for event in pygame.event.get():
                 # GUI buttons react to event
@@ -640,12 +628,8 @@ class GUI:
     def toggle_player_move(self):
         if self.player_turn == Turn.WHITE:
             self.player_turn = Turn.BLACK
-            # self.white_timer.pause_timer()
         else:
             self.player_turn = Turn.WHITE
-            # self.black_timer.pause_timer()
-        print(f"{self.player_turn.name} to move!")
-        # self.run_timer = False
 
     def draw_score_and_time(self):
         """
@@ -710,8 +694,8 @@ class GUI:
 
         # Format the time first
         time = "{:.1f}".format(time)
-
         font_text_time_label = pygame.font.SysFont('Ariel', 30)
+
         if piece_enum == Turn.WHITE:
             # Draw a box to cover the last value
             pygame.draw.rect(self.window, red, (670, 675, 75, 20))
@@ -780,36 +764,4 @@ class GUI:
     def clear_selected_pieces(self):
         self.selected_pieces.clear()
         self.update_printer("Cleared piece selection")
-
-    # def begin_timer(self):
-    #     if not self.run_once:
-    #         return
-    #     print("THREAD RIPPER")
-    #     self.run_once = False
-    #     total_agg_time = None
-    #     timer = None
-    #     while game_state.game_state['game']['state'] == ('started' or 'paused'):
-    #         print(f"Executing begin timer loop iteration for {self.player_turn.name}")
-    #         if self.player_turn == Turn.WHITE:
-    #             timer = self.white_timer
-    #         else:
-    #             timer = self.black_timer
-    #         # thread3 = threading.Thread(target=timer.start_timer)
-    #         # thread3.start()
-    #         timer.is_running = True
-    #         timer.start_timer()
-
-    # def resume_timer(self):
-    #     if game_state.game_state['game']['turn'] == 'black':
-    #         self.black_timer.resume_timer()
-    #     else:
-    #         self.white_timer.resume_timer()
-
-
-    # def start_timer(self):
-    #     self.run_timer = True
-    #     self.is_started = True
-    #     self.run_once = True
-    #     thread2 = threading.Thread(target=self.begin_timer)
-    #     thread2.start()
 
