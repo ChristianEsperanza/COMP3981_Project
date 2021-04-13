@@ -280,9 +280,9 @@ def set_board_config(context: GUI):
             context.board.build_board(context.window, 'belgian_daisy')
             game_state['config']['starting_layout'] = 'belgian daisy'
 
+
 def set_game_config(context: GUI):
-    # Get the game configs from the GUI
-    # state_timer.start_state_timer(context)
+    # Set the game configs from the GUI
 
     # Starting layout
     set_board_config(context)
@@ -318,7 +318,6 @@ def set_game_config(context: GUI):
         context.update_printer("AI is thinking...")
         ai_main.begin_turn(context, black_piece_id)
 
-    # gui_updater.update_gui(context)
 
 def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates:list):
     """
