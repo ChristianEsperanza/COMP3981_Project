@@ -61,7 +61,6 @@ def start_game(context: GUI):
 def stop_game(context: GUI):
     # Stop the game
 
-    # TODO: should stop timer
     if game_state['game']['state'] == 'stopped':
         return False
     else:

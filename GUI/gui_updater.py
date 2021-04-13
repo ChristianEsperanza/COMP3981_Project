@@ -20,19 +20,11 @@ def update_gui(context: GUI):
 
 
 def update_gui_total_time(context: GUI, piece=None):
-    if piece is None:
-        turn = game_state.game_state['game']['turn']
-        piece = (Turn.WHITE, Turn.BLACK)[turn == 'black']
-
     context.update_total_time(Turn.WHITE, game_state.game_state['white']['total_time'])
     context.update_total_time(Turn.BLACK, game_state.game_state['black']['total_time'])
 
 
 def update_gui_turn_time(context: GUI, piece=None):
-    if piece is None:
-        turn = game_state.game_state['game']['turn']
-        piece = (Turn.WHITE, Turn.BLACK)[turn == 'black']
-
     context.update_turn_time(Turn.WHITE, game_state.game_state['white']['move_time'])
     context.update_turn_time(Turn.BLACK, game_state.game_state['black']['move_time'])
 
