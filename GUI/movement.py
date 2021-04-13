@@ -86,9 +86,6 @@ def move_3_pieces(context: GUI, old_coordinate_1, old_coordinate_2, old_coordina
 
 
 def sumito_two_to_one(context:GUI, old_coordinates, new_coordinates):
-    # Coordinate will come in String of its location (Ex: 'I6')
-    # Ex: E7F8 to G8H9
-
     current_piece = context.board.board_dict[old_coordinates[0]].piece
     for coord in new_coordinates:
         context.board.board_dict[coord].piece = current_piece
@@ -162,10 +159,6 @@ def push_three_to_one(context, old_coordinates, new_coordinates, enemy_end_coord
 
     for coord in empty_coordinates:
         context.board.board_dict[coord].piece = None
-    # Coordinate will come in String of its location (Ex: 'I6')
-    # Ex - F3F4F5 -> F4F5F6 Push F7
-
-    # Get the tiles
 
 
 def push_three_to_two(context, old_coordinates, new_coordinates, enemy_start_coordinates, enemy_end_coordinates):

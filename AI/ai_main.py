@@ -144,5 +144,4 @@ def get_next_coordinate(last_coordinate: str, vector: tuple):
     return f"{chr(ord(last_coordinate[0]) + vector[0])}{int(last_coordinate[1]) + vector[1]}"
 
 def strip_coordinate(move_string):
-    # Strip the colour from a given coordinate
-    return move_string[0] + move_string[1]
+    return move_string[:-1]
