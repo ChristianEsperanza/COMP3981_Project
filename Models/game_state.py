@@ -148,8 +148,6 @@ def undo_move(context: GUI):
         last_board = board_history.pop()
         last_state = state_history.pop()
 
-        # White move time = 3.6
-
         # Set to paused so player can gather their thoughts and feelings
         last_state['game']['state'] = 'paused'
 
@@ -174,11 +172,6 @@ def undo_move(context: GUI):
     else:
         return False
 
-    # if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
-    #     ai_main.begin_turn(context, black_piece_id)
-    # elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
-    #     ai_main.begin_turn(context, white_piece_id)
-
 
 def update_turn(context: GUI):
     # Check for wins/no time left
@@ -202,9 +195,6 @@ def update_turn(context: GUI):
         if game_state['white']['player'] == 'ai':
             context.update_printer("White to move! AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
-
-        # else:
-            # context.update_printer("White to move!")
 
     # If white just went
     elif game_state['game']['turn'] == 'white':
@@ -232,35 +222,35 @@ def check_goal_state(context: GUI):
     #    Point win (6 points)
     if game_state['white']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won!")
+        context.update_printer("White has won by score")
         play_music()
 
     elif game_state['black']['score'] == 6:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won!")
+        context.update_printer("Black has won by score")
         play_music()
 
     # No moves left on current player
     elif game_state['white']['moves_taken'] == game_state['white']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("Black has won")
+        context.update_printer("Black has won by move limit")
         play_music()
 
     elif game_state['black']['moves_taken'] == game_state['black']['move_limit']:
         game_state['game']['state'] = 'stopped'
-        context.update_printer("White has won")
+        context.update_printer("White has won by move limit")
         play_music()
 
     #    No time left on a player
-    # elif game_state['white']['time_limit'] <= game_state['white']['total_time']:
-    #     game_state['game']['state'] = 'stopped'
-    #     context.update_printer("Black has won")
-    #     play_music()
-    # 
-    # elif game_state['black']['time_limit'] <= game_state['black']['total_time']:
-    #     game_state['game']['state'] = 'stopped'
-    #     context.update_printer("White has won")
-    #     play_music()
+    elif game_state['white']['total_time'] >= game_state['white']['time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("Black has won by time")
+        # play_music()
+
+    elif game_state['black']['total_time'] >= game_state['black']['time_limit']:
+        game_state['game']['state'] = 'stopped'
+        context.update_printer("White has won by time")
+        # play_music()
 
 
 def play_music():
