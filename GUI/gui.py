@@ -256,7 +256,7 @@ class GUI:
         left = thorpy.make_button("<", func=self.test_func_move, params={"vector": Vector.Left})
         left.set_size((50, 50))
 
-        center = thorpy.make_button("0")
+        center = thorpy.make_button("Clr", func=self.clear_selected_pieces)
         center.set_size((50, 50))
         center.set_topleft((2000, 1000))
 
@@ -777,6 +777,10 @@ class GUI:
         turn_label = font_text_time_lable.render(piece_enum.name, True, black)
         self.window.blit(turn_label, turn_label_location)
         pygame.display.update()
+
+    def clear_selected_pieces(self):
+        self.selected_pieces.clear()
+        self.update_printer("Cleared piece selection")
 
     # def begin_timer(self):
     #     if not self.run_once:
