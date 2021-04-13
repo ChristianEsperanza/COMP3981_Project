@@ -48,7 +48,7 @@ class Timer:
             else:
                 game_state.game_state['black']['total_time'] = timestamp
             gui_updater.update_gui_total_time(self.context, self.player, int(timestamp))
-            gui_updater.update_gui_move_time(self.context, self.player, int(turn_elapsed_time))
+            gui_updater.update_gui_turn_time(self.context, self.player, int(turn_elapsed_time))
 
         # Timer stopped. Cache timer details.
         if game_state.game_state['game']['state'] == 'paused':
@@ -58,12 +58,12 @@ class Timer:
             # if not self.is_soft_paused:
             self._total_agg_time = game_state.game_state['white']['total_time']
             gui_updater.update_gui_total_time(self.context, Turn.WHITE, int(timestamp))
-            gui_updater.update_gui_move_time(self.context, Turn.WHITE, int(self.current_move_time))
+            gui_updater.update_gui_turn_time(self.context, Turn.WHITE, int(self.current_move_time))
         else:
             # if not self.is_soft_paused:
             self._total_agg_time = game_state.game_state['black']['total_time']
             gui_updater.update_gui_total_time(self.context, Turn.BLACK, int(timestamp))
-            gui_updater.update_gui_move_time(self.context, Turn.BLACK, int(self.current_move_time))
+            gui_updater.update_gui_turn_time(self.context, Turn.BLACK, int(self.current_move_time))
 
     def pause_timer(self):
         self.is_running = False
@@ -87,6 +87,6 @@ class Timer:
 
         time.sleep(.1)
         gui_updater.update_gui_total_time(self.context, Turn.WHITE, 0)
-        gui_updater.update_gui_move_time(self.context, Turn.WHITE, 0)
+        gui_updater.update_gui_turn_time(self.context, Turn.WHITE, 0)
         gui_updater.update_gui_total_time(self.context, Turn.BLACK, 0)
-        gui_updater.update_gui_move_time(self.context, Turn.BLACK, 0)
+        gui_updater.update_gui_turn_time(self.context, Turn.BLACK, 0)

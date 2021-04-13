@@ -6,6 +6,7 @@ import pygame
 import GUI
 from AI import ai_main
 from GUI import gui_updater
+from Models import state_timer
 from Utility.constants import *
 from Utility.enum import *
 
@@ -53,7 +54,7 @@ def start_game(context: GUI):
     else:
         context.update_printer("Starting game, black to move!")
         set_game_config(context)
-        context.start_timer()
+        # context.start_timer()
 
 
 def stop_game(context: GUI):
@@ -73,9 +74,11 @@ def pause_game(context: GUI):
     else:
         # Set state and reset move timer
         game_state['game']['state'] = 'paused'
-        if game_state['game']['turn'] == 'black':
+
+        # Reset the move time for AI, search will need to be done again
+        if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
             game_state['black']['move_time'] = 0
-        else:
+        elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
             game_state['white']['move_time'] = 0
 
 
@@ -85,6 +88,7 @@ def resume_game(context: GUI):
     if game_state['game']['state'] != 'paused' or game_state['game']['state'] == 'stopped':
         return False
     else:
+
         game_state['game']['state'] = 'started'
         if game_state['game']['turn'] == 'black' and game_state['black']['player'] == 'ai':
             context.update_printer("Black to move! AI is thinking...")
@@ -93,8 +97,6 @@ def resume_game(context: GUI):
         elif game_state['game']['turn'] == 'white' and game_state['white']['player'] == 'ai':
             context.update_printer("White to move! AI is thinking...")
             ai_main.begin_turn(context, white_piece_id)
-
-        # TODO: Start the timer again
 
 
 def reset_game(context: GUI):
@@ -165,14 +167,10 @@ def update_turn(context: GUI):
     state_history.append(temp_state)
     context.board.update_board(context.window)
 
-    # Calculate the current score after movement
-    # TODO: Call this function in functions where the score changes (IE sumitos)
+    # Calculate the current score after movement, reset the move timers
     context.board.update_scores()
-
-    # TODO: append move history
-
-    # Go through each turn state (ie black/white and human/ai) to find the correct state.
-    # Once correct state is found, update the moves and time taken, update the state, and begin ai movement
+    game_state['black']['move_time'] = 0.0
+    game_state['white']['move_time'] = 0.0
 
     # If black just went
     if game_state['game']['turn'] == 'black':
@@ -276,6 +274,7 @@ def set_board_config(context:GUI):
 
 def set_game_config(context: GUI):
     # Get the game configs from the GUI
+    # state_timer.start_state_timer(context)
 
     # Starting layout
     set_board_config(context)
