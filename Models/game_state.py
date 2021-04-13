@@ -166,11 +166,13 @@ def update_turn(context: GUI):
     check_goal_state(context)
 
     # Add to board and state history then update
-    temp_board = copy.deepcopy(context.board)
-    temp_state = copy.deepcopy(game_state)
+    # temp_board = copy.deepcopy(context.board)
+    # temp_state = copy.deepcopy(game_state)
+    #
+    # board_history.append(temp_board)
+    # state_history.append(temp_state)
 
-    board_history.append(temp_board)
-    state_history.append(temp_state)
+    save_history(context)
     context.board.update_board(context.window)
 
     # Calculate the current score after movement, reset the move timers
@@ -308,6 +310,7 @@ def set_game_config(context: GUI):
         context.update_printer("Black to move!")
         game_state['game']['turn'] = 'black'
         game_state['game']['state'] = 'started'
+        save_history(context)
         gui_updater.update_gui(context)
 
     elif game_state['black']['player'] == 'ai':
@@ -316,7 +319,20 @@ def set_game_config(context: GUI):
         gui_updater.update_gui(context)
 
         context.update_printer("AI is thinking...")
+        save_history(context)
         ai_main.begin_turn(context, black_piece_id)
+
+    else:
+        save_history(context)
+
+
+def save_history(context: GUI):
+    # Save the current board and game_state
+    temp_board = copy.deepcopy(context.board)
+    temp_state = copy.deepcopy(game_state)
+
+    board_history.append(temp_board)
+    state_history.append(temp_state)
 
 
 def add_to_move_history(context: GUI, old_coordinates: list, new_coordinates:list):
