@@ -240,7 +240,6 @@ class GUI:
         settings_box.set_size((225, 450))
 
         """ MOVEMENT CONTROLS """
-        # TODO: Move these functions into gui_controls
         # Row 1
         up_left = thorpy.make_button("UP-L", func=self.test_func_move, params={"vector": Vector.UpLeft})
         up_left.set_size((50, 50))
